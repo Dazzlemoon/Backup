@@ -1,0 +1,12 @@
+model:
+  lorem.Lorem:
+    cutoff: 5.0
+    max_degree: 6
+    initialize_node_features: True
+    max_degree_lr: 0
+baseline:
+  elemental:
+    8: -18599.4368
+    12: -8721.7590
+    13: -9877.6778
+    79: -688.8680

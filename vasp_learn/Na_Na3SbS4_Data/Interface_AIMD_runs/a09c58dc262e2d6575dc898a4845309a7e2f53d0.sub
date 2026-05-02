@@ -1,0 +1,36 @@
+#!/bin/bash -l
+#SBATCH --parsable
+#SBATCH --nodes 1
+#SBATCH --ntasks-per-node 64
+#SBATCH --gres=gpu:0
+#SBATCH --partition 64c512g
+#SBATCH --partition=64c512g
+#SBATCH --ntasks=64
+#SBATCH --mail-type=end
+#SBATCH --mail-user=2393474010@sjtu.edu.cn
+#SBATCH --time=96:00:00
+#SBATCH --job-name=Interface_Gap1A_Compact_168atoms
+
+
+REMOTE_ROOT=$(readlink -f /dssg/home/acct-matxzl/matxzl/QiuQizhi/vasp_learn/Na_Na3SbS4_Data/Interface_AIMD_runs)
+echo 0 > $REMOTE_ROOT/a09c58dc262e2d6575dc898a4845309a7e2f53d0_flag_if_job_task_fail
+test $? -ne 0 && exit 1
+
+
+module load vasp/6.3.0-intel-2021.4.0
+
+
+
+
+
+source $REMOTE_ROOT/a09c58dc262e2d6575dc898a4845309a7e2f53d0.sub.run
+
+cd $REMOTE_ROOT
+test $? -ne 0 && exit 1
+
+wait
+FLAG_IF_JOB_TASK_FAIL=$(cat a09c58dc262e2d6575dc898a4845309a7e2f53d0_flag_if_job_task_fail)
+if test $FLAG_IF_JOB_TASK_FAIL -eq 0; then touch a09c58dc262e2d6575dc898a4845309a7e2f53d0_job_tag_finished; else exit 1;fi
+
+
+

@@ -1,0 +1,7 @@
+/data/home/public/qiuqizhi/reaxnet/my_experiment/LLZO/run_llzo_md.py:87: DeprecationWarning: Pickled array contains an aval with a named_shape attribute. This is deprecated and the code path supporting such avals will be removed. Please re-pickle the array.
+  params = pickle.load(f)
+/data/home/public/tzh/anaconda3/envs/qqz/lib/python3.10/site-packages/jax/_src/ops/scatter.py:108: FutureWarning: scatter inputs have incompatible types: cannot safely cast value from dtype=int64 to dtype=int32 with jax_numpy_dtype_promotion='standard'. In future JAX releases this will result in an error.
+  warnings.warn(
+/data/home/public/tzh/anaconda3/envs/qqz/lib/python3.10/site-packages/ase/md/nvtberendsen.py:102: RuntimeWarning: divide by zero encountered in scalar divide
+  1.0 + (self.temperature / old_temperature - 1.0) * tautscl
+slurmstepd: error: *** JOB 85 ON mgt01 CANCELLED AT 2026-04-27T19:42:11 ***

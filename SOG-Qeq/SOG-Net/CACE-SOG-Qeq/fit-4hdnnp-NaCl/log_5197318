@@ -1,0 +1,1451 @@
+reading data (extxyz + charge via cace.data.extxyz_charge)
+device: cuda
+building CACE representation
+Representation: Cace(
+  (node_onehot): NodeEncoder(num_classes=2)
+  (node_embedding_sender): NodeEmbedding(num_classes=2, embedding_dim=2)
+  (node_embedding_receiver): NodeEmbedding(num_classes=2, embedding_dim=2)
+  (edge_coding): EdgeEncoder(directed=True)
+  (radial_basis): BesselRBF(cutoff=5.289999961853027, n_rbf=6, trainable=True)
+  (cutoff_fn): PolynomialCutoff(p=6.0, cutoff=5.289999961853027)
+  (angular_basis): AngularComponent(l_max=3)
+  (radial_transform): SharedRadialLinearTransform(
+    (weights): ParameterList(
+        (0): Parameter containing: [torch.float32 of size 6x8x4 (cuda:0)]
+        (1): Parameter containing: [torch.float32 of size 6x8x4 (cuda:0)]
+        (2): Parameter containing: [torch.float32 of size 6x8x4 (cuda:0)]
+        (3): Parameter containing: [torch.float32 of size 6x8x4 (cuda:0)]
+    )
+  )
+  (symmetrizer): Symmetrizer()
+  (message_passing_list): ModuleList()
+)
+building CACE NNP (ChargeEq long-range, renamed to SOG_potential)
+First train loop:
+creating training task
+training
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 1 Loss 14.272136497762467
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 2 Loss 4.7679596722126005
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 3 Loss 3.644587254391776
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 4 Loss 2.7390077295568256
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 5 Loss 2.694059254725774
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 6 Loss 2.6142041128873825
+epoch 7 Loss 2.4456898038917116
+epoch 8 Loss 2.1512497856881883
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 9 Loss 2.031223569975959
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 10 Loss 1.9437335813707775
+##### Step: 9 Learning rate: 0.005 #####
+Epoch 10, Train Loss: 1.9437, Val Loss: 2.0052
+train_e/atom_mae: 0.014011
+2026-03-11 18:33:29.695 INFO: train_e/atom_mae: 0.014011
+train_e/atom_rmse: 0.020205
+2026-03-11 18:33:29.696 INFO: train_e/atom_rmse: 0.020205
+train_f_mae: 0.038643
+2026-03-11 18:33:29.787 INFO: train_f_mae: 0.038643
+train_f_rmse: 0.062667
+2026-03-11 18:33:29.787 INFO: train_f_rmse: 0.062667
+val_e/atom_mae: 0.010379
+2026-03-11 18:33:29.847 INFO: val_e/atom_mae: 0.010379
+val_e/atom_rmse: 0.010659
+2026-03-11 18:33:29.848 INFO: val_e/atom_rmse: 0.010659
+val_f_mae: 0.028801
+2026-03-11 18:33:29.848 INFO: val_f_mae: 0.028801
+val_f_rmse: 0.044822
+2026-03-11 18:33:29.849 INFO: val_f_rmse: 0.044822
+epoch 11 Loss 1.9706298853291406
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 12 Loss 1.3855852040979597
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 13 Loss 1.296707864801089
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 14 Loss 1.2693885196910963
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 15 Loss 1.3959561241004201
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 16 Loss 1.0756430631213718
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 17 Loss 0.9955935239129596
+epoch 18 Loss 0.8643264595667521
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 19 Loss 1.012632160451677
+epoch 20 Loss 0.9796421017249425
+##### Step: 19 Learning rate: 0.005 #####
+Epoch 20, Train Loss: 0.9796, Val Loss: 0.8301
+train_e/atom_mae: 0.011187
+2026-03-11 19:00:36.781 INFO: train_e/atom_mae: 0.011187
+train_e/atom_rmse: 0.012235
+2026-03-11 19:00:36.781 INFO: train_e/atom_rmse: 0.012235
+train_f_mae: 0.023045
+2026-03-11 19:00:36.862 INFO: train_f_mae: 0.023045
+train_f_rmse: 0.034970
+2026-03-11 19:00:36.863 INFO: train_f_rmse: 0.034970
+val_e/atom_mae: 0.011112
+2026-03-11 19:00:36.927 INFO: val_e/atom_mae: 0.011112
+val_e/atom_rmse: 0.011631
+2026-03-11 19:00:36.927 INFO: val_e/atom_rmse: 0.011631
+val_f_mae: 0.019253
+2026-03-11 19:00:36.928 INFO: val_f_mae: 0.019253
+val_f_rmse: 0.028772
+2026-03-11 19:00:36.929 INFO: val_f_rmse: 0.028772
+epoch 21 Loss 0.8240831366512511
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 22 Loss 0.8400166140331162
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 23 Loss 0.7479276378949483
+epoch 24 Loss 0.7548833841416571
+epoch 25 Loss 0.7684059904019038
+epoch 26 Loss 0.7696507912211948
+epoch 27 Loss 0.7536668122808139
+epoch 28 Loss 0.6928569873174032
+epoch 29 Loss 0.6630927429265446
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 30 Loss 0.6960206641422377
+##### Step: 29 Learning rate: 0.0025 #####
+Epoch 30, Train Loss: 0.6960, Val Loss: 0.8541
+train_e/atom_mae: 0.011147
+2026-03-11 19:27:31.915 INFO: train_e/atom_mae: 0.011147
+train_e/atom_rmse: 0.011519
+2026-03-11 19:27:31.916 INFO: train_e/atom_rmse: 0.011519
+train_f_mae: 0.018296
+2026-03-11 19:27:31.964 INFO: train_f_mae: 0.018296
+train_f_rmse: 0.027370
+2026-03-11 19:27:31.965 INFO: train_f_rmse: 0.027370
+val_e/atom_mae: 0.011641
+2026-03-11 19:27:32.014 INFO: val_e/atom_mae: 0.011641
+val_e/atom_rmse: 0.011995
+2026-03-11 19:27:32.015 INFO: val_e/atom_rmse: 0.011995
+val_f_mae: 0.019755
+2026-03-11 19:27:32.016 INFO: val_f_mae: 0.019755
+val_f_rmse: 0.029206
+2026-03-11 19:27:32.016 INFO: val_f_rmse: 0.029206
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 31 Loss 0.6578302555945185
+epoch 32 Loss 0.6266411560111576
+epoch 33 Loss 0.7141175626383888
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 34 Loss 0.6767915721899933
+epoch 35 Loss 0.6584363805916574
+epoch 36 Loss 0.7241753900713391
+epoch 37 Loss 0.6210468596220017
+epoch 38 Loss 0.65197839723693
+epoch 39 Loss 0.6784268173575402
+epoch 40 Loss 0.634635133544604
+##### Step: 39 Learning rate: 0.0025 #####
+Epoch 40, Train Loss: 0.6346, Val Loss: 0.5713
+train_e/atom_mae: 0.010755
+2026-03-11 19:54:27.233 INFO: train_e/atom_mae: 0.010755
+train_e/atom_rmse: 0.011119
+2026-03-11 19:54:27.233 INFO: train_e/atom_rmse: 0.011119
+train_f_mae: 0.017210
+2026-03-11 19:54:27.316 INFO: train_f_mae: 0.017210
+train_f_rmse: 0.025739
+2026-03-11 19:54:27.317 INFO: train_f_rmse: 0.025739
+val_e/atom_mae: 0.010582
+2026-03-11 19:54:27.361 INFO: val_e/atom_mae: 0.010582
+val_e/atom_rmse: 0.010921
+2026-03-11 19:54:27.362 INFO: val_e/atom_rmse: 0.010921
+val_f_mae: 0.015913
+2026-03-11 19:54:27.362 INFO: val_f_mae: 0.015913
+val_f_rmse: 0.023859
+2026-03-11 19:54:27.363 INFO: val_f_rmse: 0.023859
+training
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 1 Loss 1.0522990331384872
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 2 Loss 0.7731964321931203
+epoch 3 Loss 0.8728096223539776
+epoch 4 Loss 0.8569241962499089
+epoch 5 Loss 0.6251708819137679
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 6 Loss 0.5765340134998163
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 7 Loss 0.5754736092355516
+epoch 8 Loss 0.49790202321277727
+epoch 9 Loss 0.4680112840400802
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 10 Loss 0.3771793801751402
+##### Step: 9 Learning rate: 0.005 #####
+Epoch 10, Train Loss: 0.3772, Val Loss: 0.4049
+train_e/atom_mae: 0.010524
+2026-03-11 20:21:15.632 INFO: train_e/atom_mae: 0.010524
+train_e/atom_rmse: 0.013191
+2026-03-11 20:21:15.632 INFO: train_e/atom_rmse: 0.013191
+train_f_mae: 0.017038
+2026-03-11 20:21:15.680 INFO: train_f_mae: 0.017038
+train_f_rmse: 0.025765
+2026-03-11 20:21:15.681 INFO: train_f_rmse: 0.025765
+val_e/atom_mae: 0.012609
+2026-03-11 20:21:15.725 INFO: val_e/atom_mae: 0.012609
+val_e/atom_rmse: 0.012629
+2026-03-11 20:21:15.725 INFO: val_e/atom_rmse: 0.012629
+val_f_mae: 0.013632
+2026-03-11 20:21:15.726 INFO: val_f_mae: 0.013632
+val_f_rmse: 0.020027
+2026-03-11 20:21:15.727 INFO: val_f_rmse: 0.020027
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 11 Loss 0.4011029367314445
+epoch 12 Loss 0.34237610042095185
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 13 Loss 0.33359283324744965
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 14 Loss 0.2996921909517712
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 15 Loss 0.258212425948845
+epoch 16 Loss 0.25509044773876666
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 17 Loss 0.21519589805768596
+epoch 18 Loss 0.21066309154861504
+epoch 19 Loss 0.18916419208049773
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 20 Loss 0.1726644922627343
+##### Step: 19 Learning rate: 0.005 #####
+Epoch 20, Train Loss: 0.1727, Val Loss: 0.1720
+train_e/atom_mae: 0.010429
+2026-03-11 20:48:06.088 INFO: train_e/atom_mae: 0.010429
+train_e/atom_rmse: 0.012894
+2026-03-11 20:48:06.088 INFO: train_e/atom_rmse: 0.012894
+train_f_mae: 0.010981
+2026-03-11 20:48:06.137 INFO: train_f_mae: 0.010981
+train_f_rmse: 0.016237
+2026-03-11 20:48:06.137 INFO: train_f_rmse: 0.016237
+val_e/atom_mae: 0.010341
+2026-03-11 20:48:06.183 INFO: val_e/atom_mae: 0.010341
+val_e/atom_rmse: 0.012170
+2026-03-11 20:48:06.183 INFO: val_e/atom_rmse: 0.012170
+val_f_mae: 0.009090
+2026-03-11 20:48:06.184 INFO: val_f_mae: 0.009090
+val_f_rmse: 0.012972
+2026-03-11 20:48:06.184 INFO: val_f_rmse: 0.012972
+epoch 21 Loss 0.14935793484250703
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 22 Loss 0.13319773647520278
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 23 Loss 0.13369262018137507
+epoch 24 Loss 0.13129064506126775
+epoch 25 Loss 0.1221842444770866
+epoch 26 Loss 0.12203783130480184
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 27 Loss 0.11702236883342267
+epoch 28 Loss 0.11776356057160431
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 29 Loss 0.11034446344607406
+epoch 30 Loss 0.116058326098654
+##### Step: 29 Learning rate: 0.0025 #####
+Epoch 30, Train Loss: 0.1161, Val Loss: 0.1103
+train_e/atom_mae: 0.005945
+2026-03-11 21:14:57.772 INFO: train_e/atom_mae: 0.005945
+train_e/atom_rmse: 0.007435
+2026-03-11 21:14:57.773 INFO: train_e/atom_rmse: 0.007435
+train_f_mae: 0.007803
+2026-03-11 21:14:57.821 INFO: train_f_mae: 0.007803
+train_f_rmse: 0.011131
+2026-03-11 21:14:57.822 INFO: train_f_rmse: 0.011131
+val_e/atom_mae: 0.003363
+2026-03-11 21:14:57.866 INFO: val_e/atom_mae: 0.003363
+val_e/atom_rmse: 0.004102
+2026-03-11 21:14:57.866 INFO: val_e/atom_rmse: 0.004102
+val_f_mae: 0.007366
+2026-03-11 21:14:57.867 INFO: val_f_mae: 0.007366
+val_f_rmse: 0.010485
+2026-03-11 21:14:57.867 INFO: val_f_rmse: 0.010485
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 31 Loss 0.10668404743075371
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 32 Loss 0.105682723927829
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 33 Loss 0.10129207736502091
+epoch 34 Loss 0.1106060624619325
+epoch 35 Loss 0.1048786802093188
+epoch 36 Loss 0.09604843761357997
+epoch 37 Loss 0.09890463706519868
+epoch 38 Loss 0.09703133936143583
+epoch 39 Loss 0.1045685501727793
+epoch 40 Loss 0.09676682422558466
+##### Step: 39 Learning rate: 0.0025 #####
+Epoch 40, Train Loss: 0.0968, Val Loss: 0.1048
+train_e/atom_mae: 0.005747
+2026-03-11 21:41:57.006 INFO: train_e/atom_mae: 0.005747
+train_e/atom_rmse: 0.007287
+2026-03-11 21:41:57.025 INFO: train_e/atom_rmse: 0.007287
+train_f_mae: 0.007063
+2026-03-11 21:41:57.074 INFO: train_f_mae: 0.007063
+train_f_rmse: 0.010044
+2026-03-11 21:41:57.074 INFO: train_f_rmse: 0.010044
+val_e/atom_mae: 0.004656
+2026-03-11 21:41:57.120 INFO: val_e/atom_mae: 0.004656
+val_e/atom_rmse: 0.005895
+2026-03-11 21:41:57.120 INFO: val_e/atom_rmse: 0.005895
+val_f_mae: 0.007141
+2026-03-11 21:41:57.121 INFO: val_f_mae: 0.007141
+val_f_rmse: 0.010201
+2026-03-11 21:41:57.121 INFO: val_f_rmse: 0.010201
+training
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 1 Loss 0.07909306676851378
+epoch 2 Loss 0.08864098325785663
+epoch 3 Loss 0.09856483356820213
+epoch 4 Loss 0.11617083676159382
+epoch 5 Loss 0.12291830894019869
+epoch 6 Loss 0.11269836869090795
+epoch 7 Loss 0.11499687223798699
+epoch 8 Loss 0.11587716711064179
+epoch 9 Loss 0.11208438173764282
+epoch 10 Loss 0.11612820674975713
+##### Step: 9 Learning rate: 0.005 #####
+Epoch 10, Train Loss: 0.1161, Val Loss: 0.1183
+train_e/atom_mae: 0.007556
+2026-03-11 22:08:47.873 INFO: train_e/atom_mae: 0.007556
+train_e/atom_rmse: 0.009893
+2026-03-11 22:08:47.878 INFO: train_e/atom_rmse: 0.009893
+train_f_mae: 0.007156
+2026-03-11 22:08:47.926 INFO: train_f_mae: 0.007156
+train_f_rmse: 0.010254
+2026-03-11 22:08:47.926 INFO: train_f_rmse: 0.010254
+val_e/atom_mae: 0.006164
+2026-03-11 22:08:47.970 INFO: val_e/atom_mae: 0.006164
+val_e/atom_rmse: 0.006898
+2026-03-11 22:08:47.971 INFO: val_e/atom_rmse: 0.006898
+val_f_mae: 0.007622
+2026-03-11 22:08:47.971 INFO: val_f_mae: 0.007622
+val_f_rmse: 0.010825
+2026-03-11 22:08:47.972 INFO: val_f_rmse: 0.010825
+epoch 11 Loss 0.09883752433790101
+epoch 12 Loss 0.1127879629491104
+epoch 13 Loss 0.10808947988682323
+epoch 14 Loss 0.10771168530815177
+epoch 15 Loss 0.109588117632601
+epoch 16 Loss 0.09782860776616467
+epoch 17 Loss 0.11251631703227759
+epoch 18 Loss 0.09481638763927751
+epoch 19 Loss 0.100208858160509
+epoch 20 Loss 0.09753881205287245
+##### Step: 19 Learning rate: 0.005 #####
+Epoch 20, Train Loss: 0.0975, Val Loss: 0.1237
+train_e/atom_mae: 0.007484
+2026-03-11 22:35:39.237 INFO: train_e/atom_mae: 0.007484
+train_e/atom_rmse: 0.009535
+2026-03-11 22:35:39.237 INFO: train_e/atom_rmse: 0.009535
+train_f_mae: 0.007041
+2026-03-11 22:35:39.287 INFO: train_f_mae: 0.007041
+train_f_rmse: 0.010080
+2026-03-11 22:35:39.287 INFO: train_f_rmse: 0.010080
+val_e/atom_mae: 0.015412
+2026-03-11 22:35:39.330 INFO: val_e/atom_mae: 0.015412
+val_e/atom_rmse: 0.015634
+2026-03-11 22:35:39.331 INFO: val_e/atom_rmse: 0.015634
+val_f_mae: 0.007533
+2026-03-11 22:35:39.332 INFO: val_f_mae: 0.007533
+val_f_rmse: 0.010816
+2026-03-11 22:35:39.332 INFO: val_f_rmse: 0.010816
+epoch 21 Loss 0.07908030020693937
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 22 Loss 0.07977120519926151
+epoch 23 Loss 0.0749404498272472
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 24 Loss 0.0804819873927368
+epoch 25 Loss 0.0779631139834722
+epoch 26 Loss 0.07522601454622216
+epoch 27 Loss 0.07578909765515063
+epoch 28 Loss 0.07451780601922009
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 29 Loss 0.0721782779486643
+epoch 30 Loss 0.0738475425210264
+##### Step: 29 Learning rate: 0.0025 #####
+Epoch 30, Train Loss: 0.0738, Val Loss: 0.0669
+train_e/atom_mae: 0.003179
+2026-03-11 23:02:30.033 INFO: train_e/atom_mae: 0.003179
+train_e/atom_rmse: 0.004227
+2026-03-11 23:02:30.033 INFO: train_e/atom_rmse: 0.004227
+train_f_mae: 0.006123
+2026-03-11 23:02:30.082 INFO: train_f_mae: 0.006123
+train_f_rmse: 0.008715
+2026-03-11 23:02:30.082 INFO: train_f_rmse: 0.008715
+val_e/atom_mae: 0.001254
+2026-03-11 23:02:30.127 INFO: val_e/atom_mae: 0.001254
+val_e/atom_rmse: 0.001344
+2026-03-11 23:02:30.127 INFO: val_e/atom_rmse: 0.001344
+val_f_mae: 0.005766
+2026-03-11 23:02:30.128 INFO: val_f_mae: 0.005766
+val_f_rmse: 0.008178
+2026-03-11 23:02:30.128 INFO: val_f_rmse: 0.008178
+epoch 31 Loss 0.07159728743549851
+epoch 32 Loss 0.06897825582987732
+epoch 33 Loss 0.07028555161423153
+epoch 34 Loss 0.07699414126988914
+epoch 35 Loss 0.06879138654718796
+epoch 36 Loss 0.07400188446458843
+epoch 37 Loss 0.07566821386830674
+epoch 38 Loss 0.07278977300143905
+epoch 39 Loss 0.06891958189507326
+epoch 40 Loss 0.07125138190057542
+##### Step: 39 Learning rate: 0.0025 #####
+Epoch 40, Train Loss: 0.0713, Val Loss: 0.0714
+train_e/atom_mae: 0.001988
+2026-03-11 23:29:32.331 INFO: train_e/atom_mae: 0.001988
+train_e/atom_rmse: 0.002510
+2026-03-11 23:29:32.332 INFO: train_e/atom_rmse: 0.002510
+train_f_mae: 0.005948
+2026-03-11 23:29:32.381 INFO: train_f_mae: 0.005948
+train_f_rmse: 0.008474
+2026-03-11 23:29:32.381 INFO: train_f_rmse: 0.008474
+val_e/atom_mae: 0.003268
+2026-03-11 23:29:32.426 INFO: val_e/atom_mae: 0.003268
+val_e/atom_rmse: 0.003284
+2026-03-11 23:29:32.426 INFO: val_e/atom_rmse: 0.003284
+val_f_mae: 0.005871
+2026-03-11 23:29:32.427 INFO: val_f_mae: 0.005871
+val_f_rmse: 0.008436
+2026-03-11 23:29:32.427 INFO: val_f_rmse: 0.008436
+training
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 1 Loss 0.060607522514959176
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 2 Loss 0.0669861893935336
+epoch 3 Loss 0.0701883135156499
+epoch 4 Loss 0.08455558571136661
+epoch 5 Loss 0.09206909152368704
+epoch 6 Loss 0.08604779190901253
+epoch 7 Loss 0.08257397622283962
+epoch 8 Loss 0.08190790738082594
+epoch 9 Loss 0.09026253543794155
+epoch 10 Loss 0.08199260738574796
+##### Step: 9 Learning rate: 0.005 #####
+Epoch 10, Train Loss: 0.0820, Val Loss: 0.0945
+train_e/atom_mae: 0.002907
+2026-03-11 23:56:24.681 INFO: train_e/atom_mae: 0.002907
+train_e/atom_rmse: 0.003745
+2026-03-11 23:56:24.681 INFO: train_e/atom_rmse: 0.003745
+train_f_mae: 0.006214
+2026-03-11 23:56:24.730 INFO: train_f_mae: 0.006214
+train_f_rmse: 0.008911
+2026-03-11 23:56:24.730 INFO: train_f_rmse: 0.008911
+val_e/atom_mae: 0.001434
+2026-03-11 23:56:24.798 INFO: val_e/atom_mae: 0.001434
+val_e/atom_rmse: 0.001494
+2026-03-11 23:56:24.799 INFO: val_e/atom_rmse: 0.001494
+val_f_mae: 0.006861
+2026-03-11 23:56:24.800 INFO: val_f_mae: 0.006861
+val_f_rmse: 0.009721
+2026-03-11 23:56:24.800 INFO: val_f_rmse: 0.009721
+epoch 11 Loss 0.08510392393502925
+epoch 12 Loss 0.09189312796625826
+epoch 13 Loss 0.08235087980412775
+epoch 14 Loss 0.08740629763238959
+epoch 15 Loss 0.08536110017034743
+epoch 16 Loss 0.08215658890290392
+epoch 17 Loss 0.08624577690743737
+epoch 18 Loss 0.07821549767007431
+epoch 19 Loss 0.0755750066248907
+epoch 20 Loss 0.07492421068665055
+##### Step: 19 Learning rate: 0.005 #####
+Epoch 20, Train Loss: 0.0749, Val Loss: 0.0861
+train_e/atom_mae: 0.002943
+2026-03-12 00:23:15.968 INFO: train_e/atom_mae: 0.002943
+train_e/atom_rmse: 0.003707
+2026-03-12 00:23:15.968 INFO: train_e/atom_rmse: 0.003707
+train_f_mae: 0.006344
+2026-03-12 00:23:16.017 INFO: train_f_mae: 0.006344
+train_f_rmse: 0.009090
+2026-03-12 00:23:16.017 INFO: train_f_rmse: 0.009090
+val_e/atom_mae: 0.001159
+2026-03-12 00:23:16.061 INFO: val_e/atom_mae: 0.001159
+val_e/atom_rmse: 0.001422
+2026-03-12 00:23:16.061 INFO: val_e/atom_rmse: 0.001422
+val_f_mae: 0.006537
+2026-03-12 00:23:16.062 INFO: val_f_mae: 0.006537
+val_f_rmse: 0.009278
+2026-03-12 00:23:16.062 INFO: val_f_rmse: 0.009278
+epoch 21 Loss 0.06472322088976701
+epoch 22 Loss 0.06336163164012962
+epoch 23 Loss 0.06434880461543799
+epoch 24 Loss 0.06284367463654943
+epoch 25 Loss 0.06331901285797358
+epoch 26 Loss 0.06475231451706753
+epoch 27 Loss 0.0627299965918064
+epoch 28 Loss 0.06163163693828715
+epoch 29 Loss 0.06359385110851791
+epoch 30 Loss 0.06735095345311695
+##### Step: 29 Learning rate: 0.0025 #####
+Epoch 30, Train Loss: 0.0674, Val Loss: 0.0680
+train_e/atom_mae: 0.001829
+2026-03-12 00:50:08.358 INFO: train_e/atom_mae: 0.001829
+train_e/atom_rmse: 0.002290
+2026-03-12 00:50:08.359 INFO: train_e/atom_rmse: 0.002290
+train_f_mae: 0.005598
+2026-03-12 00:50:08.408 INFO: train_f_mae: 0.005598
+train_f_rmse: 0.007985
+2026-03-12 00:50:08.408 INFO: train_f_rmse: 0.007985
+val_e/atom_mae: 0.001913
+2026-03-12 00:50:08.453 INFO: val_e/atom_mae: 0.001913
+val_e/atom_rmse: 0.002005
+2026-03-12 00:50:08.453 INFO: val_e/atom_rmse: 0.002005
+val_f_mae: 0.005710
+2026-03-12 00:50:08.454 INFO: val_f_mae: 0.005710
+val_f_rmse: 0.008243
+2026-03-12 00:50:08.454 INFO: val_f_rmse: 0.008243
+epoch 31 Loss 0.06210732624348667
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 32 Loss 0.060219680149522094
+epoch 33 Loss 0.06467338206867378
+epoch 34 Loss 0.06197696871641609
+epoch 35 Loss 0.060085571284095446
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 36 Loss 0.0665705451493462
+epoch 37 Loss 0.06151679264174567
+epoch 38 Loss 0.06126235444098711
+epoch 39 Loss 0.06701081780923737
+epoch 40 Loss 0.05949808159636127
+##### Step: 39 Learning rate: 0.0025 #####
+Epoch 40, Train Loss: 0.0595, Val Loss: 0.0574
+train_e/atom_mae: 0.002087
+2026-03-12 01:17:07.459 INFO: train_e/atom_mae: 0.002087
+train_e/atom_rmse: 0.002602
+2026-03-12 01:17:07.460 INFO: train_e/atom_rmse: 0.002602
+train_f_mae: 0.005529
+2026-03-12 01:17:07.508 INFO: train_f_mae: 0.005529
+train_f_rmse: 0.007897
+2026-03-12 01:17:07.509 INFO: train_f_rmse: 0.007897
+val_e/atom_mae: 0.002132
+2026-03-12 01:17:07.553 INFO: val_e/atom_mae: 0.002132
+val_e/atom_rmse: 0.002140
+2026-03-12 01:17:07.553 INFO: val_e/atom_rmse: 0.002140
+val_f_mae: 0.005341
+2026-03-12 01:17:07.554 INFO: val_f_mae: 0.005341
+val_f_rmse: 0.007574
+2026-03-12 01:17:07.555 INFO: val_f_rmse: 0.007574
+training
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 1 Loss 0.0549790560019513
+epoch 2 Loss 0.055928799129194684
+epoch 3 Loss 0.06567239668634203
+epoch 4 Loss 0.06624746706750657
+epoch 5 Loss 0.08368956820418437
+epoch 6 Loss 0.07850296402557029
+epoch 7 Loss 0.08124996521406704
+epoch 8 Loss 0.0745194133495291
+epoch 9 Loss 0.07673495694994927
+epoch 10 Loss 0.068981513335473
+##### Step: 9 Learning rate: 0.005 #####
+Epoch 10, Train Loss: 0.0690, Val Loss: 0.0632
+train_e/atom_mae: 0.002697
+2026-03-12 01:43:57.170 INFO: train_e/atom_mae: 0.002697
+train_e/atom_rmse: 0.003529
+2026-03-12 01:43:57.171 INFO: train_e/atom_rmse: 0.003529
+train_f_mae: 0.005836
+2026-03-12 01:43:57.219 INFO: train_f_mae: 0.005836
+train_f_rmse: 0.008389
+2026-03-12 01:43:57.219 INFO: train_f_rmse: 0.008389
+val_e/atom_mae: 0.002829
+2026-03-12 01:43:57.262 INFO: val_e/atom_mae: 0.002829
+val_e/atom_rmse: 0.003508
+2026-03-12 01:43:57.263 INFO: val_e/atom_rmse: 0.003508
+val_f_mae: 0.005500
+2026-03-12 01:43:57.264 INFO: val_f_mae: 0.005500
+val_f_rmse: 0.007933
+2026-03-12 01:43:57.264 INFO: val_f_rmse: 0.007933
+epoch 11 Loss 0.07288175453742345
+epoch 12 Loss 0.07907847507546345
+epoch 13 Loss 0.07765384871512651
+epoch 14 Loss 0.07286299152506723
+epoch 15 Loss 0.08039918375511965
+epoch 16 Loss 0.07037443101820018
+epoch 17 Loss 0.07004994465659062
+epoch 18 Loss 0.07363195754173729
+epoch 19 Loss 0.0736051713095771
+epoch 20 Loss 0.07389789649595817
+##### Step: 19 Learning rate: 0.005 #####
+Epoch 20, Train Loss: 0.0739, Val Loss: 0.0676
+train_e/atom_mae: 0.003380
+2026-03-12 02:10:46.428 INFO: train_e/atom_mae: 0.003380
+train_e/atom_rmse: 0.004355
+2026-03-12 02:10:46.430 INFO: train_e/atom_rmse: 0.004355
+train_f_mae: 0.005987
+2026-03-12 02:10:46.478 INFO: train_f_mae: 0.005987
+train_f_rmse: 0.008602
+2026-03-12 02:10:46.479 INFO: train_f_rmse: 0.008602
+val_e/atom_mae: 0.004104
+2026-03-12 02:10:46.524 INFO: val_e/atom_mae: 0.004104
+val_e/atom_rmse: 0.004377
+2026-03-12 02:10:46.524 INFO: val_e/atom_rmse: 0.004377
+val_f_mae: 0.005748
+2026-03-12 02:10:46.525 INFO: val_f_mae: 0.005748
+val_f_rmse: 0.008192
+2026-03-12 02:10:46.525 INFO: val_f_rmse: 0.008192
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 21 Loss 0.05793865643855598
+epoch 22 Loss 0.058175635606878336
+epoch 23 Loss 0.06331087115945087
+epoch 24 Loss 0.05688025118990077
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 25 Loss 0.05641091233947211
+epoch 26 Loss 0.0571805731455485
+epoch 27 Loss 0.060906801604562334
+epoch 28 Loss 0.0583581417447163
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 29 Loss 0.055750012430879806
+epoch 30 Loss 0.058704548987249534
+##### Step: 29 Learning rate: 0.0025 #####
+Epoch 30, Train Loss: 0.0587, Val Loss: 0.0653
+train_e/atom_mae: 0.001950
+2026-03-12 02:37:37.328 INFO: train_e/atom_mae: 0.001950
+train_e/atom_rmse: 0.002487
+2026-03-12 02:37:37.328 INFO: train_e/atom_rmse: 0.002487
+train_f_mae: 0.005336
+2026-03-12 02:37:37.377 INFO: train_f_mae: 0.005336
+train_f_rmse: 0.007631
+2026-03-12 02:37:37.377 INFO: train_f_rmse: 0.007631
+val_e/atom_mae: 0.001918
+2026-03-12 02:37:37.420 INFO: val_e/atom_mae: 0.001918
+val_e/atom_rmse: 0.002507
+2026-03-12 02:37:37.421 INFO: val_e/atom_rmse: 0.002507
+val_f_mae: 0.005693
+2026-03-12 02:37:37.421 INFO: val_f_mae: 0.005693
+val_f_rmse: 0.008073
+2026-03-12 02:37:37.422 INFO: val_f_rmse: 0.008073
+epoch 31 Loss 0.05675227327893178
+epoch 32 Loss 0.05687498506365551
+epoch 33 Loss 0.05714420173317194
+epoch 34 Loss 0.05565409069259961
+epoch 35 Loss 0.05997996052934064
+epoch 36 Loss 0.05625813859204451
+epoch 37 Loss 0.05574978821393516
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 38 Loss 0.05902210359772046
+epoch 39 Loss 0.05637412472317616
+epoch 40 Loss 0.05660422118173705
+##### Step: 39 Learning rate: 0.0025 #####
+Epoch 40, Train Loss: 0.0566, Val Loss: 0.0557
+train_e/atom_mae: 0.001978
+2026-03-12 03:04:35.788 INFO: train_e/atom_mae: 0.001978
+train_e/atom_rmse: 0.002551
+2026-03-12 03:04:35.789 INFO: train_e/atom_rmse: 0.002551
+train_f_mae: 0.005277
+2026-03-12 03:04:35.838 INFO: train_f_mae: 0.005277
+train_f_rmse: 0.007544
+2026-03-12 03:04:35.838 INFO: train_f_rmse: 0.007544
+val_e/atom_mae: 0.000161
+2026-03-12 03:04:35.883 INFO: val_e/atom_mae: 0.000161
+val_e/atom_rmse: 0.000209
+2026-03-12 03:04:35.883 INFO: val_e/atom_rmse: 0.000209
+val_f_mae: 0.005197
+2026-03-12 03:04:35.884 INFO: val_f_mae: 0.005197
+val_f_rmse: 0.007468
+2026-03-12 03:04:35.884 INFO: val_f_rmse: 0.007468
+Save best MAE e model: 0.0019783887546509504 0.00016076743486337364
+Second train loop:
+training
+epoch 1 Loss 0.04980902801371283
+epoch 2 Loss 0.05152649568600787
+epoch 3 Loss 0.050003532305773764
+epoch 4 Loss 0.0510471992339525
+epoch 5 Loss 0.05063827717883719
+epoch 6 Loss 0.049496017611689036
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 7 Loss 0.050844248990631766
+epoch 8 Loss 0.05022505433609088
+epoch 9 Loss 0.05077730477477113
+epoch 10 Loss 0.04940174489592512
+##### Step: 49 Learning rate: 0.00125 #####
+Epoch 10, Train Loss: 0.0494, Val Loss: 0.0503
+train_e/atom_mae: 0.001185
+2026-03-12 03:31:30.989 INFO: train_e/atom_mae: 0.001185
+train_e/atom_rmse: 0.001519
+2026-03-12 03:31:30.990 INFO: train_e/atom_rmse: 0.001519
+train_f_mae: 0.004932
+2026-03-12 03:31:31.038 INFO: train_f_mae: 0.004932
+train_f_rmse: 0.007055
+2026-03-12 03:31:31.039 INFO: train_f_rmse: 0.007055
+val_e/atom_mae: 0.000442
+2026-03-12 03:31:31.083 INFO: val_e/atom_mae: 0.000442
+val_e/atom_rmse: 0.000503
+2026-03-12 03:31:31.084 INFO: val_e/atom_rmse: 0.000503
+val_f_mae: 0.004951
+2026-03-12 03:31:31.085 INFO: val_f_mae: 0.004951
+val_f_rmse: 0.007089
+2026-03-12 03:31:31.085 INFO: val_f_rmse: 0.007089
+Save best RMSE e model: 0.0015189365949481726 0.0005033926572650671
+epoch 11 Loss 0.04916536712398132
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 12 Loss 0.04983514412202769
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 13 Loss 0.04986404456819097
+epoch 14 Loss 0.049538378357473344
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 15 Loss 0.048044549282640216
+epoch 16 Loss 0.050039596472763355
+epoch 17 Loss 0.048826082001129784
+epoch 18 Loss 0.04962113448108236
+epoch 19 Loss 0.04841044703498483
+epoch 20 Loss 0.048237171601504085
+##### Step: 59 Learning rate: 0.00125 #####
+Epoch 20, Train Loss: 0.0482, Val Loss: 0.0519
+train_e/atom_mae: 0.001216
+2026-03-12 03:58:21.150 INFO: train_e/atom_mae: 0.001216
+train_e/atom_rmse: 0.001548
+2026-03-12 03:58:21.150 INFO: train_e/atom_rmse: 0.001548
+train_f_mae: 0.004868
+2026-03-12 03:58:21.198 INFO: train_f_mae: 0.004868
+train_f_rmse: 0.006967
+2026-03-12 03:58:21.199 INFO: train_f_rmse: 0.006967
+val_e/atom_mae: 0.001214
+2026-03-12 03:58:21.244 INFO: val_e/atom_mae: 0.001214
+val_e/atom_rmse: 0.001259
+2026-03-12 03:58:21.244 INFO: val_e/atom_rmse: 0.001259
+val_f_mae: 0.005029
+2026-03-12 03:58:21.245 INFO: val_f_mae: 0.005029
+val_f_rmse: 0.007172
+2026-03-12 03:58:21.246 INFO: val_f_rmse: 0.007172
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 21 Loss 0.04601729564575685
+epoch 22 Loss 0.04602774039117826
+epoch 23 Loss 0.04509571324206061
+epoch 24 Loss 0.045007658888482384
+epoch 25 Loss 0.04550270484553443
+epoch 26 Loss 0.046422806301464635
+epoch 27 Loss 0.04507647249433729
+epoch 28 Loss 0.04576414328068495
+epoch 29 Loss 0.04459901186741061
+epoch 30 Loss 0.045015867607047164
+##### Step: 69 Learning rate: 0.000625 #####
+Epoch 30, Train Loss: 0.0450, Val Loss: 0.0460
+train_e/atom_mae: 0.000790
+2026-03-12 04:25:12.613 INFO: train_e/atom_mae: 0.000790
+train_e/atom_rmse: 0.001020
+2026-03-12 04:25:12.613 INFO: train_e/atom_rmse: 0.001020
+train_f_mae: 0.004693
+2026-03-12 04:25:12.661 INFO: train_f_mae: 0.004693
+train_f_rmse: 0.006723
+2026-03-12 04:25:12.662 INFO: train_f_rmse: 0.006723
+val_e/atom_mae: 0.000335
+2026-03-12 04:25:12.705 INFO: val_e/atom_mae: 0.000335
+val_e/atom_rmse: 0.000368
+2026-03-12 04:25:12.705 INFO: val_e/atom_rmse: 0.000368
+val_f_mae: 0.004696
+2026-03-12 04:25:12.706 INFO: val_f_mae: 0.004696
+val_f_rmse: 0.006779
+2026-03-12 04:25:12.706 INFO: val_f_rmse: 0.006779
+Save best RMSE e model: 0.0010196007788181305 0.00036838988307863474
+epoch 31 Loss 0.04518781314500504
+epoch 32 Loss 0.04524800572337376
+epoch 33 Loss 0.044774938654154536
+epoch 34 Loss 0.04529649147349927
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 35 Loss 0.04530993933478991
+epoch 36 Loss 0.04479586518680056
+epoch 37 Loss 0.04509399126387305
+epoch 38 Loss 0.044627570365038186
+epoch 39 Loss 0.04426987569158276
+epoch 40 Loss 0.044842015620734955
+##### Step: 79 Learning rate: 0.000625 #####
+Epoch 40, Train Loss: 0.0448, Val Loss: 0.0458
+train_e/atom_mae: 0.000805
+2026-03-12 04:52:03.250 INFO: train_e/atom_mae: 0.000805
+train_e/atom_rmse: 0.001035
+2026-03-12 04:52:03.251 INFO: train_e/atom_rmse: 0.001035
+train_f_mae: 0.004666
+2026-03-12 04:52:03.299 INFO: train_f_mae: 0.004666
+train_f_rmse: 0.006684
+2026-03-12 04:52:03.300 INFO: train_f_rmse: 0.006684
+val_e/atom_mae: 0.001564
+2026-03-12 04:52:03.343 INFO: val_e/atom_mae: 0.001564
+val_e/atom_rmse: 0.001771
+2026-03-12 04:52:03.344 INFO: val_e/atom_rmse: 0.001771
+val_f_mae: 0.004652
+2026-03-12 04:52:03.344 INFO: val_f_mae: 0.004652
+val_f_rmse: 0.006713
+2026-03-12 04:52:03.345 INFO: val_f_rmse: 0.006713
+epoch 41 Loss 0.043078801958925196
+epoch 42 Loss 0.043047879493484896
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 43 Loss 0.04277257390734222
+epoch 44 Loss 0.043054189756512644
+epoch 45 Loss 0.042832715205020376
+epoch 46 Loss 0.042557675648066735
+epoch 47 Loss 0.04284874127763841
+epoch 48 Loss 0.04272799749548237
+epoch 49 Loss 0.04287483847596579
+epoch 50 Loss 0.04263470036908984
+##### Step: 89 Learning rate: 0.0003125 #####
+Epoch 50, Train Loss: 0.0426, Val Loss: 0.0427
+train_e/atom_mae: 0.000556
+2026-03-12 05:18:55.608 INFO: train_e/atom_mae: 0.000556
+train_e/atom_rmse: 0.000730
+2026-03-12 05:18:55.609 INFO: train_e/atom_rmse: 0.000730
+train_f_mae: 0.004558
+2026-03-12 05:18:55.658 INFO: train_f_mae: 0.004558
+train_f_rmse: 0.006536
+2026-03-12 05:18:55.658 INFO: train_f_rmse: 0.006536
+val_e/atom_mae: 0.000195
+2026-03-12 05:18:55.702 INFO: val_e/atom_mae: 0.000195
+val_e/atom_rmse: 0.000244
+2026-03-12 05:18:55.703 INFO: val_e/atom_rmse: 0.000244
+val_f_mae: 0.004537
+2026-03-12 05:18:55.703 INFO: val_f_mae: 0.004537
+val_f_rmse: 0.006538
+2026-03-12 05:18:55.704 INFO: val_f_rmse: 0.006538
+Save best RMSE e model: 0.0007296149851754308 0.00024423134163953364
+epoch 51 Loss 0.042581038605421784
+epoch 52 Loss 0.042968218709445664
+epoch 53 Loss 0.04277504622729288
+epoch 54 Loss 0.042640984791020554
+epoch 55 Loss 0.04243863860766093
+epoch 56 Loss 0.04289391523641017
+epoch 57 Loss 0.04268721943514214
+epoch 58 Loss 0.04256993644767337
+epoch 59 Loss 0.04229298192593786
+epoch 60 Loss 0.04316960929789477
+##### Step: 99 Learning rate: 0.0003125 #####
+Epoch 60, Train Loss: 0.0432, Val Loss: 0.0424
+train_e/atom_mae: 0.000534
+2026-03-12 05:45:46.662 INFO: train_e/atom_mae: 0.000534
+train_e/atom_rmse: 0.000690
+2026-03-12 05:45:46.663 INFO: train_e/atom_rmse: 0.000690
+train_f_mae: 0.004552
+2026-03-12 05:45:46.711 INFO: train_f_mae: 0.004552
+train_f_rmse: 0.006526
+2026-03-12 05:45:46.711 INFO: train_f_rmse: 0.006526
+val_e/atom_mae: 0.000791
+2026-03-12 05:45:46.755 INFO: val_e/atom_mae: 0.000791
+val_e/atom_rmse: 0.000828
+2026-03-12 05:45:46.756 INFO: val_e/atom_rmse: 0.000828
+val_f_mae: 0.004507
+2026-03-12 05:45:46.756 INFO: val_f_mae: 0.004507
+val_f_rmse: 0.006500
+2026-03-12 05:45:46.757 INFO: val_f_rmse: 0.006500
+epoch 61 Loss 0.041437253101418416
+epoch 62 Loss 0.04133294615894556
+epoch 63 Loss 0.04127377132574717
+epoch 64 Loss 0.04141475681629446
+epoch 65 Loss 0.04146317233848903
+epoch 66 Loss 0.04132476304140356
+epoch 67 Loss 0.0414594327347974
+epoch 68 Loss 0.04139321892418795
+epoch 69 Loss 0.04133518212785323
+epoch 70 Loss 0.04119659409754806
+##### Step: 109 Learning rate: 0.00015625 #####
+Epoch 70, Train Loss: 0.0412, Val Loss: 0.0416
+train_e/atom_mae: 0.000350
+2026-03-12 06:12:39.386 INFO: train_e/atom_mae: 0.000350
+train_e/atom_rmse: 0.000445
+2026-03-12 06:12:39.386 INFO: train_e/atom_rmse: 0.000445
+train_f_mae: 0.004480
+2026-03-12 06:12:39.434 INFO: train_f_mae: 0.004480
+train_f_rmse: 0.006429
+2026-03-12 06:12:39.435 INFO: train_f_rmse: 0.006429
+val_e/atom_mae: 0.000374
+2026-03-12 06:12:39.478 INFO: val_e/atom_mae: 0.000374
+val_e/atom_rmse: 0.000407
+2026-03-12 06:12:39.479 INFO: val_e/atom_rmse: 0.000407
+val_f_mae: 0.004467
+2026-03-12 06:12:39.480 INFO: val_f_mae: 0.004467
+val_f_rmse: 0.006447
+2026-03-12 06:12:39.480 INFO: val_f_rmse: 0.006447
+epoch 71 Loss 0.04119495174330142
+epoch 72 Loss 0.041329874580519066
+epoch 73 Loss 0.04130097267321414
+epoch 74 Loss 0.041310576432281074
+epoch 75 Loss 0.04123600675207045
+epoch 76 Loss 0.04095980754329098
+epoch 77 Loss 0.04117768429426683
+epoch 78 Loss 0.0412714643134839
+epoch 79 Loss 0.0410730354487896
+epoch 80 Loss 0.04101971034995384
+##### Step: 119 Learning rate: 0.00015625 #####
+Epoch 80, Train Loss: 0.0410, Val Loss: 0.0410
+train_e/atom_mae: 0.000386
+2026-03-12 06:39:29.973 INFO: train_e/atom_mae: 0.000386
+train_e/atom_rmse: 0.000484
+2026-03-12 06:39:29.974 INFO: train_e/atom_rmse: 0.000484
+train_f_mae: 0.004470
+2026-03-12 06:39:30.021 INFO: train_f_mae: 0.004470
+train_f_rmse: 0.006414
+2026-03-12 06:39:30.022 INFO: train_f_rmse: 0.006414
+val_e/atom_mae: 0.000232
+2026-03-12 06:39:30.066 INFO: val_e/atom_mae: 0.000232
+val_e/atom_rmse: 0.000283
+2026-03-12 06:39:30.066 INFO: val_e/atom_rmse: 0.000283
+val_f_mae: 0.004439
+2026-03-12 06:39:30.067 INFO: val_f_mae: 0.004439
+val_f_rmse: 0.006407
+2026-03-12 06:39:30.067 INFO: val_f_rmse: 0.006407
+epoch 81 Loss 0.04063202689298325
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 82 Loss 0.04062731770798564
+epoch 83 Loss 0.040666605496986044
+epoch 84 Loss 0.04061802919747101
+epoch 85 Loss 0.04054022312371267
+epoch 86 Loss 0.040510980685551964
+epoch 87 Loss 0.0405421502267321
+epoch 88 Loss 0.04053612478284372
+epoch 89 Loss 0.04046044231495923
+epoch 90 Loss 0.04051778372791078
+##### Step: 129 Learning rate: 7.8125e-05 #####
+Epoch 90, Train Loss: 0.0405, Val Loss: 0.0407
+train_e/atom_mae: 0.000271
+2026-03-12 07:06:23.573 INFO: train_e/atom_mae: 0.000271
+train_e/atom_rmse: 0.000347
+2026-03-12 07:06:23.573 INFO: train_e/atom_rmse: 0.000347
+train_f_mae: 0.004435
+2026-03-12 07:06:23.622 INFO: train_f_mae: 0.004435
+train_f_rmse: 0.006368
+2026-03-12 07:06:23.622 INFO: train_f_rmse: 0.006368
+val_e/atom_mae: 0.000143
+2026-03-12 07:06:23.667 INFO: val_e/atom_mae: 0.000143
+val_e/atom_rmse: 0.000182
+2026-03-12 07:06:23.667 INFO: val_e/atom_rmse: 0.000182
+val_f_mae: 0.004419
+2026-03-12 07:06:23.668 INFO: val_f_mae: 0.004419
+val_f_rmse: 0.006379
+2026-03-12 07:06:23.668 INFO: val_f_rmse: 0.006379
+Save best MAE e model: 0.00027117918943986297 0.00014303697389550507
+Save best RMSE e model: 0.00034657365176826715 0.00018245632236357778
+epoch 91 Loss 0.040547176183511814
+epoch 92 Loss 0.04058265250590112
+epoch 93 Loss 0.0405386044871476
+epoch 94 Loss 0.04041498545557261
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 95 Loss 0.04042486632449759
+epoch 96 Loss 0.04049266487773922
+epoch 97 Loss 0.04055941986333993
+epoch 98 Loss 0.04042483859592014
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 99 Loss 0.04049080005122556
+epoch 100 Loss 0.040433488128085934
+##### Step: 139 Learning rate: 7.8125e-05 #####
+Epoch 100, Train Loss: 0.0404, Val Loss: 0.0406
+train_e/atom_mae: 0.000278
+2026-03-12 07:33:14.609 INFO: train_e/atom_mae: 0.000278
+train_e/atom_rmse: 0.000353
+2026-03-12 07:33:14.609 INFO: train_e/atom_rmse: 0.000353
+train_f_mae: 0.004432
+2026-03-12 07:33:14.657 INFO: train_f_mae: 0.004432
+train_f_rmse: 0.006362
+2026-03-12 07:33:14.658 INFO: train_f_rmse: 0.006362
+val_e/atom_mae: 0.000441
+2026-03-12 07:33:14.702 INFO: val_e/atom_mae: 0.000441
+val_e/atom_rmse: 0.000471
+2026-03-12 07:33:14.703 INFO: val_e/atom_rmse: 0.000471
+val_f_mae: 0.004414
+2026-03-12 07:33:14.703 INFO: val_f_mae: 0.004414
+val_f_rmse: 0.006372
+2026-03-12 07:33:14.704 INFO: val_f_rmse: 0.006372
+Third train loop:
+epoch 1 Loss 0.040293619245704675
+epoch 2 Loss 0.04025145150721073
+epoch 3 Loss 0.04025460346498423
+epoch 4 Loss 0.04023438099978699
+epoch 5 Loss 0.040243493082622685
+epoch 6 Loss 0.040359200766930975
+epoch 7 Loss 0.040311949455903634
+epoch 8 Loss 0.04019406932716568
+epoch 9 Loss 0.04024184784541528
+epoch 10 Loss 0.04026210216805339
+##### Step: 149 Learning rate: 3.90625e-05 #####
+Epoch 10, Train Loss: 0.0403, Val Loss: 0.0406
+train_e/atom_mae: 0.000191
+2026-03-12 08:00:09.137 INFO: train_e/atom_mae: 0.000191
+train_e/atom_rmse: 0.000241
+2026-03-12 08:00:09.140 INFO: train_e/atom_rmse: 0.000241
+train_f_mae: 0.004411
+2026-03-12 08:00:09.189 INFO: train_f_mae: 0.004411
+train_f_rmse: 0.006334
+2026-03-12 08:00:09.189 INFO: train_f_rmse: 0.006334
+val_e/atom_mae: 0.000314
+2026-03-12 08:00:09.236 INFO: val_e/atom_mae: 0.000314
+val_e/atom_rmse: 0.000374
+2026-03-12 08:00:09.237 INFO: val_e/atom_rmse: 0.000374
+val_f_mae: 0.004391
+2026-03-12 08:00:09.237 INFO: val_f_mae: 0.004391
+val_f_rmse: 0.006343
+2026-03-12 08:00:09.238 INFO: val_f_rmse: 0.006343
+epoch 11 Loss 0.040216912016686465
+epoch 12 Loss 0.040203479275935226
+epoch 13 Loss 0.04018920410838392
+epoch 14 Loss 0.040196462228066394
+epoch 15 Loss 0.04020819703944855
+epoch 16 Loss 0.04018212459981441
+epoch 17 Loss 0.0402087817237609
+epoch 18 Loss 0.040237863993065226
+epoch 19 Loss 0.04020184360237585
+epoch 20 Loss 0.040205894321617155
+##### Step: 159 Learning rate: 3.90625e-05 #####
+Epoch 20, Train Loss: 0.0402, Val Loss: 0.0404
+train_e/atom_mae: 0.000190
+2026-03-12 08:27:01.821 INFO: train_e/atom_mae: 0.000190
+train_e/atom_rmse: 0.000239
+2026-03-12 08:27:01.829 INFO: train_e/atom_rmse: 0.000239
+train_f_mae: 0.004408
+2026-03-12 08:27:01.878 INFO: train_f_mae: 0.004408
+train_f_rmse: 0.006330
+2026-03-12 08:27:01.878 INFO: train_f_rmse: 0.006330
+val_e/atom_mae: 0.000187
+2026-03-12 08:27:01.923 INFO: val_e/atom_mae: 0.000187
+val_e/atom_rmse: 0.000237
+2026-03-12 08:27:01.923 INFO: val_e/atom_rmse: 0.000237
+val_f_mae: 0.004392
+2026-03-12 08:27:01.924 INFO: val_f_mae: 0.004392
+val_f_rmse: 0.006346
+2026-03-12 08:27:01.924 INFO: val_f_rmse: 0.006346
+epoch 21 Loss 0.04000889154771964
+epoch 22 Loss 0.04000880669388506
+epoch 23 Loss 0.03999606684057249
+epoch 24 Loss 0.04005115655354328
+epoch 25 Loss 0.03996698521491554
+epoch 26 Loss 0.04002674747465385
+epoch 27 Loss 0.040013995545191895
+epoch 28 Loss 0.03995519552379847
+epoch 29 Loss 0.03997809047707253
+epoch 30 Loss 0.039966897637479834
+##### Step: 169 Learning rate: 1.953125e-05 #####
+Epoch 30, Train Loss: 0.0400, Val Loss: 0.0403
+train_e/atom_mae: 0.000161
+2026-03-12 08:53:55.846 INFO: train_e/atom_mae: 0.000161
+train_e/atom_rmse: 0.000202
+2026-03-12 08:53:55.849 INFO: train_e/atom_rmse: 0.000202
+train_f_mae: 0.004398
+2026-03-12 08:53:55.897 INFO: train_f_mae: 0.004398
+train_f_rmse: 0.006317
+2026-03-12 08:53:55.897 INFO: train_f_rmse: 0.006317
+val_e/atom_mae: 0.000214
+2026-03-12 08:53:55.942 INFO: val_e/atom_mae: 0.000214
+val_e/atom_rmse: 0.000255
+2026-03-12 08:53:55.942 INFO: val_e/atom_rmse: 0.000255
+val_f_mae: 0.004383
+2026-03-12 08:53:55.943 INFO: val_f_mae: 0.004383
+val_f_rmse: 0.006333
+2026-03-12 08:53:55.943 INFO: val_f_rmse: 0.006333
+epoch 31 Loss 0.04000833378690812
+epoch 32 Loss 0.040002569158871966
+epoch 33 Loss 0.03997490390514334
+epoch 34 Loss 0.03997296944674519
+epoch 35 Loss 0.03996881448767251
+epoch 36 Loss 0.039986216229283146
+epoch 37 Loss 0.03996361451430453
+epoch 38 Loss 0.03996342499843902
+epoch 39 Loss 0.03995093097496364
+epoch 40 Loss 0.039988829303118915
+##### Step: 179 Learning rate: 1.953125e-05 #####
+Epoch 40, Train Loss: 0.0400, Val Loss: 0.0402
+train_e/atom_mae: 0.000163
+2026-03-12 09:20:48.115 INFO: train_e/atom_mae: 0.000163
+train_e/atom_rmse: 0.000204
+2026-03-12 09:20:48.118 INFO: train_e/atom_rmse: 0.000204
+train_f_mae: 0.004397
+2026-03-12 09:20:48.167 INFO: train_f_mae: 0.004397
+train_f_rmse: 0.006315
+2026-03-12 09:20:48.168 INFO: train_f_rmse: 0.006315
+val_e/atom_mae: 0.000132
+2026-03-12 09:20:48.212 INFO: val_e/atom_mae: 0.000132
+val_e/atom_rmse: 0.000171
+2026-03-12 09:20:48.213 INFO: val_e/atom_rmse: 0.000171
+val_f_mae: 0.004386
+2026-03-12 09:20:48.214 INFO: val_f_mae: 0.004386
+val_f_rmse: 0.006335
+2026-03-12 09:20:48.214 INFO: val_f_rmse: 0.006335
+Save best MAE e model: 0.00016254407819360495 0.00013194081839174032
+Save best RMSE e model: 0.00020391082216519862 0.0001705648610368371
+epoch 41 Loss 0.03986758976139956
+epoch 42 Loss 0.039866312100655506
+epoch 43 Loss 0.03988436441040701
+epoch 44 Loss 0.03987254784132044
+epoch 45 Loss 0.039867799983670314
+epoch 46 Loss 0.03987596519912283
+epoch 47 Loss 0.03985514000265135
+epoch 48 Loss 0.03986861567116446
+epoch 49 Loss 0.03987603125679824
+epoch 50 Loss 0.03987618057885104
+##### Step: 189 Learning rate: 9.765625e-06 #####
+Epoch 50, Train Loss: 0.0399, Val Loss: 0.0401
+train_e/atom_mae: 0.000146
+2026-03-12 09:47:40.751 INFO: train_e/atom_mae: 0.000146
+train_e/atom_rmse: 0.000184
+2026-03-12 09:47:40.753 INFO: train_e/atom_rmse: 0.000184
+train_f_mae: 0.004392
+2026-03-12 09:47:40.801 INFO: train_f_mae: 0.004392
+train_f_rmse: 0.006308
+2026-03-12 09:47:40.802 INFO: train_f_rmse: 0.006308
+val_e/atom_mae: 0.000183
+2026-03-12 09:47:40.847 INFO: val_e/atom_mae: 0.000183
+val_e/atom_rmse: 0.000224
+2026-03-12 09:47:40.847 INFO: val_e/atom_rmse: 0.000224
+val_f_mae: 0.004377
+2026-03-12 09:47:40.848 INFO: val_f_mae: 0.004377
+val_f_rmse: 0.006325
+2026-03-12 09:47:40.849 INFO: val_f_rmse: 0.006325
+epoch 51 Loss 0.039876436181366444
+epoch 52 Loss 0.03987293264518182
+epoch 53 Loss 0.03986580617311928
+epoch 54 Loss 0.03985125957884722
+epoch 55 Loss 0.039860748052597046
+epoch 56 Loss 0.039852499703152314
+epoch 57 Loss 0.039852351194454565
+epoch 58 Loss 0.03988421369550957
+epoch 59 Loss 0.039848302306814326
+epoch 60 Loss 0.039864954015033115
+##### Step: 199 Learning rate: 9.765625e-06 #####
+Epoch 60, Train Loss: 0.0399, Val Loss: 0.0400
+train_e/atom_mae: 0.000146
+2026-03-12 10:14:35.878 INFO: train_e/atom_mae: 0.000146
+train_e/atom_rmse: 0.000184
+2026-03-12 10:14:35.889 INFO: train_e/atom_rmse: 0.000184
+train_f_mae: 0.004391
+2026-03-12 10:14:35.980 INFO: train_f_mae: 0.004391
+train_f_rmse: 0.006308
+2026-03-12 10:14:35.980 INFO: train_f_rmse: 0.006308
+val_e/atom_mae: 0.000127
+2026-03-12 10:14:36.028 INFO: val_e/atom_mae: 0.000127
+val_e/atom_rmse: 0.000165
+2026-03-12 10:14:36.029 INFO: val_e/atom_rmse: 0.000165
+val_f_mae: 0.004376
+2026-03-12 10:14:36.030 INFO: val_f_mae: 0.004376
+val_f_rmse: 0.006323
+2026-03-12 10:14:36.030 INFO: val_f_rmse: 0.006323
+Save best MAE e model: 0.00014635011029895395 0.00012733772746287286
+Save best RMSE e model: 0.00018438776896800846 0.00016474464791826904
+epoch 61 Loss 0.03981438589385814
+epoch 62 Loss 0.03980763447160522
+epoch 63 Loss 0.039806642209490144
+epoch 64 Loss 0.03980135392811563
+epoch 65 Loss 0.03980849514404933
+epoch 66 Loss 0.03980530190592011
+epoch 67 Loss 0.03980297275508444
+epoch 68 Loss 0.03981896046963003
+epoch 69 Loss 0.039803012317667405
+epoch 70 Loss 0.039810630374898515
+##### Step: 209 Learning rate: 4.8828125e-06 #####
+Epoch 70, Train Loss: 0.0398, Val Loss: 0.0400
+train_e/atom_mae: 0.000138
+2026-03-12 10:41:27.416 INFO: train_e/atom_mae: 0.000138
+train_e/atom_rmse: 0.000173
+2026-03-12 10:41:27.433 INFO: train_e/atom_rmse: 0.000173
+train_f_mae: 0.004389
+2026-03-12 10:41:27.481 INFO: train_f_mae: 0.004389
+train_f_rmse: 0.006304
+2026-03-12 10:41:27.482 INFO: train_f_rmse: 0.006304
+val_e/atom_mae: 0.000174
+2026-03-12 10:41:27.546 INFO: val_e/atom_mae: 0.000174
+val_e/atom_rmse: 0.000214
+2026-03-12 10:41:27.547 INFO: val_e/atom_rmse: 0.000214
+val_f_mae: 0.004374
+2026-03-12 10:41:27.547 INFO: val_f_mae: 0.004374
+val_f_rmse: 0.006319
+2026-03-12 10:41:27.548 INFO: val_f_rmse: 0.006319
+epoch 71 Loss 0.03980964043488105
+保存失败: 'NeuralNetworkPotential' object has no attribute 'models'
+epoch 72 Loss 0.039821927479157845
+epoch 73 Loss 0.03980324296901623
+epoch 74 Loss 0.039804984792653056
+epoch 75 Loss 0.039803178146895435
+epoch 76 Loss 0.03980096433725622
+epoch 77 Loss 0.03979641055688262
+epoch 78 Loss 0.039799418391452894
+epoch 79 Loss 0.03979789975409707
+epoch 80 Loss 0.03980151303319467
+##### Step: 219 Learning rate: 4.8828125e-06 #####
+Epoch 80, Train Loss: 0.0398, Val Loss: 0.0400
+train_e/atom_mae: 0.000138
+2026-03-12 11:08:18.376 INFO: train_e/atom_mae: 0.000138
+train_e/atom_rmse: 0.000174
+2026-03-12 11:08:18.377 INFO: train_e/atom_rmse: 0.000174
+train_f_mae: 0.004388
+2026-03-12 11:08:18.425 INFO: train_f_mae: 0.004388
+train_f_rmse: 0.006304
+2026-03-12 11:08:18.426 INFO: train_f_rmse: 0.006304
+val_e/atom_mae: 0.000138
+2026-03-12 11:08:18.469 INFO: val_e/atom_mae: 0.000138
+val_e/atom_rmse: 0.000176
+2026-03-12 11:08:18.470 INFO: val_e/atom_rmse: 0.000176
+val_f_mae: 0.004376
+2026-03-12 11:08:18.470 INFO: val_f_mae: 0.004376
+val_f_rmse: 0.006321
+2026-03-12 11:08:18.471 INFO: val_f_rmse: 0.006321
+epoch 81 Loss 0.039774672211044367
+epoch 82 Loss 0.03978630720741219
+epoch 83 Loss 0.03978012030323346
+epoch 84 Loss 0.03977068371449908
+epoch 85 Loss 0.039778895721667346
+epoch 86 Loss 0.03977756388278471
+epoch 87 Loss 0.03977405227513777
+epoch 88 Loss 0.039776031577752696
+epoch 89 Loss 0.039775922753744655
+epoch 90 Loss 0.03978799593324463
+##### Step: 229 Learning rate: 2.44140625e-06 #####
+Epoch 90, Train Loss: 0.0398, Val Loss: 0.0400
+train_e/atom_mae: 0.000134
+2026-03-12 11:35:21.458 INFO: train_e/atom_mae: 0.000134
+train_e/atom_rmse: 0.000169
+2026-03-12 11:35:21.473 INFO: train_e/atom_rmse: 0.000169
+train_f_mae: 0.004387
+2026-03-12 11:35:21.521 INFO: train_f_mae: 0.004387
+train_f_rmse: 0.006302
+2026-03-12 11:35:21.522 INFO: train_f_rmse: 0.006302
+val_e/atom_mae: 0.000129
+2026-03-12 11:35:21.586 INFO: val_e/atom_mae: 0.000129
+val_e/atom_rmse: 0.000167
+2026-03-12 11:35:21.586 INFO: val_e/atom_rmse: 0.000167
+val_f_mae: 0.004375
+2026-03-12 11:35:21.587 INFO: val_f_mae: 0.004375
+val_f_rmse: 0.006319
+2026-03-12 11:35:21.587 INFO: val_f_rmse: 0.006319
+epoch 91 Loss 0.039767048687984544
+epoch 92 Loss 0.03977317052996821
+epoch 93 Loss 0.03978122207025687
+epoch 94 Loss 0.03977216976384322
+epoch 95 Loss 0.03977912397227353
+epoch 96 Loss 0.039772897449632486
+epoch 97 Loss 0.03976789268768496
+epoch 98 Loss 0.039774194055547316
+epoch 99 Loss 0.039774230112218194
+epoch 100 Loss 0.039775706092930505
+##### Step: 239 Learning rate: 2.44140625e-06 #####
+Epoch 100, Train Loss: 0.0398, Val Loss: 0.0400
+train_e/atom_mae: 0.000133
+2026-03-12 12:02:14.108 INFO: train_e/atom_mae: 0.000133
+train_e/atom_rmse: 0.000168
+2026-03-12 12:02:14.110 INFO: train_e/atom_rmse: 0.000168
+train_f_mae: 0.004387
+2026-03-12 12:02:14.159 INFO: train_f_mae: 0.004387
+train_f_rmse: 0.006302
+2026-03-12 12:02:14.159 INFO: train_f_rmse: 0.006302
+val_e/atom_mae: 0.000134
+2026-03-12 12:02:14.203 INFO: val_e/atom_mae: 0.000134
+val_e/atom_rmse: 0.000173
+2026-03-12 12:02:14.204 INFO: val_e/atom_rmse: 0.000173
+val_f_mae: 0.004373
+2026-03-12 12:02:14.204 INFO: val_f_mae: 0.004373
+val_f_rmse: 0.006318
+2026-03-12 12:02:14.205 INFO: val_f_rmse: 0.006318
+Fourth train loop:
+epoch 1 Loss 0.04807579871887962
+epoch 2 Loss 0.04708345410103599
+epoch 3 Loss 0.04682613231655624
+epoch 4 Loss 0.04673075139522553
+epoch 5 Loss 0.04673772630799148
+epoch 6 Loss 0.046970983845078286
+epoch 7 Loss 0.04687340575994717
+epoch 8 Loss 0.046904328490297
+epoch 9 Loss 0.04647761092831691
+epoch 10 Loss 0.04661096376056473
+##### Step: 249 Learning rate: 1.220703125e-06 #####
+Epoch 10, Train Loss: 0.0466, Val Loss: 0.0471
+train_e/atom_mae: 0.000127
+2026-03-12 12:29:07.982 INFO: train_e/atom_mae: 0.000127
+train_e/atom_rmse: 0.000161
+2026-03-12 12:29:07.983 INFO: train_e/atom_rmse: 0.000161
+train_f_mae: 0.004400
+2026-03-12 12:29:08.031 INFO: train_f_mae: 0.004400
+train_f_rmse: 0.006320
+2026-03-12 12:29:08.033 INFO: train_f_rmse: 0.006320
+val_e/atom_mae: 0.000123
+2026-03-12 12:29:08.084 INFO: val_e/atom_mae: 0.000123
+val_e/atom_rmse: 0.000160
+2026-03-12 12:29:08.084 INFO: val_e/atom_rmse: 0.000160
+val_f_mae: 0.004386
+2026-03-12 12:29:08.085 INFO: val_f_mae: 0.004386
+val_f_rmse: 0.006339
+2026-03-12 12:29:08.085 INFO: val_f_rmse: 0.006339
+Save best MAE e model: 0.0001270195934921503 0.00012345839058980346
+Save best RMSE e model: 0.00016097120533231646 0.0001601316616870463
+epoch 11 Loss 0.04658373587661319
+epoch 12 Loss 0.046485608518123625
+epoch 13 Loss 0.04656533000162906
+epoch 14 Loss 0.04673556718354424
+epoch 15 Loss 0.04692276887802614
+epoch 16 Loss 0.04668516546901729
+epoch 17 Loss 0.04693494477205806
+epoch 18 Loss 0.046866300617241195
+epoch 19 Loss 0.04712077363911602
+epoch 20 Loss 0.047121947711954514
+##### Step: 259 Learning rate: 1.220703125e-06 #####
+Epoch 20, Train Loss: 0.0471, Val Loss: 0.0469
+train_e/atom_mae: 0.000126
+2026-03-12 12:56:00.984 INFO: train_e/atom_mae: 0.000126
+train_e/atom_rmse: 0.000159
+2026-03-12 12:56:00.986 INFO: train_e/atom_rmse: 0.000159
+train_f_mae: 0.004402
+2026-03-12 12:56:01.035 INFO: train_f_mae: 0.004402
+train_f_rmse: 0.006322
+2026-03-12 12:56:01.035 INFO: train_f_rmse: 0.006322
+val_e/atom_mae: 0.000121
+2026-03-12 12:56:01.079 INFO: val_e/atom_mae: 0.000121
+val_e/atom_rmse: 0.000158
+2026-03-12 12:56:01.080 INFO: val_e/atom_rmse: 0.000158
+val_f_mae: 0.004389
+2026-03-12 12:56:01.080 INFO: val_f_mae: 0.004389
+val_f_rmse: 0.006342
+2026-03-12 12:56:01.081 INFO: val_f_rmse: 0.006342
+Save best MAE e model: 0.00012587975652422756 0.00012119390157749876
+Save best RMSE e model: 0.0001591329200891778 0.00015750984312035143
+epoch 21 Loss 0.046304152885244955
+epoch 22 Loss 0.04650766001186437
+epoch 23 Loss 0.04627515837964084
+epoch 24 Loss 0.04632099002806677
+epoch 25 Loss 0.046393496663206156
+epoch 26 Loss 0.046359507770588
+epoch 27 Loss 0.04644808429603775
+epoch 28 Loss 0.04633044797306259
+epoch 29 Loss 0.04660355890583661
+epoch 30 Loss 0.04653853412096699
+##### Step: 269 Learning rate: 6.103515625e-07 #####
+Epoch 30, Train Loss: 0.0465, Val Loss: 0.0469
+train_e/atom_mae: 0.000122
+2026-03-12 13:22:53.207 INFO: train_e/atom_mae: 0.000122
+train_e/atom_rmse: 0.000154
+2026-03-12 13:22:53.207 INFO: train_e/atom_rmse: 0.000154
+train_f_mae: 0.004403
+2026-03-12 13:22:53.256 INFO: train_f_mae: 0.004403
+train_f_rmse: 0.006323
+2026-03-12 13:22:53.256 INFO: train_f_rmse: 0.006323
+val_e/atom_mae: 0.000121
+2026-03-12 13:22:53.303 INFO: val_e/atom_mae: 0.000121
+val_e/atom_rmse: 0.000158
+2026-03-12 13:22:53.303 INFO: val_e/atom_rmse: 0.000158
+val_f_mae: 0.004388
+2026-03-12 13:22:53.304 INFO: val_f_mae: 0.004388
+val_f_rmse: 0.006340
+2026-03-12 13:22:53.304 INFO: val_f_rmse: 0.006340
+epoch 31 Loss 0.04671877406330572
+epoch 32 Loss 0.04636704787405001
+epoch 33 Loss 0.046439209019558295
+epoch 34 Loss 0.04632738643636306
+epoch 35 Loss 0.046465331953432824
+epoch 36 Loss 0.04650328368569414
+epoch 37 Loss 0.04653804491170579
+epoch 38 Loss 0.046386389248073104
+epoch 39 Loss 0.046508606392890214
+epoch 40 Loss 0.04670748977818423
+##### Step: 279 Learning rate: 6.103515625e-07 #####
+Epoch 40, Train Loss: 0.0467, Val Loss: 0.0469
+train_e/atom_mae: 0.000123
+2026-03-12 13:49:46.265 INFO: train_e/atom_mae: 0.000123
+train_e/atom_rmse: 0.000155
+2026-03-12 13:49:46.265 INFO: train_e/atom_rmse: 0.000155
+train_f_mae: 0.004403
+2026-03-12 13:49:46.314 INFO: train_f_mae: 0.004403
+train_f_rmse: 0.006323
+2026-03-12 13:49:46.314 INFO: train_f_rmse: 0.006323
+val_e/atom_mae: 0.000121
+2026-03-12 13:49:46.358 INFO: val_e/atom_mae: 0.000121
+val_e/atom_rmse: 0.000157
+2026-03-12 13:49:46.359 INFO: val_e/atom_rmse: 0.000157
+val_f_mae: 0.004390
+2026-03-12 13:49:46.360 INFO: val_f_mae: 0.004390
+val_f_rmse: 0.006343
+2026-03-12 13:49:46.360 INFO: val_f_rmse: 0.006343
+Save best MAE e model: 0.00012271475861780345 0.00012073283141944557
+Save best RMSE e model: 0.0001554094342282042 0.000156852271175012
+epoch 41 Loss 0.046258081590963736
+epoch 42 Loss 0.046294847846859034
+epoch 43 Loss 0.04625650929700997
+epoch 44 Loss 0.046303854108684595
+epoch 45 Loss 0.04629114774987102
+epoch 46 Loss 0.04628781554806564
+epoch 47 Loss 0.04626105813723472
+epoch 48 Loss 0.046228554534415406
+epoch 49 Loss 0.046396444166700045
+epoch 50 Loss 0.04630872160817186
+##### Step: 289 Learning rate: 3.0517578125e-07 #####
+Epoch 50, Train Loss: 0.0463, Val Loss: 0.0468
+train_e/atom_mae: 0.000121
+2026-03-12 14:16:38.781 INFO: train_e/atom_mae: 0.000121
+train_e/atom_rmse: 0.000153
+2026-03-12 14:16:38.802 INFO: train_e/atom_rmse: 0.000153
+train_f_mae: 0.004403
+2026-03-12 14:16:38.851 INFO: train_f_mae: 0.004403
+train_f_rmse: 0.006323
+2026-03-12 14:16:38.852 INFO: train_f_rmse: 0.006323
+val_e/atom_mae: 0.000120
+2026-03-12 14:16:38.895 INFO: val_e/atom_mae: 0.000120
+val_e/atom_rmse: 0.000156
+2026-03-12 14:16:38.895 INFO: val_e/atom_rmse: 0.000156
+val_f_mae: 0.004389
+2026-03-12 14:16:38.896 INFO: val_f_mae: 0.004389
+val_f_rmse: 0.006341
+2026-03-12 14:16:38.897 INFO: val_f_rmse: 0.006341

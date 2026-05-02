@@ -1,0 +1,2 @@
+model with best summed rmse of energy on split valid at step=46580160:
+-> loss=3.4134814143e-01

@@ -1,0 +1,47 @@
+#!/bin/bash -l
+
+#SBATCH --mail-user=XXXX@XXX.com
+#SBATCH --mail-type=FAIL,END
+
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=20
+#SBATCH --mem=100G
+#SBATCH --partition=gpu
+#SBATCH --gres=gpu:1
+#SBATCH --time=3-00:00:00
+
+module load gcc cuda cudnn python
+source XXXXX/mace_2/mace-env-2/bin/activate
+NAME="aumgoal"
+
+mace_run_train \
+    --name="$NAME" \
+    --train_file="AuMgO_train.xyz" \
+    --valid_file="AuMgO_valid.xyz" \
+    --log_dir="${NAME}_log" \
+    --checkpoints_dir="${NAME}_checkpoints" \
+    --results_dir="${NAME}_results" \
+    --E0s="{8: -18599.4368, 12: -8721.7590, 13: -9877.6778, 79: -688.8680}" \
+    --loss="weighted" \
+    --energy_weight=1 \
+    --forces_weight=10 \
+    --swa \
+    --start_swa=650 \
+    --device=cuda \
+    --batch_size=32 \
+    --max_num_epochs=2500 \
+    --seed=20210792 \
+    --model="MACE" \
+    --hidden_irreps='128x0e + 128x1o' \
+    --max_L=2 \
+    --r_max=5.0 \
+    --amsgrad \
+    --lr=1e-4 \
+    --eval_interval=1 \
+    --keep_checkpoints \
+    --save_all_checkpoints \
+    --enable_cueq=True \
+    --wandb \
+    --wandb_project="mace_finalrun" \
+    --wandb_name="$NAME" \

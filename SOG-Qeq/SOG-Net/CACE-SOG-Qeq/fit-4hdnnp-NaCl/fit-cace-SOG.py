@@ -1,0 +1,288 @@
+#!/usr/bin/env python
+# coding: utf-8
+"""
+按你的要求：
+- 不创建/不使用 SOGPotential；
+- 仅用 ChargeEq 的长程能量，但将其 key 从 ewald_potential 改名为 SOG_potential，
+  以保持与原脚本里“长程=SOG_potential”的命名一致。
+"""
+
+import sys
+import os
+ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if ROOT_DIR not in sys.path:
+    sys.path.insert(0, ROOT_DIR)
+
+os.environ["PYTHONWARNINGS"] = "ignore"  # 全局忽略所有 warnings
+
+import numpy as np
+import torch
+import torch.nn as nn
+import logging
+import datetime
+
+import cace
+from cace.representations import Cace
+from cace.modules import CosineCutoff, MollifierCutoff, PolynomialCutoff
+from cace.modules import BesselRBF, GaussianRBF, GaussianRBFCentered
+from cace.tools.scatter import scatter_sum
+from cace.tools import torch_geometric
+
+from cace.models.atomistic import NeuralNetworkPotential
+from cace.tasks.train import TrainingTask
+from cace.data.extxyz_charge import get_dataset_from_extxyz_with_charge
+
+torch.set_default_dtype(torch.float32)
+
+cace.tools.setup_logger(level="INFO")
+cutoff = 5.29
+Fourier_node = 18  # SOG 核的分量数（ChargeEq 内部 SOG 参数个数）
+
+save_folder = os.path.join(os.path.dirname(__file__), "loss_data", "N_" + str(Fourier_node) + "_")
+os.makedirs(save_folder, exist_ok=True)
+now = datetime.datetime.now()
+time_name = now.strftime("%Y%m%d_%H%M%S")
+
+
+print("reading data (extxyz + charge via cace.data.extxyz_charge)")
+collection = get_dataset_from_extxyz_with_charge(
+    train_path=os.path.join(os.path.dirname(__file__), "NaCl.xyz"),
+    cutoff=cutoff,
+    valid_fraction=0.1,
+    seed=1,
+    atomic_energies={11: -4417.07609365649, 17: -12516.880649933015},
+)
+batch_size = 5
+
+train_dataset = collection.train
+valid_dataset = collection.valid
+
+train_loader = torch_geometric.DataLoader(
+    dataset=train_dataset,
+    batch_size=batch_size,
+    shuffle=True,
+    drop_last=True,
+)
+
+valid_loader = torch_geometric.DataLoader(
+    dataset=valid_dataset,
+    batch_size=5,
+    shuffle=False,
+    drop_last=False,
+)
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(f"device: {device}")
+
+print("building CACE representation")
+radial_basis = BesselRBF(cutoff=cutoff, n_rbf=6, trainable=True)
+cutoff_fn = PolynomialCutoff(cutoff=cutoff)
+
+cace_representation = Cace(
+    zs=[11, 17],
+    n_atom_basis=2,
+    embed_receiver_nodes=True,
+    cutoff=cutoff,
+    cutoff_fn=cutoff_fn,
+    radial_basis=radial_basis,
+    n_radial_basis=8,
+    max_l=3,
+    max_nu=3,
+    num_message_passing=0,
+    type_message_passing=["Bchi"],
+    args_message_passing={"Bchi": {"shared_channels": False, "shared_l": False}},
+    device=device,
+    timeit=False,
+    forward_features=["atomic_numbers", "charge"],
+)
+
+cace_representation.to(device)
+print(f"Representation: {cace_representation}")
+
+# ----- 短程：SR 能量 -----
+sr_energy = cace.modules.atomwise.Atomwise(
+    n_layers=3,
+    output_key="SR_energy",
+    n_hidden=[32, 16],
+    use_batchnorm=False,
+    add_linear_nn=True,
+)
+
+# ----- 电负性 chi（Qeq 输入） -----
+chi = cace.modules.Atomwise(
+    n_layers=3,
+    n_hidden=[24, 12],
+    n_out=1,
+    per_atom_output_key="chi",
+    output_key="tot_chi",
+    residual=False,
+    add_linear_nn=True,
+    post_process=torch.square,
+    bias=False,
+)
+
+class SystemChargeFromAtomicCharges(nn.Module):
+    """
+    将每结构总电荷写入 data['system_charge']：
+    system_charge[g] = sum_{i in graph g} charge[i]
+    若 batch 中无 charge，则默认设为 0（电中性）。
+    """
+    def __init__(self, charges_key: str = "charge", output_key: str = "system_charge"):
+        super().__init__()
+        self.charges_key = charges_key
+        self.output_key = output_key
+        self.model_outputs = [output_key]
+
+    def forward(self, data: dict, **kwargs):
+        if self.charges_key not in data or data[self.charges_key] is None:
+            # fallback: 电中性
+            if data.get("batch", None) is None:
+                num_graphs = 1
+            else:
+                num_graphs = int(data["batch"].max().item()) + 1 if data["batch"].numel() > 0 else 1
+            data[self.output_key] = torch.zeros((num_graphs,), device=data["positions"].device, dtype=data["positions"].dtype)
+            return data
+
+        q = data[self.charges_key]
+        if q.dim() > 1:
+            q = q.view(-1)
+        if data.get("batch", None) is None:
+            system_q = q.sum().view(1)
+        else:
+            system_q = scatter_sum(q, data["batch"], dim=0)
+        data[self.output_key] = system_q
+        return data
+
+system_charge_from_q = SystemChargeFromAtomicCharges(charges_key="charge", output_key="system_charge")
+
+# ----- Qeq：使用 SOG 核构造 A；长程能量输出 key 命名为 SOG_potential -----
+charge_eq = cace.modules.ChargeEq(
+    dl=1.5,
+    sigma=1.0,
+    elements=[11, 17],
+    feature_key="chi",
+    output_key="q_eq",
+    ewald_key="SOG_potential",
+    # 使用 data['system_charge']（由上面的 SystemChargeFromAtomicCharges 写入）
+    system_charge=None,
+    remove_self_interaction=True,
+    aggregation_mode="sum",
+    use_sog_kernel=True,
+    sog_num_components=Fourier_node,
+)
+
+# ----- 总能量 = SR_energy + SOG_potential -----
+e_add = cace.modules.FeatureAdd(
+    feature_keys=["SR_energy", "SOG_potential"],
+    output_key="CACE_energy",
+)
+
+# 训练/测试只需要能量与力：关闭 stress 输出，避免额外依赖位移张量与 stress key
+forces = cace.modules.Forces(
+    energy_key="CACE_energy",
+    forces_key="CACE_forces",
+    calc_stress=False,
+)
+
+print("building CACE NNP (ChargeEq long-range, renamed to SOG_potential)")
+cace_nnp = NeuralNetworkPotential(
+    input_modules=None,
+    representation=cace_representation,
+    output_modules=[sr_energy, chi, system_charge_from_q, charge_eq, e_add, forces],
+)
+cace_nnp.to(device)
+
+print("First train loop:")
+energy_loss = cace.tasks.GetLoss(
+    target_name="energy",
+    predict_name="CACE_energy",
+    loss_fn=torch.nn.MSELoss(),
+    loss_weight=0.1,
+)
+
+force_loss = cace.tasks.GetLoss(
+    target_name="forces",
+    predict_name="CACE_forces",
+    loss_fn=torch.nn.MSELoss(),
+    loss_weight=1000,
+)
+
+from cace.tools import Metrics
+
+e_metric = Metrics(
+    target_name="energy",
+    predict_name="CACE_energy",
+    name="e/atom",
+    per_atom=True,
+)
+
+f_metric = Metrics(
+    target_name="forces",
+    predict_name="CACE_forces",
+    name="f",
+)
+
+print("creating training task")
+optimizer_args = {"lr": 5e-3, "betas": (0.99, 0.999)}
+scheduler_args = {"step_size": 20, "gamma": 0.5}
+
+for i in range(5):
+    task = TrainingTask(
+        model=cace_nnp,
+        losses=[energy_loss, force_loss],
+        metrics=[e_metric, f_metric],
+        device=device,
+        optimizer_args=optimizer_args,
+        scheduler_cls=torch.optim.lr_scheduler.StepLR,
+        scheduler_args=scheduler_args,
+        max_grad_norm=10,
+        ema=False,
+        ema_start=10,
+        warmup_steps=5,
+        save_folder=save_folder,
+        time_name=time_name,
+    )
+    print("training")
+    task.fit(train_loader, valid_loader, epochs=40, screen_nan=False, val_stride=10)
+
+task.save_model("hydrocarbon-model.pth")
+cace_nnp.to(device)
+
+print("Second train loop:")
+energy_loss = cace.tasks.GetLoss(
+    target_name="energy",
+    predict_name="CACE_energy",
+    loss_fn=torch.nn.MSELoss(),
+    loss_weight=1,
+)
+task.update_loss([energy_loss, force_loss])
+print("training")
+task.fit(train_loader, valid_loader, epochs=100, screen_nan=False, val_stride=10)
+task.save_model("hydrocarbon-model-2.pth")
+cace_nnp.to(device)
+
+print("Third train loop:")
+energy_loss = cace.tasks.GetLoss(
+    target_name="energy",
+    predict_name="CACE_energy",
+    loss_fn=torch.nn.MSELoss(),
+    loss_weight=10,
+)
+task.update_loss([energy_loss, force_loss])
+task.fit(train_loader, valid_loader, epochs=100, screen_nan=False, val_stride=10)
+task.save_model("hydrocarbon-model-3.pth")
+
+print("Fourth train loop:")
+energy_loss = cace.tasks.GetLoss(
+    target_name="energy",
+    predict_name="CACE_energy",
+    loss_fn=torch.nn.MSELoss(),
+    loss_weight=1000,
+)
+task.update_loss([energy_loss, force_loss])
+task.fit(train_loader, valid_loader, epochs=100, screen_nan=False, val_stride=10)
+task.save_model("hydrocarbon-model-4.pth")
+
+print("Finished")
+trainable_params = sum(p.numel() for p in cace_nnp.parameters() if p.requires_grad)
+print(f"Number of trainable parameters: {trainable_params}")

@@ -1,0 +1,24 @@
+baseline:
+  elemental:
+    1: -2.6544
+    6: -5.9724
+# model:
+#   lorem.Lorem:
+#     cutoff: 3.0
+#     equivariant_message_passing: true
+#     initialize_node_features: true
+#     lr: true
+#     max_degree: 6
+#     num_message_passing: 1
+
+model:
+  lorem.Lorem:
+    cutoff: 3.0
+    equivariant_message_passing: true
+    initialize_node_features: true
+    lr: true
+    lr_kernel_type: "sog"
+    sog_num_gaussians: 12
+    sog_init_mode: "dimer_cc"
+    max_degree: 6
+    num_message_passing: 1

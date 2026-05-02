@@ -1,0 +1,2 @@
+model with best summed mae of energy on split valid at step=48453632:
+-> loss=1.7038437724e-01

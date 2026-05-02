@@ -1,0 +1,42 @@
+#!/bin/bash -l
+
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=20
+#SBATCH --mem=100G
+#SBATCH --partition=gpu
+#SBATCH --gres=gpu:1
+#SBATCH --time=3-00:00:00
+
+module load gcc cuda cudnn python
+source XXXXX/mace_2/mace-env-2/bin/activate
+NAME="nacl"
+
+mace_run_train \
+    --name="$NAME" \
+    --train_file="NaCl_train.xyz" \
+    --valid_file="NaCl_valid.xyz" \
+    --log_dir="${NAME}_log" \
+    --checkpoints_dir="${NAME}_checkpoints" \
+    --results_dir="${NAME}_results" \
+    --loss="weighted" \
+    --energy_weight=1 \
+    --forces_weight=10 \
+    --E0s="{11: -4417.0705, 17: -12516.8904}" \
+    --device=cuda \
+    --batch_size=32 \
+    --max_num_epochs=1000 \
+    --seed=20210792 \
+    --model="MACE" \
+    --hidden_irreps='128x0e + 128x1o + 128x2e' \
+    --max_L=2 \
+    --r_max=5.0 \
+    --amsgrad \
+    --lr=1e-4 \
+    --eval_interval=1 \
+    --keep_checkpoints \
+    --save_all_checkpoints \
+    --enable_cueq=True \
+    --wandb \
+    --wandb_project="mace_finalrun" \
+    --wandb_name="$NAME" \

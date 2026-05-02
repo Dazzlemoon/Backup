@@ -1,0 +1,12 @@
+baseline:
+  elemental:
+    1: -2.6544
+    6: -5.9724
+model:
+  lorem.Lorem:
+    cutoff: 2.5
+    equivariant_message_passing: true
+    initialize_node_features: true
+    lr: false
+    max_degree: 6
+    num_message_passing: 2

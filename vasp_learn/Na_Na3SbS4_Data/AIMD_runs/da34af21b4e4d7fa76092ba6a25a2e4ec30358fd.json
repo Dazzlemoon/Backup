@@ -1,0 +1,311 @@
+{
+    "work_base": "Na_Na3SbS4_Data/AIMD_runs",
+    "_abs_work_base": "/dssg/home/acct-matxzl/matxzl/QiuQizhi/vasp_learn/Na_Na3SbS4_Data/AIMD_runs",
+    "machine": {
+        "batch_type": "Slurm",
+        "context_type": "LazyLocalContext",
+        "local_root": "./",
+        "remote_root": null,
+        "remote_profile": {}
+    },
+    "resources": {
+        "number_node": 1,
+        "cpu_per_node": 64,
+        "gpu_per_node": 0,
+        "queue_name": "64c512g",
+        "group_size": 1,
+        "custom_flags": [
+            "#SBATCH --partition=64c512g",
+            "#SBATCH --mail-type=end",
+            "#SBATCH --mail-user=2393474010@sjtu.edu.cn",
+            "#SBATCH --ntasks=64",
+            "#SBATCH --time=48:00:00",
+            "#SBATCH --job-name=Na_AIMD"
+        ],
+        "strategy": {
+            "if_cuda_multi_devices": false,
+            "ratio_unfinished": 0.0
+        },
+        "para_deg": 1,
+        "module_purge": false,
+        "module_unload_list": [],
+        "module_list": [
+            "oneapi/2021.4.0"
+        ],
+        "source_list": [],
+        "envs": {},
+        "prepend_script": [],
+        "append_script": [],
+        "wait_time": 0,
+        "kwargs": {}
+    },
+    "forward_common_files": [],
+    "backward_common_files": [],
+    "belonging_jobs": [
+        {
+            "036b2ae2fa91ce22eaed45c532994d2e62080701": {
+                "job_task_list": [
+                    {
+                        "command": "mpirun -np 64 vasp_std",
+                        "task_work_path": "Na_mp-127",
+                        "forward_files": [],
+                        "backward_files": [
+                            "OUTCAR",
+                            "vasprun.xml",
+                            "OSZICAR",
+                            "XDATCAR"
+                        ],
+                        "outlog": "log",
+                        "errlog": "err"
+                    }
+                ],
+                "resources": {
+                    "number_node": 1,
+                    "cpu_per_node": 64,
+                    "gpu_per_node": 0,
+                    "queue_name": "64c512g",
+                    "group_size": 1,
+                    "custom_flags": [
+                        "#SBATCH --partition=64c512g",
+                        "#SBATCH --mail-type=end",
+                        "#SBATCH --mail-user=2393474010@sjtu.edu.cn",
+                        "#SBATCH --ntasks=64",
+                        "#SBATCH --time=48:00:00",
+                        "#SBATCH --job-name=Na_AIMD"
+                    ],
+                    "strategy": {
+                        "if_cuda_multi_devices": false,
+                        "ratio_unfinished": 0.0
+                    },
+                    "para_deg": 1,
+                    "module_purge": false,
+                    "module_unload_list": [],
+                    "module_list": [
+                        "oneapi/2021.4.0"
+                    ],
+                    "source_list": [],
+                    "envs": {},
+                    "prepend_script": [],
+                    "append_script": [],
+                    "wait_time": 0,
+                    "kwargs": {}
+                },
+                "job_state": 4,
+                "job_id": "50711422",
+                "fail_count": 3
+            }
+        },
+        {
+            "6cb45d22f054643c677f3ee0097a92af02dc823d": {
+                "job_task_list": [
+                    {
+                        "command": "mpirun -np 64 vasp_std",
+                        "task_work_path": "Na_mp-10172",
+                        "forward_files": [],
+                        "backward_files": [
+                            "OUTCAR",
+                            "vasprun.xml",
+                            "OSZICAR",
+                            "XDATCAR"
+                        ],
+                        "outlog": "log",
+                        "errlog": "err"
+                    }
+                ],
+                "resources": {
+                    "number_node": 1,
+                    "cpu_per_node": 64,
+                    "gpu_per_node": 0,
+                    "queue_name": "64c512g",
+                    "group_size": 1,
+                    "custom_flags": [
+                        "#SBATCH --partition=64c512g",
+                        "#SBATCH --mail-type=end",
+                        "#SBATCH --mail-user=2393474010@sjtu.edu.cn",
+                        "#SBATCH --ntasks=64",
+                        "#SBATCH --time=48:00:00",
+                        "#SBATCH --job-name=Na_AIMD"
+                    ],
+                    "strategy": {
+                        "if_cuda_multi_devices": false,
+                        "ratio_unfinished": 0.0
+                    },
+                    "para_deg": 1,
+                    "module_purge": false,
+                    "module_unload_list": [],
+                    "module_list": [
+                        "oneapi/2021.4.0"
+                    ],
+                    "source_list": [],
+                    "envs": {},
+                    "prepend_script": [],
+                    "append_script": [],
+                    "wait_time": 0,
+                    "kwargs": {}
+                },
+                "job_state": 3,
+                "job_id": "50711423",
+                "fail_count": 2
+            }
+        },
+        {
+            "1a47b06d90b2e1ef32edacabe971e332328d4b80": {
+                "job_task_list": [
+                    {
+                        "command": "mpirun -np 64 vasp_std",
+                        "task_work_path": "Na_mp-2018774",
+                        "forward_files": [],
+                        "backward_files": [
+                            "OUTCAR",
+                            "vasprun.xml",
+                            "OSZICAR",
+                            "XDATCAR"
+                        ],
+                        "outlog": "log",
+                        "errlog": "err"
+                    }
+                ],
+                "resources": {
+                    "number_node": 1,
+                    "cpu_per_node": 64,
+                    "gpu_per_node": 0,
+                    "queue_name": "64c512g",
+                    "group_size": 1,
+                    "custom_flags": [
+                        "#SBATCH --partition=64c512g",
+                        "#SBATCH --mail-type=end",
+                        "#SBATCH --mail-user=2393474010@sjtu.edu.cn",
+                        "#SBATCH --ntasks=64",
+                        "#SBATCH --time=48:00:00",
+                        "#SBATCH --job-name=Na_AIMD"
+                    ],
+                    "strategy": {
+                        "if_cuda_multi_devices": false,
+                        "ratio_unfinished": 0.0
+                    },
+                    "para_deg": 1,
+                    "module_purge": false,
+                    "module_unload_list": [],
+                    "module_list": [
+                        "oneapi/2021.4.0"
+                    ],
+                    "source_list": [],
+                    "envs": {},
+                    "prepend_script": [],
+                    "append_script": [],
+                    "wait_time": 0,
+                    "kwargs": {}
+                },
+                "job_state": 2,
+                "job_id": "50711424",
+                "fail_count": 2
+            }
+        },
+        {
+            "a5c06c2dee298919cdabeed26063c3c3f96e2724": {
+                "job_task_list": [
+                    {
+                        "command": "mpirun -np 64 vasp_std",
+                        "task_work_path": "Na3SbS4_mp-10167",
+                        "forward_files": [],
+                        "backward_files": [
+                            "OUTCAR",
+                            "vasprun.xml",
+                            "OSZICAR",
+                            "XDATCAR"
+                        ],
+                        "outlog": "log",
+                        "errlog": "err"
+                    }
+                ],
+                "resources": {
+                    "number_node": 1,
+                    "cpu_per_node": 64,
+                    "gpu_per_node": 0,
+                    "queue_name": "64c512g",
+                    "group_size": 1,
+                    "custom_flags": [
+                        "#SBATCH --partition=64c512g",
+                        "#SBATCH --mail-type=end",
+                        "#SBATCH --mail-user=2393474010@sjtu.edu.cn",
+                        "#SBATCH --ntasks=64",
+                        "#SBATCH --time=48:00:00",
+                        "#SBATCH --job-name=Na_AIMD"
+                    ],
+                    "strategy": {
+                        "if_cuda_multi_devices": false,
+                        "ratio_unfinished": 0.0
+                    },
+                    "para_deg": 1,
+                    "module_purge": false,
+                    "module_unload_list": [],
+                    "module_list": [
+                        "oneapi/2021.4.0"
+                    ],
+                    "source_list": [],
+                    "envs": {},
+                    "prepend_script": [],
+                    "append_script": [],
+                    "wait_time": 0,
+                    "kwargs": {}
+                },
+                "job_state": 2,
+                "job_id": "50711425",
+                "fail_count": 2
+            }
+        },
+        {
+            "fec99ba51b5a5061b01c05141440c5fefe48bf38": {
+                "job_task_list": [
+                    {
+                        "command": "mpirun -np 64 vasp_std",
+                        "task_work_path": "Na_mp-974558",
+                        "forward_files": [],
+                        "backward_files": [
+                            "OUTCAR",
+                            "vasprun.xml",
+                            "OSZICAR",
+                            "XDATCAR"
+                        ],
+                        "outlog": "log",
+                        "errlog": "err"
+                    }
+                ],
+                "resources": {
+                    "number_node": 1,
+                    "cpu_per_node": 64,
+                    "gpu_per_node": 0,
+                    "queue_name": "64c512g",
+                    "group_size": 1,
+                    "custom_flags": [
+                        "#SBATCH --partition=64c512g",
+                        "#SBATCH --mail-type=end",
+                        "#SBATCH --mail-user=2393474010@sjtu.edu.cn",
+                        "#SBATCH --ntasks=64",
+                        "#SBATCH --time=48:00:00",
+                        "#SBATCH --job-name=Na_AIMD"
+                    ],
+                    "strategy": {
+                        "if_cuda_multi_devices": false,
+                        "ratio_unfinished": 0.0
+                    },
+                    "para_deg": 1,
+                    "module_purge": false,
+                    "module_unload_list": [],
+                    "module_list": [
+                        "oneapi/2021.4.0"
+                    ],
+                    "source_list": [],
+                    "envs": {},
+                    "prepend_script": [],
+                    "append_script": [],
+                    "wait_time": 0,
+                    "kwargs": {}
+                },
+                "job_state": 2,
+                "job_id": "50711426",
+                "fail_count": 2
+            }
+        }
+    ]
+}

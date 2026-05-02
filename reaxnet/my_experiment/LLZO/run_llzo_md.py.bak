@@ -1,0 +1,209 @@
+#!/usr/bin/env python3
+"""
+LLZO NVT MD runner with ReaxNet (E0 + EPQEq + optional D3).
+
+Notes:
+- Paper uses NpT then NVT with Nose-Hoover/Parrinello-Rahman and 2 fs.
+- This script implements NVT Langevin for practical cluster execution.
+- Defaults are set close to paper timing scales (100 ps equil + 2 ns production).
+"""
+
+import argparse
+import pickle
+import sys
+from pathlib import Path
+
+import jax
+import jax.numpy as jnp
+import numpy as np
+import yaml
+from ase import units
+from ase.calculators.calculator import Calculator, all_changes
+from ase.constraints import FixCom
+from ase.io import Trajectory, read
+from ase.md.langevin import Langevin
+from jax_md import partition, space
+
+
+def parse_args():
+    p = argparse.ArgumentParser()
+    p.add_argument("--project-root", default="/data/home/public/qiuqizhi/reaxnet")
+    p.add_argument("--structure", default="data/LLZO/init.vasp")
+    p.add_argument("--temperature-k", type=float, default=800.0)
+    p.add_argument("--timestep-fs", type=float, default=2.0)
+    p.add_argument("--equil-ps", type=float, default=100.0)
+    p.add_argument("--prod-ps", type=float, default=2000.0)
+    p.add_argument("--friction", type=float, default=0.02)
+    p.add_argument("--use-d3", action="store_true")
+    p.add_argument("--seed", type=int, default=42)
+    p.add_argument("--traj-out", default="llzo_800K_nvt.traj")
+    p.add_argument("--log-out", default="llzo_800K_nvt.log")
+    return p.parse_args()
+
+
+def main():
+    args = parse_args()
+    jax.config.update("jax_enable_x64", True)
+
+    project_root = Path(args.project_root).resolve()
+    if str(project_root) not in sys.path:
+        sys.path.insert(0, str(project_root))
+
+    # Local imports after sys.path injection
+    from reaxnet.egnn.data import AtomicNumberTable
+    from reaxnet.egnn.nequip import NequIPEnergyModel
+    from reaxnet.egnn.nn_util import neighbor_list_featurizer
+    from reaxnet.jax_nb.jax_nb import LAMBDA, nonbond_potential, pqeq_fori_loop
+    from reaxnet.jax_nb.parameters import pqeq_parameters
+
+    model_dir = project_root / "reaxnet" / "pretrained"
+    structure_path = project_root / args.structure
+    for fp in [model_dir / "model_config.yaml", model_dir / "params.pickle", model_dir / "mapping.yaml", structure_path]:
+        if not fp.exists():
+            raise FileNotFoundError(f"Missing file: {fp}")
+
+    atoms = read(str(structure_path))
+    with open(model_dir / "model_config.yaml", "r") as f:
+        model_dict = yaml.safe_load(f)
+    with open(model_dir / "params.pickle", "rb") as f:
+        params = pickle.load(f)
+
+    ztable = AtomicNumberTable.from_dict(str(model_dir / "mapping.yaml"))
+    model = NequIPEnergyModel(**model_dict)
+
+    positions0 = jnp.asarray(atoms.get_scaled_positions())
+    box = jnp.asarray(atoms.get_cell().array.transpose())
+    atomic_numbers = jnp.asarray(atoms.numbers)
+    chemical_symbols = atoms.get_chemical_symbols()
+    nn_atomic_numbers = ztable.mapping(atomic_numbers)
+    nn_atomic_numbers = jax.nn.one_hot(jnp.array(nn_atomic_numbers), len(ztable) + 1)
+
+    displacement_fn, _ = space.periodic_general(box, fractional_coordinates=True)
+    featurizer = neighbor_list_featurizer(displacement_fn)
+
+    nn_neighbor_fn = partition.neighbor_list(
+        displacement_fn, box, model_dict["r_max"], format=partition.Sparse, fractional_coordinates=True
+    )
+    nb_neighbor_fn = partition.neighbor_list(
+        displacement_fn, box, 12.5, format=partition.Sparse, fractional_coordinates=True, capacity_multiplier=2.0
+    )
+
+    def energy_nn(embedded_numbers, _model, _params, position, neighbor, **kwargs):
+        graph = featurizer(embedded_numbers, position, neighbor, **kwargs)
+        atomic_output = _model.apply(_params, graph.edges, graph.nodes, graph.senders, graph.receivers)
+        return jnp.sum(atomic_output[:-1])
+
+    rad = jnp.array([pqeq_parameters[s]["rad"] for s in chemical_symbols])
+    alpha = 0.5 * LAMBDA / rad / rad
+    alpha = jnp.sqrt(alpha.reshape(-1, 1) * alpha.reshape(1, -1) / (alpha.reshape(-1, 1) + alpha.reshape(1, -1)))
+    chi0 = jnp.array([pqeq_parameters[s]["chi0"] for s in chemical_symbols])
+    eta0 = jnp.array([pqeq_parameters[s]["eta0"] for s in chemical_symbols])
+    z = jnp.array([pqeq_parameters[s]["Z"] for s in chemical_symbols])
+    Ks = jnp.array([pqeq_parameters[s]["Ks"] for s in chemical_symbols])
+
+    energy_fn_nn = lambda p, n: energy_nn(nn_atomic_numbers, model, params, p, n)
+
+    def total_energy_fn(pos_frac, nn_nbr, nb_nbr):
+        nn_nbr = nn_nbr.update(pos_frac)
+        nb_nbr = nb_nbr.update(pos_frac)
+        pe_nn = energy_fn_nn(pos_frac, nn_nbr)
+        charges, r_shell = pqeq_fori_loop(
+            displacement_fn,
+            jax.lax.stop_gradient(pos_frac),
+            nb_nbr,
+            alpha=alpha,
+            cutoff=12.5,
+            iterations=2,
+            net_charge=0.0,
+            eta0=eta0,
+            chi0=chi0,
+            z=z,
+            Ks=Ks,
+        )
+        pe_nb = nonbond_potential(
+            displacement_fn,
+            pos_frac,
+            nb_nbr,
+            r_shell,
+            charges,
+            alpha=alpha,
+            cutoff=12.5,
+            eta0=eta0,
+            chi0=chi0,
+            z=z,
+            Ks=Ks,
+            compute_d3=args.use_d3,
+            atomic_numbers=atomic_numbers,
+            d3_params={"s6": 1.0, "rs6": 1.217, "s18": 0.722, "rs18": 1.0, "alp": 14.0},
+            damping="zero",
+            smooth_fn=None,
+        )
+        return pe_nn + pe_nb, (charges, r_shell)
+
+    nn_nbr = nn_neighbor_fn.allocate(positions0)
+    nb_nbr = nb_neighbor_fn.allocate(positions0)
+    value_and_grad_fn = jax.jit(
+        jax.value_and_grad(lambda p: total_energy_fn(p, nn_nbr=nn_nbr, nb_nbr=nb_nbr), argnums=0, has_aux=True)
+    )
+
+    class ReaxNetPQEqCalculator(Calculator):
+        implemented_properties = ["energy", "forces"]
+
+        def __init__(self, vg_fn):
+            super().__init__()
+            self.vg_fn = vg_fn
+
+        def calculate(self, atoms_obj, properties, system_changes):
+            if len(system_changes) == 0:
+                system_changes = all_changes
+            scaled = atoms_obj.get_scaled_positions(wrap=True)
+            (energy, _aux), grad_frac = self.vg_fn(jnp.asarray(scaled))
+            grad_frac = np.asarray(grad_frac)
+            cell = atoms_obj.get_cell().array
+            inv_cell_T = np.linalg.inv(cell.T)
+            forces = -grad_frac @ inv_cell_T
+            self.results = {"energy": float(energy), "forces": forces}
+
+    np.random.seed(args.seed)
+    atoms_md = atoms.copy()
+    atoms_md.calc = ReaxNetPQEqCalculator(value_and_grad_fn)
+    atoms_md.set_constraint(FixCom())
+
+    log_out = Path(args.log_out).resolve()
+    traj_out = Path(args.traj_out).resolve()
+    log_out.parent.mkdir(parents=True, exist_ok=True)
+    traj_out.parent.mkdir(parents=True, exist_ok=True)
+
+    dyn = Langevin(
+        atoms_md,
+        timestep=args.timestep_fs * units.fs,
+        temperature_K=args.temperature_k,
+        friction=args.friction,
+        fixcm=False,
+        logfile=str(log_out),
+    )
+
+    traj = Trajectory(str(traj_out), mode="w", atoms=atoms_md)
+    traj.write(atoms_md)
+    dyn.attach(lambda: traj.write(atoms_md), interval=1)
+
+    steps_equil = int(round(args.equil_ps * 1000.0 / args.timestep_fs))
+    steps_prod = int(round(args.prod_ps * 1000.0 / args.timestep_fs))
+
+    print(f"[INFO] atoms={len(atoms_md)} T={args.temperature_k}K dt={args.timestep_fs}fs use_d3={args.use_d3}")
+    print(f"[INFO] equil_steps={steps_equil} prod_steps={steps_prod}")
+    print(f"[INFO] log={log_out}")
+    print(f"[INFO] traj={traj_out}")
+
+    if steps_equil > 0:
+        dyn.run(steps_equil)
+    if steps_prod > 0:
+        dyn.run(steps_prod)
+    traj.close()
+
+    print("[DONE] MD finished.")
+
+
+if __name__ == "__main__":
+    main()
+

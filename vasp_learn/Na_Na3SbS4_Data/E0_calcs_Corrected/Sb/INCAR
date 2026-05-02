@@ -1,0 +1,14 @@
+SYSTEM = Sb Isolated Atom
+PREC = Accurate
+ENCUT = 500
+ISMEAR = 0
+SIGMA = 0.01
+ISPIN = 2
+MAGMOM = 3
+LORBIT = 11
+ISYM = 0
+NELM = 100
+ALGO = Normal
+LREAL = Auto
+LWAVE = .FALSE.
+LCHARG = .FALSE.

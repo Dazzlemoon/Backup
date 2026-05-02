@@ -1,0 +1,9 @@
+
+cd $REMOTE_ROOT
+cd Na_mp-127
+test $? -ne 0 && exit 1
+if [ ! -f 0d2159ebfbfe14c6d343a62a409aede275e0d68a_task_tag_finished ] ;then
+   ( mpirun -np 64 vasp_std ) 1>>log 2>>err 
+  if test $? -eq 0; then touch 0d2159ebfbfe14c6d343a62a409aede275e0d68a_task_tag_finished; else echo 1 > $REMOTE_ROOT/036b2ae2fa91ce22eaed45c532994d2e62080701_flag_if_job_task_fail;tail -v -c 1000 $REMOTE_ROOT/Na_mp-127/err > $REMOTE_ROOT/036b2ae2fa91ce22eaed45c532994d2e62080701_last_err_file;fi
+fi &
+wait 

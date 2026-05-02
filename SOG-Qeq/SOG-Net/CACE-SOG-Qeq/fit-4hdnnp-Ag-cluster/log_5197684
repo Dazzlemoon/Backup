@@ -1,0 +1,1438 @@
+reading data (extxyz + charge via cace.data.extxyz_charge)
+total Ag-cluster structures in xyz: 11013
+device: cuda
+building CACE representation
+Representation: Cace(
+  (node_onehot): NodeEncoder(num_classes=1)
+  (node_embedding_sender): NodeEmbedding(num_classes=1, embedding_dim=2)
+  (node_embedding_receiver): NodeEmbedding(num_classes=1, embedding_dim=2)
+  (edge_coding): EdgeEncoder(directed=True)
+  (radial_basis): BesselRBF(cutoff=5.289999961853027, n_rbf=6, trainable=True)
+  (cutoff_fn): PolynomialCutoff(p=6.0, cutoff=5.289999961853027)
+  (angular_basis): AngularComponent(l_max=3)
+  (radial_transform): SharedRadialLinearTransform(
+    (weights): ParameterList(
+        (0): Parameter containing: [torch.float32 of size 6x8x4 (cuda:0)]
+        (1): Parameter containing: [torch.float32 of size 6x8x4 (cuda:0)]
+        (2): Parameter containing: [torch.float32 of size 6x8x4 (cuda:0)]
+        (3): Parameter containing: [torch.float32 of size 6x8x4 (cuda:0)]
+    )
+  )
+  (symmetrizer): Symmetrizer()
+  (message_passing_list): ModuleList()
+)
+building CACE NNP (ChargeEq long-range, renamed to SOG_potential)
+ChargeEq SOG params initialized from BSA (r_cut=5.29, b=2).
+First train loop:
+creating training task
+training
+epoch 1 Loss 19226287762.211906
+epoch 2 Loss 19144923315.794147
+epoch 3 Loss 19131165660.86781
+epoch 4 Loss 19052793823.96771
+epoch 5 Loss 18699108944.080727
+epoch 6 Loss 18269783572.149345
+epoch 7 Loss 17510545136.24218
+epoch 8 Loss 17104855860.95661
+epoch 9 Loss 16334267027.761856
+epoch 10 Loss 16529908011.140263
+##### Step: 9 Learning rate: 0.005 #####
+Epoch 10, Train Loss: 16529908011.1403, Val Loss: 15782190909.3937
+train_e/atom_mae: 134964.171875
+2026-03-13 01:28:08.871 INFO: train_e/atom_mae: 134964.171875
+train_e/atom_rmse: 135443.343750
+2026-03-13 01:28:08.872 INFO: train_e/atom_rmse: 135443.343750
+train_f_mae: 569.274597
+2026-03-13 01:28:08.984 INFO: train_f_mae: 569.274597
+train_f_rmse: 1260.933838
+2026-03-13 01:28:08.985 INFO: train_f_rmse: 1260.933838
+val_e/atom_mae: 110382.929688
+2026-03-13 01:28:09.085 INFO: val_e/atom_mae: 110382.929688
+val_e/atom_rmse: 110383.140625
+2026-03-13 01:28:09.085 INFO: val_e/atom_rmse: 110383.140625
+val_f_mae: 968.098877
+2026-03-13 01:28:09.087 INFO: val_f_mae: 968.098877
+val_f_rmse: 2195.507568
+2026-03-13 01:28:09.087 INFO: val_f_rmse: 2195.507568
+epoch 11 Loss 15337528792.734612
+epoch 12 Loss 14956202003.374369
+epoch 13 Loss 14167442971.124117
+epoch 14 Loss 14481594771.503532
+epoch 15 Loss 13028425681.243189
+epoch 16 Loss 12031754196.343088
+epoch 17 Loss 11611371171.132189
+epoch 18 Loss 10535027216.145308
+epoch 19 Loss 9779078656.258326
+epoch 20 Loss 9888990278.26438
+##### Step: 19 Learning rate: 0.005 #####
+Epoch 20, Train Loss: 9888990278.2644, Val Loss: 9236487697.3756
+train_e/atom_mae: 83492.320312
+2026-03-13 02:43:21.983 INFO: train_e/atom_mae: 83492.320312
+train_e/atom_rmse: 85061.585938
+2026-03-13 02:43:21.983 INFO: train_e/atom_rmse: 85061.585938
+train_f_mae: 1334.224365
+2026-03-13 02:43:22.093 INFO: train_f_mae: 1334.224365
+train_f_rmse: 2463.699219
+2026-03-13 02:43:22.094 INFO: train_f_rmse: 2463.699219
+val_e/atom_mae: 66139.078125
+2026-03-13 02:43:22.188 INFO: val_e/atom_mae: 66139.078125
+val_e/atom_rmse: 66139.562500
+2026-03-13 02:43:22.188 INFO: val_e/atom_rmse: 66139.562500
+val_f_mae: 1184.704590
+2026-03-13 02:43:22.190 INFO: val_f_mae: 1184.704590
+val_f_rmse: 2305.871582
+2026-03-13 02:43:22.190 INFO: val_f_rmse: 2305.871582
+epoch 21 Loss 8810160881.921291
+epoch 22 Loss 7637452978.89001
+epoch 23 Loss 8257405486.69223
+epoch 24 Loss 6564770108.189708
+epoch 25 Loss 6301982958.950555
+epoch 26 Loss 5106640997.747729
+epoch 27 Loss 5661322924.141272
+epoch 28 Loss 6333032411.769929
+epoch 29 Loss 5041777142.409687
+epoch 30 Loss 5375123803.640767
+##### Step: 29 Learning rate: 0.0025 #####
+Epoch 30, Train Loss: 5375123803.6408, Val Loss: 3929316200.2534
+train_e/atom_mae: 43356.550781
+2026-03-13 03:58:35.061 INFO: train_e/atom_mae: 43356.550781
+train_e/atom_rmse: 44610.730469
+2026-03-13 03:58:35.061 INFO: train_e/atom_rmse: 44610.730469
+train_f_mae: 1190.074585
+2026-03-13 03:58:35.172 INFO: train_f_mae: 1190.074585
+train_f_rmse: 2172.063721
+2026-03-13 03:58:35.172 INFO: train_f_rmse: 2172.063721
+val_e/atom_mae: 32681.515625
+2026-03-13 03:58:35.270 INFO: val_e/atom_mae: 32681.515625
+val_e/atom_rmse: 32685.263672
+2026-03-13 03:58:35.271 INFO: val_e/atom_rmse: 32685.263672
+val_f_mae: 916.272278
+2026-03-13 03:58:35.272 INFO: val_f_mae: 916.272278
+val_f_rmse: 1725.434082
+2026-03-13 03:58:35.272 INFO: val_f_rmse: 1725.434082
+epoch 31 Loss 6080573367.410696
+epoch 32 Loss 4858228048.565085
+epoch 33 Loss 5041527549.545913
+epoch 34 Loss 6343913955.907165
+epoch 35 Loss 5703847665.533804
+epoch 36 Loss 5255506246.32896
+epoch 37 Loss 5058928426.5590315
+epoch 38 Loss 4774536334.337033
+epoch 39 Loss 4700585738.203835
+epoch 40 Loss 4245923438.853683
+##### Step: 39 Learning rate: 0.0025 #####
+Epoch 40, Train Loss: 4245923438.8537, Val Loss: 5663964775.0950
+train_e/atom_mae: 35605.703125
+2026-03-13 05:13:51.484 INFO: train_e/atom_mae: 35605.703125
+train_e/atom_rmse: 36204.691406
+2026-03-13 05:13:51.485 INFO: train_e/atom_rmse: 36204.691406
+train_f_mae: 1123.990479
+2026-03-13 05:13:51.596 INFO: train_f_mae: 1123.990479
+train_f_rmse: 2006.652710
+2026-03-13 05:13:51.596 INFO: train_f_rmse: 2006.652710
+val_e/atom_mae: 39311.398438
+2026-03-13 05:13:51.694 INFO: val_e/atom_mae: 39311.398438
+val_e/atom_rmse: 39320.828125
+2026-03-13 05:13:51.694 INFO: val_e/atom_rmse: 39320.828125
+val_f_mae: 1161.221680
+2026-03-13 05:13:51.696 INFO: val_f_mae: 1161.221680
+val_f_rmse: 2068.061523
+2026-03-13 05:13:51.696 INFO: val_f_rmse: 2068.061523
+training
+epoch 1 Loss 7814947962.833502
+epoch 2 Loss 4506092782.4984865
+epoch 3 Loss 4339549801.445005
+epoch 4 Loss 3441185909.4732594
+epoch 5 Loss 3405935599.0474267
+epoch 6 Loss 2168710986.7245207
+epoch 7 Loss 2299804774.7971745
+epoch 8 Loss 1850572282.3410697
+epoch 9 Loss 1223088551.346115
+epoch 10 Loss 1437046136.3975782
+##### Step: 9 Learning rate: 0.005 #####
+Epoch 10, Train Loss: 1437046136.3976, Val Loss: 2841919424.8688
+train_e/atom_mae: 18499.197266
+2026-03-13 06:29:19.055 INFO: train_e/atom_mae: 18499.197266
+train_e/atom_rmse: 21621.074219
+2026-03-13 06:29:19.056 INFO: train_e/atom_rmse: 21621.074219
+train_f_mae: 926.540405
+2026-03-13 06:29:19.166 INFO: train_f_mae: 926.540405
+train_f_rmse: 1681.656738
+2026-03-13 06:29:19.166 INFO: train_f_rmse: 1681.656738
+val_e/atom_mae: 10373.777344
+2026-03-13 06:29:19.267 INFO: val_e/atom_mae: 10373.777344
+val_e/atom_rmse: 10377.621094
+2026-03-13 06:29:19.267 INFO: val_e/atom_rmse: 10377.621094
+val_f_mae: 1134.623901
+2026-03-13 06:29:19.269 INFO: val_f_mae: 1134.623901
+val_f_rmse: 1657.201538
+2026-03-13 06:29:19.269 INFO: val_f_rmse: 1657.201538
+epoch 11 Loss 1113759241.6811302
+epoch 12 Loss 1414165731.2492433
+epoch 13 Loss 1002969861.715439
+epoch 14 Loss 856417786.8905146
+epoch 15 Loss 671543902.1271443
+epoch 16 Loss 701897269.2078708
+epoch 17 Loss 631093042.1533804
+epoch 18 Loss 609223778.7124118
+epoch 19 Loss 525111649.84258324
+epoch 20 Loss 451725612.56407666
+##### Step: 19 Learning rate: 0.005 #####
+Epoch 20, Train Loss: 451725612.5641, Val Loss: 468165906.9321
+train_e/atom_mae: 6058.885254
+2026-03-13 07:44:50.806 INFO: train_e/atom_mae: 6058.885254
+train_e/atom_rmse: 7050.839355
+2026-03-13 07:44:50.807 INFO: train_e/atom_rmse: 7050.839355
+train_f_mae: 502.517731
+2026-03-13 07:44:50.917 INFO: train_f_mae: 502.517731
+train_f_rmse: 867.783264
+2026-03-13 07:44:50.918 INFO: train_f_rmse: 867.783264
+val_e/atom_mae: 2992.230469
+2026-03-13 07:44:51.031 INFO: val_e/atom_mae: 2992.230469
+val_e/atom_rmse: 3003.981445
+2026-03-13 07:44:51.031 INFO: val_e/atom_rmse: 3003.981445
+val_f_mae: 461.026733
+2026-03-13 07:44:51.032 INFO: val_f_mae: 461.026733
+val_f_rmse: 679.241577
+2026-03-13 07:44:51.033 INFO: val_f_rmse: 679.241577
+epoch 21 Loss 188857862.43491423
+epoch 22 Loss 179284863.450555
+epoch 23 Loss 187002830.57542887
+epoch 24 Loss 146975223.26892027
+epoch 25 Loss 157189810.66170534
+epoch 26 Loss 157804954.96266398
+epoch 27 Loss 132654923.38092835
+epoch 28 Loss 175320967.14530778
+epoch 29 Loss 134518944.4018668
+epoch 30 Loss 120375567.629667
+##### Step: 29 Learning rate: 0.0025 #####
+Epoch 30, Train Loss: 120375567.6297, Val Loss: 211732056.0724
+train_e/atom_mae: 1408.540405
+2026-03-13 09:00:03.215 INFO: train_e/atom_mae: 1408.540405
+train_e/atom_rmse: 1664.740479
+2026-03-13 09:00:03.215 INFO: train_e/atom_rmse: 1664.740479
+train_f_mae: 229.964203
+2026-03-13 09:00:03.329 INFO: train_f_mae: 229.964203
+train_f_rmse: 394.340424
+2026-03-13 09:00:03.329 INFO: train_f_rmse: 394.340424
+val_e/atom_mae: 1102.054565
+2026-03-13 09:00:03.432 INFO: val_e/atom_mae: 1102.054565
+val_e/atom_rmse: 1107.312012
+2026-03-13 09:00:03.432 INFO: val_e/atom_rmse: 1107.312012
+val_f_mae: 309.992004
+2026-03-13 09:00:03.434 INFO: val_f_mae: 309.992004
+val_f_rmse: 459.207275
+2026-03-13 09:00:03.434 INFO: val_f_rmse: 459.207275
+epoch 31 Loss 120402225.35469224
+epoch 32 Loss 128317531.83097881
+epoch 33 Loss 161415549.351665
+epoch 34 Loss 145029170.6647326
+epoch 35 Loss 134006847.05751766
+epoch 36 Loss 118751072.42280525
+epoch 37 Loss 107855314.14984864
+epoch 38 Loss 95403524.80272453
+epoch 39 Loss 101864407.50971241
+epoch 40 Loss 150001397.20610493
+##### Step: 39 Learning rate: 0.0025 #####
+Epoch 40, Train Loss: 150001397.2061, Val Loss: 89896890.6063
+train_e/atom_mae: 1176.953857
+2026-03-13 10:15:34.538 INFO: train_e/atom_mae: 1176.953857
+train_e/atom_rmse: 1433.318237
+2026-03-13 10:15:34.552 INFO: train_e/atom_rmse: 1433.318237
+train_f_mae: 205.768997
+2026-03-13 10:15:34.663 INFO: train_f_mae: 205.768997
+train_f_rmse: 352.782837
+2026-03-13 10:15:34.663 INFO: train_f_rmse: 352.782837
+val_e/atom_mae: 668.736450
+2026-03-13 10:15:34.763 INFO: val_e/atom_mae: 668.736450
+val_e/atom_rmse: 671.843323
+2026-03-13 10:15:34.763 INFO: val_e/atom_rmse: 671.843323
+val_f_mae: 186.054962
+2026-03-13 10:15:34.765 INFO: val_f_mae: 186.054962
+val_f_rmse: 299.320526
+2026-03-13 10:15:34.765 INFO: val_f_rmse: 299.320526
+training
+epoch 1 Loss 40668797.8929112
+epoch 2 Loss 74552699.80903128
+epoch 3 Loss 136073217.52850655
+epoch 4 Loss 210083205.99016145
+epoch 5 Loss 215922152.83476287
+epoch 6 Loss 193996942.36503533
+epoch 7 Loss 181230815.16952574
+epoch 8 Loss 195079464.28002018
+epoch 9 Loss 232273512.06256306
+epoch 10 Loss 171111071.05751765
+##### Step: 9 Learning rate: 0.005 #####
+Epoch 10, Train Loss: 171111071.0575, Val Loss: 101020998.6606
+train_e/atom_mae: 1637.628296
+2026-03-13 11:32:24.569 INFO: train_e/atom_mae: 1637.628296
+train_e/atom_rmse: 2056.470947
+2026-03-13 11:32:24.581 INFO: train_e/atom_rmse: 2056.470947
+train_f_mae: 230.191971
+2026-03-13 11:32:24.694 INFO: train_f_mae: 230.191971
+train_f_rmse: 401.613007
+2026-03-13 11:32:24.694 INFO: train_f_rmse: 401.613007
+val_e/atom_mae: 3663.569580
+2026-03-13 11:32:24.813 INFO: val_e/atom_mae: 3663.569580
+val_e/atom_rmse: 3666.152832
+2026-03-13 11:32:24.813 INFO: val_e/atom_rmse: 3666.152832
+val_f_mae: 172.577225
+2026-03-13 11:32:24.815 INFO: val_f_mae: 172.577225
+val_f_rmse: 298.738800
+2026-03-13 11:32:24.815 INFO: val_f_rmse: 298.738800
+epoch 11 Loss 178455313.10317862
+epoch 12 Loss 164611525.19563574
+epoch 13 Loss 181198990.57820383
+epoch 14 Loss 162061289.63218972
+epoch 15 Loss 145373210.15842584
+epoch 16 Loss 189549603.86251262
+epoch 17 Loss 141069148.46430373
+epoch 18 Loss 94273219.17532796
+epoch 19 Loss 151357557.16851664
+epoch 20 Loss 86808593.26702826
+##### Step: 19 Learning rate: 0.005 #####
+Epoch 20, Train Loss: 86808593.2670, Val Loss: 72348188.3846
+train_e/atom_mae: 1611.656860
+2026-03-13 12:48:48.845 INFO: train_e/atom_mae: 1611.656860
+train_e/atom_rmse: 1981.574097
+2026-03-13 12:48:48.865 INFO: train_e/atom_rmse: 1981.574097
+train_f_mae: 220.087128
+2026-03-13 12:48:48.975 INFO: train_f_mae: 220.087128
+train_f_rmse: 382.023376
+2026-03-13 12:48:48.975 INFO: train_f_rmse: 382.023376
+val_e/atom_mae: 1892.785278
+2026-03-13 12:48:49.087 INFO: val_e/atom_mae: 1892.785278
+val_e/atom_rmse: 1894.632812
+2026-03-13 12:48:49.087 INFO: val_e/atom_rmse: 1894.632812
+val_f_mae: 159.903778
+2026-03-13 12:48:49.089 INFO: val_f_mae: 159.903778
+val_f_rmse: 263.013763
+2026-03-13 12:48:49.089 INFO: val_f_rmse: 263.013763
+epoch 21 Loss 32779636.237764884
+epoch 22 Loss 34842941.426273964
+epoch 23 Loss 39067134.81294148
+epoch 24 Loss 37546415.68251766
+epoch 25 Loss 37520614.89723133
+epoch 26 Loss 35677724.536453076
+epoch 27 Loss 30633496.989026237
+epoch 28 Loss 45635931.59731332
+epoch 29 Loss 38825830.70982593
+epoch 30 Loss 32472801.82568113
+##### Step: 29 Learning rate: 0.0025 #####
+Epoch 30, Train Loss: 32472801.8257, Val Loss: 55026696.1120
+train_e/atom_mae: 483.261810
+2026-03-13 14:05:26.206 INFO: train_e/atom_mae: 483.261810
+train_e/atom_rmse: 600.526001
+2026-03-13 14:05:26.215 INFO: train_e/atom_rmse: 600.526001
+train_f_mae: 110.352043
+2026-03-13 14:05:26.325 INFO: train_f_mae: 110.352043
+train_f_rmse: 190.199066
+2026-03-13 14:05:26.326 INFO: train_f_rmse: 190.199066
+val_e/atom_mae: 1021.137207
+2026-03-13 14:05:26.444 INFO: val_e/atom_mae: 1021.137207
+val_e/atom_rmse: 1026.289673
+2026-03-13 14:05:26.444 INFO: val_e/atom_rmse: 1026.289673
+val_f_mae: 118.893097
+2026-03-13 14:05:26.446 INFO: val_f_mae: 118.893097
+val_f_rmse: 232.836121
+2026-03-13 14:05:26.446 INFO: val_f_rmse: 232.836121
+epoch 31 Loss 28463838.975403633
+epoch 32 Loss 26990346.448599897
+epoch 33 Loss 29732253.974930625
+epoch 34 Loss 27253088.302598387
+epoch 35 Loss 31005750.965628155
+epoch 36 Loss 27558925.585425075
+epoch 37 Loss 23781420.440306507
+epoch 38 Loss 28343365.856048185
+epoch 39 Loss 24890157.924949545
+epoch 40 Loss 24039886.103746217
+##### Step: 39 Learning rate: 0.0025 #####
+Epoch 40, Train Loss: 24039886.1037, Val Loss: 26917065.0283
+train_e/atom_mae: 398.544342
+2026-03-13 15:20:47.187 INFO: train_e/atom_mae: 398.544342
+train_e/atom_rmse: 497.646423
+2026-03-13 15:20:47.209 INFO: train_e/atom_rmse: 497.646423
+train_f_mae: 95.824631
+2026-03-13 15:20:47.319 INFO: train_f_mae: 95.824631
+train_f_rmse: 164.265076
+2026-03-13 15:20:47.320 INFO: train_f_rmse: 164.265076
+val_e/atom_mae: 840.584167
+2026-03-13 15:20:47.438 INFO: val_e/atom_mae: 840.584167
+val_e/atom_rmse: 841.758179
+2026-03-13 15:20:47.438 INFO: val_e/atom_rmse: 841.758179
+val_f_mae: 102.699554
+2026-03-13 15:20:47.439 INFO: val_f_mae: 102.699554
+val_f_rmse: 162.376236
+2026-03-13 15:20:47.440 INFO: val_f_rmse: 162.376236
+training
+epoch 1 Loss 11348283.190243442
+epoch 2 Loss 25531411.077888496
+epoch 3 Loss 46494421.03497099
+epoch 4 Loss 40763714.24381937
+epoch 5 Loss 59637967.42078708
+epoch 6 Loss 59466252.33627649
+epoch 7 Loss 73874530.43705852
+epoch 8 Loss 55511630.47701186
+epoch 9 Loss 55310099.90678608
+epoch 10 Loss 67674347.35601665
+##### Step: 9 Learning rate: 0.005 #####
+Epoch 10, Train Loss: 67674347.3560, Val Loss: 46518076.3552
+train_e/atom_mae: 671.595093
+2026-03-13 16:36:05.862 INFO: train_e/atom_mae: 671.595093
+train_e/atom_rmse: 882.799500
+2026-03-13 16:36:05.886 INFO: train_e/atom_rmse: 882.799500
+train_f_mae: 124.051643
+2026-03-13 16:36:05.995 INFO: train_f_mae: 124.051643
+train_f_rmse: 221.042679
+2026-03-13 16:36:05.996 INFO: train_f_rmse: 221.042679
+val_e/atom_mae: 220.121750
+2026-03-13 16:36:06.114 INFO: val_e/atom_mae: 220.121750
+val_e/atom_rmse: 289.995758
+2026-03-13 16:36:06.115 INFO: val_e/atom_rmse: 289.995758
+val_f_mae: 127.351921
+2026-03-13 16:36:06.116 INFO: val_f_mae: 127.351921
+val_f_rmse: 215.531296
+2026-03-13 16:36:06.117 INFO: val_f_rmse: 215.531296
+epoch 11 Loss 39099490.08164102
+epoch 12 Loss 59392464.34542129
+epoch 13 Loss 33282498.194500506
+epoch 14 Loss 37267981.148650356
+epoch 15 Loss 45970720.321581736
+epoch 16 Loss 44401985.18374748
+epoch 17 Loss 24722776.292633705
+epoch 18 Loss 26189518.741927344
+epoch 19 Loss 25324839.15609233
+epoch 20 Loss 24585949.437058527
+##### Step: 19 Learning rate: 0.005 #####
+Epoch 20, Train Loss: 24585949.4371, Val Loss: 20853163.6369
+train_e/atom_mae: 545.481750
+2026-03-13 17:51:36.084 INFO: train_e/atom_mae: 545.481750
+train_e/atom_rmse: 688.301819
+2026-03-13 17:51:36.101 INFO: train_e/atom_rmse: 688.301819
+train_f_mae: 107.538177
+2026-03-13 17:51:36.210 INFO: train_f_mae: 107.538177
+train_f_rmse: 188.672836
+2026-03-13 17:51:36.211 INFO: train_f_rmse: 188.672836
+val_e/atom_mae: 560.547913
+2026-03-13 17:51:36.329 INFO: val_e/atom_mae: 560.547913
+val_e/atom_rmse: 569.921021
+2026-03-13 17:51:36.329 INFO: val_e/atom_rmse: 569.921021
+val_f_mae: 80.075684
+2026-03-13 17:51:36.331 INFO: val_f_mae: 80.075684
+val_f_rmse: 143.590485
+2026-03-13 17:51:36.331 INFO: val_f_rmse: 143.590485
+epoch 21 Loss 9650760.320761858
+epoch 22 Loss 8628067.90151993
+epoch 23 Loss 9039230.152655147
+epoch 24 Loss 8830794.80308716
+epoch 25 Loss 8776711.589004163
+epoch 26 Loss 13515504.927598385
+epoch 27 Loss 8451988.912848448
+epoch 28 Loss 9770046.753823474
+epoch 29 Loss 8655095.883025354
+epoch 30 Loss 7364723.318077542
+##### Step: 29 Learning rate: 0.0025 #####
+Epoch 30, Train Loss: 7364723.3181, Val Loss: 5445309.7664
+train_e/atom_mae: 188.692184
+2026-03-13 19:06:52.092 INFO: train_e/atom_mae: 188.692184
+train_e/atom_rmse: 237.595840
+2026-03-13 19:06:52.113 INFO: train_e/atom_rmse: 237.595840
+train_f_mae: 55.193542
+2026-03-13 19:06:52.224 INFO: train_f_mae: 55.193542
+train_f_rmse: 96.007736
+2026-03-13 19:06:52.224 INFO: train_f_rmse: 96.007736
+val_e/atom_mae: 145.810516
+2026-03-13 19:06:52.340 INFO: val_e/atom_mae: 145.810516
+val_e/atom_rmse: 150.805130
+2026-03-13 19:06:52.340 INFO: val_e/atom_rmse: 150.805130
+val_f_mae: 44.538990
+2026-03-13 19:06:52.342 INFO: val_f_mae: 44.538990
+val_f_rmse: 73.551842
+2026-03-13 19:06:52.342 INFO: val_f_rmse: 73.551842
+epoch 31 Loss 7468329.878594854
+epoch 32 Loss 7598043.966140578
+epoch 33 Loss 5240099.110076627
+epoch 34 Loss 8250793.196455601
+epoch 35 Loss 6883978.524154894
+epoch 36 Loss 7378365.501308653
+epoch 37 Loss 5730466.505628784
+epoch 38 Loss 5081778.612354944
+epoch 39 Loss 5636602.547131212
+epoch 40 Loss 8371943.240736945
+##### Step: 39 Learning rate: 0.0025 #####
+Epoch 40, Train Loss: 8371943.2407, Val Loss: 6687828.5407
+train_e/atom_mae: 152.548050
+2026-03-13 20:22:09.825 INFO: train_e/atom_mae: 152.548050
+train_e/atom_rmse: 191.264511
+2026-03-13 20:22:09.839 INFO: train_e/atom_rmse: 191.264511
+train_f_mae: 46.997646
+2026-03-13 20:22:09.949 INFO: train_f_mae: 46.997646
+train_f_rmse: 82.043381
+2026-03-13 20:22:09.950 INFO: train_f_rmse: 82.043381
+val_e/atom_mae: 212.162567
+2026-03-13 20:22:10.057 INFO: val_e/atom_mae: 212.162567
+val_e/atom_rmse: 212.965195
+2026-03-13 20:22:10.058 INFO: val_e/atom_rmse: 212.965195
+val_f_mae: 50.614719
+2026-03-13 20:22:10.059 INFO: val_f_mae: 50.614719
+val_f_rmse: 81.358093
+2026-03-13 20:22:10.059 INFO: val_f_rmse: 81.358093
+training
+epoch 1 Loss 2806216.708840502
+epoch 2 Loss 4755449.0022389
+epoch 3 Loss 8932399.783725403
+epoch 4 Loss 10043990.753090313
+epoch 5 Loss 10863554.999030335
+epoch 6 Loss 13165608.792444501
+epoch 7 Loss 12715042.92502838
+epoch 8 Loss 13532266.286673814
+epoch 9 Loss 10636641.813477548
+epoch 10 Loss 9529684.277907416
+##### Step: 9 Learning rate: 0.005 #####
+Epoch 10, Train Loss: 9529684.2779, Val Loss: 17403422.1652
+train_e/atom_mae: 213.178772
+2026-03-13 21:37:17.405 INFO: train_e/atom_mae: 213.178772
+train_e/atom_rmse: 278.418640
+2026-03-13 21:37:17.406 INFO: train_e/atom_rmse: 278.418640
+train_f_mae: 55.486584
+2026-03-13 21:37:17.515 INFO: train_f_mae: 55.486584
+train_f_rmse: 98.124008
+2026-03-13 21:37:17.515 INFO: train_f_rmse: 98.124008
+val_e/atom_mae: 388.897369
+2026-03-13 21:37:17.611 INFO: val_e/atom_mae: 388.897369
+val_e/atom_rmse: 391.733368
+2026-03-13 21:37:17.612 INFO: val_e/atom_rmse: 391.733368
+val_f_mae: 84.913597
+2026-03-13 21:37:17.613 INFO: val_f_mae: 84.913597
+val_f_rmse: 131.285202
+2026-03-13 21:37:17.613 INFO: val_f_rmse: 131.285202
+epoch 11 Loss 8860182.849567987
+epoch 12 Loss 9153322.008829465
+epoch 13 Loss 5792551.322527749
+epoch 14 Loss 5867264.678394614
+epoch 15 Loss 5694236.388796039
+epoch 16 Loss 5125691.5943294335
+epoch 17 Loss 5313216.944153633
+epoch 18 Loss 5723362.670014505
+epoch 19 Loss 3871509.5165513055
+epoch 20 Loss 2904450.6379643353
+##### Step: 19 Learning rate: 0.005 #####
+Epoch 20, Train Loss: 2904450.6380, Val Loss: 2452309.3795
+train_e/atom_mae: 170.853760
+2026-03-13 22:52:52.703 INFO: train_e/atom_mae: 170.853760
+train_e/atom_rmse: 218.220215
+2026-03-13 22:52:52.704 INFO: train_e/atom_rmse: 218.220215
+train_f_mae: 43.001060
+2026-03-13 22:52:52.813 INFO: train_f_mae: 43.001060
+train_f_rmse: 76.077065
+2026-03-13 22:52:52.813 INFO: train_f_rmse: 76.077065
+val_e/atom_mae: 52.216438
+2026-03-13 22:52:52.915 INFO: val_e/atom_mae: 52.216438
+val_e/atom_rmse: 60.708557
+2026-03-13 22:52:52.915 INFO: val_e/atom_rmse: 60.708557
+val_f_mae: 28.197338
+2026-03-13 22:52:52.917 INFO: val_f_mae: 28.197338
+val_f_rmse: 49.530193
+2026-03-13 22:52:52.917 INFO: val_f_rmse: 49.530193
+epoch 21 Loss 1500784.5572387818
+epoch 22 Loss 1632500.6266456705
+epoch 23 Loss 1041194.1090862686
+epoch 24 Loss 1204269.4642761415
+epoch 25 Loss 1631150.6767124827
+epoch 26 Loss 1133614.6512065623
+epoch 27 Loss 967974.1320763828
+epoch 28 Loss 1242698.7368228117
+epoch 29 Loss 1186528.3408301668
+epoch 30 Loss 969366.4154825066
+##### Step: 29 Learning rate: 0.0025 #####
+Epoch 30, Train Loss: 969366.4155, Val Loss: 2034245.8880
+train_e/atom_mae: 54.317856
+2026-03-14 00:08:15.947 INFO: train_e/atom_mae: 54.317856
+train_e/atom_rmse: 69.527679
+2026-03-14 00:08:15.958 INFO: train_e/atom_rmse: 69.527679
+train_f_mae: 19.741873
+2026-03-14 00:08:16.067 INFO: train_f_mae: 19.741873
+train_f_rmse: 35.308037
+2026-03-14 00:08:16.068 INFO: train_f_rmse: 35.308037
+val_e/atom_mae: 52.963871
+2026-03-14 00:08:16.189 INFO: val_e/atom_mae: 52.963871
+val_e/atom_rmse: 64.158440
+2026-03-14 00:08:16.189 INFO: val_e/atom_rmse: 64.158440
+val_f_mae: 22.356043
+2026-03-14 00:08:16.191 INFO: val_f_mae: 22.356043
+val_f_rmse: 45.103577
+2026-03-14 00:08:16.191 INFO: val_f_rmse: 45.103577
+epoch 31 Loss 976303.8201035885
+epoch 32 Loss 969624.2434064787
+epoch 33 Loss 784175.1540042019
+epoch 34 Loss 679161.7741746027
+epoch 35 Loss 822172.8378216448
+epoch 36 Loss 512810.3154454544
+epoch 37 Loss 495485.5240221072
+epoch 38 Loss 516597.563508589
+epoch 39 Loss 517150.63013736176
+epoch 40 Loss 423085.2290807699
+##### Step: 39 Learning rate: 0.0025 #####
+Epoch 40, Train Loss: 423085.2291, Val Loss: 262197.4398
+train_e/atom_mae: 38.469234
+2026-03-14 01:23:34.376 INFO: train_e/atom_mae: 38.469234
+train_e/atom_rmse: 49.999966
+2026-03-14 01:23:34.397 INFO: train_e/atom_rmse: 49.999966
+train_f_mae: 14.067077
+2026-03-14 01:23:34.508 INFO: train_f_mae: 14.067077
+train_f_rmse: 25.834215
+2026-03-14 01:23:34.508 INFO: train_f_rmse: 25.834215
+val_e/atom_mae: 35.432278
+2026-03-14 01:23:34.627 INFO: val_e/atom_mae: 35.432278
+val_e/atom_rmse: 37.107693
+2026-03-14 01:23:34.627 INFO: val_e/atom_rmse: 37.107693
+val_f_mae: 9.570493
+2026-03-14 01:23:34.629 INFO: val_f_mae: 9.570493
+val_f_rmse: 16.129316
+2026-03-14 01:23:34.629 INFO: val_f_rmse: 16.129316
+Second train loop:
+training
+epoch 1 Loss 202335.70103724045
+epoch 2 Loss 253544.29132689815
+epoch 3 Loss 230505.66265653577
+epoch 4 Loss 240726.3466673696
+epoch 5 Loss 260516.70134063013
+epoch 6 Loss 205308.77201995696
+epoch 7 Loss 209252.6696301873
+epoch 8 Loss 240309.8584580561
+epoch 9 Loss 205670.4812373249
+epoch 10 Loss 192385.13119047994
+##### Step: 49 Learning rate: 0.00125 #####
+Epoch 10, Train Loss: 192385.1312, Val Loss: 350057.0450
+train_e/atom_mae: 16.117275
+2026-03-14 02:39:01.249 INFO: train_e/atom_mae: 16.117275
+train_e/atom_rmse: 21.251154
+2026-03-14 02:39:01.270 INFO: train_e/atom_rmse: 21.251154
+train_f_mae: 7.772055
+2026-03-14 02:39:01.381 INFO: train_f_mae: 7.772055
+train_f_rmse: 14.832096
+2026-03-14 02:39:01.382 INFO: train_f_rmse: 14.832096
+val_e/atom_mae: 22.201040
+2026-03-14 02:39:01.507 INFO: val_e/atom_mae: 22.201040
+val_e/atom_rmse: 23.365360
+2026-03-14 02:39:01.508 INFO: val_e/atom_rmse: 23.365360
+val_f_mae: 10.142891
+2026-03-14 02:39:01.509 INFO: val_f_mae: 10.142891
+val_f_rmse: 18.593090
+2026-03-14 02:39:01.510 INFO: val_f_rmse: 18.593090
+epoch 11 Loss 200497.59753947638
+epoch 12 Loss 223318.05907217693
+epoch 13 Loss 203047.14801893802
+epoch 14 Loss 236931.66198865965
+epoch 15 Loss 202214.8479905576
+epoch 16 Loss 223632.34331739563
+epoch 17 Loss 166277.07085990714
+epoch 18 Loss 274298.4515680184
+epoch 19 Loss 214186.47798349205
+epoch 20 Loss 190243.5663536526
+##### Step: 59 Learning rate: 0.00125 #####
+Epoch 20, Train Loss: 190243.5664, Val Loss: 163070.6671
+train_e/atom_mae: 15.294995
+2026-03-14 03:54:33.960 INFO: train_e/atom_mae: 15.294995
+train_e/atom_rmse: 19.969166
+2026-03-14 03:54:33.981 INFO: train_e/atom_rmse: 19.969166
+train_f_mae: 7.742706
+2026-03-14 03:54:34.092 INFO: train_f_mae: 7.742706
+train_f_rmse: 14.487092
+2026-03-14 03:54:34.093 INFO: train_f_rmse: 14.487092
+val_e/atom_mae: 34.860001
+2026-03-14 03:54:34.208 INFO: val_e/atom_mae: 34.860001
+val_e/atom_rmse: 35.086964
+2026-03-14 03:54:34.208 INFO: val_e/atom_rmse: 35.086964
+val_f_mae: 6.309304
+2026-03-14 03:54:34.210 INFO: val_f_mae: 6.309304
+val_f_rmse: 12.262840
+2026-03-14 03:54:34.210 INFO: val_f_rmse: 12.262840
+epoch 21 Loss 148308.8419598407
+epoch 22 Loss 126583.42674241513
+epoch 23 Loss 104904.72393755715
+epoch 24 Loss 119605.82988769039
+epoch 25 Loss 102584.60913837329
+epoch 26 Loss 109619.53942760233
+epoch 27 Loss 111872.3613847873
+epoch 28 Loss 126081.13772352047
+epoch 29 Loss 105444.91244343625
+epoch 30 Loss 115674.3148335631
+##### Step: 69 Learning rate: 0.000625 #####
+Epoch 30, Train Loss: 115674.3148, Val Loss: 125688.1378
+train_e/atom_mae: 9.502292
+2026-03-14 05:10:02.072 INFO: train_e/atom_mae: 9.502292
+train_e/atom_rmse: 12.506652
+2026-03-14 05:10:02.072 INFO: train_e/atom_rmse: 12.506652
+train_f_mae: 5.397233
+2026-03-14 05:10:02.184 INFO: train_f_mae: 5.397233
+train_f_rmse: 10.754545
+2026-03-14 05:10:02.184 INFO: train_f_rmse: 10.754545
+val_e/atom_mae: 10.882224
+2026-03-14 05:10:02.283 INFO: val_e/atom_mae: 10.882224
+val_e/atom_rmse: 11.925625
+2026-03-14 05:10:02.283 INFO: val_e/atom_rmse: 11.925625
+val_f_mae: 5.972645
+2026-03-14 05:10:02.289 INFO: val_f_mae: 5.972645
+val_f_rmse: 11.129962
+2026-03-14 05:10:02.290 INFO: val_f_rmse: 11.129962
+epoch 31 Loss 103180.56386981122
+epoch 32 Loss 102817.71401475585
+epoch 33 Loss 110653.39570576102
+epoch 34 Loss 93840.10346056402
+epoch 35 Loss 100282.02361327632
+epoch 36 Loss 115335.43940791834
+epoch 37 Loss 97302.96783108523
+epoch 38 Loss 112473.83516917146
+epoch 39 Loss 90838.01930811138
+epoch 40 Loss 97366.37128030448
+##### Step: 79 Learning rate: 0.000625 #####
+Epoch 40, Train Loss: 97366.3713, Val Loss: 70534.2228
+train_e/atom_mae: 8.468120
+2026-03-14 06:25:30.788 INFO: train_e/atom_mae: 8.468120
+train_e/atom_rmse: 11.165253
+2026-03-14 06:25:30.789 INFO: train_e/atom_rmse: 11.165253
+train_f_mae: 5.052405
+2026-03-14 06:25:30.899 INFO: train_f_mae: 5.052405
+train_f_rmse: 10.064148
+2026-03-14 06:25:30.899 INFO: train_f_rmse: 10.064148
+val_e/atom_mae: 7.538417
+2026-03-14 06:25:31.003 INFO: val_e/atom_mae: 7.538417
+val_e/atom_rmse: 8.140272
+2026-03-14 06:25:31.003 INFO: val_e/atom_rmse: 8.140272
+val_f_mae: 4.310494
+2026-03-14 06:25:31.005 INFO: val_f_mae: 4.310494
+val_f_rmse: 8.347587
+2026-03-14 06:25:31.005 INFO: val_f_rmse: 8.347587
+epoch 41 Loss 74049.56751572256
+epoch 42 Loss 77778.25376899788
+epoch 43 Loss 72858.22230771524
+epoch 44 Loss 78525.67483997827
+epoch 45 Loss 70914.63006308486
+epoch 46 Loss 70278.71620746385
+epoch 47 Loss 79632.32973953693
+epoch 48 Loss 73553.23675401612
+epoch 49 Loss 71251.10573715687
+epoch 50 Loss 70411.79894631518
+##### Step: 89 Learning rate: 0.0003125 #####
+Epoch 50, Train Loss: 70411.7989, Val Loss: 88138.3496
+train_e/atom_mae: 5.746597
+2026-03-14 07:40:53.939 INFO: train_e/atom_mae: 5.746597
+train_e/atom_rmse: 7.539216
+2026-03-14 07:40:53.939 INFO: train_e/atom_rmse: 7.539216
+train_f_mae: 4.072518
+2026-03-14 07:40:54.050 INFO: train_f_mae: 4.072518
+train_f_rmse: 8.568185
+2026-03-14 07:40:54.051 INFO: train_f_rmse: 8.568185
+val_e/atom_mae: 6.435939
+2026-03-14 07:40:54.148 INFO: val_e/atom_mae: 6.435939
+val_e/atom_rmse: 9.225894
+2026-03-14 07:40:54.148 INFO: val_e/atom_rmse: 9.225894
+val_f_mae: 4.785008
+2026-03-14 07:40:54.150 INFO: val_f_mae: 4.785008
+val_f_rmse: 9.340891
+2026-03-14 07:40:54.150 INFO: val_f_rmse: 9.340891
+epoch 51 Loss 73035.26801965985
+epoch 52 Loss 70619.51353643977
+epoch 53 Loss 76554.39000553319
+epoch 54 Loss 80413.60647081054
+epoch 55 Loss 77328.79303982423
+epoch 56 Loss 76075.77601545009
+epoch 57 Loss 67416.15704123981
+epoch 58 Loss 67031.2253481406
+epoch 59 Loss 73582.55766852232
+epoch 60 Loss 70731.21584611849
+##### Step: 99 Learning rate: 0.0003125 #####
+Epoch 60, Train Loss: 70731.2158, Val Loss: 140333.2240
+train_e/atom_mae: 5.839936
+2026-03-14 08:56:21.618 INFO: train_e/atom_mae: 5.839936
+train_e/atom_rmse: 7.809758
+2026-03-14 08:56:21.618 INFO: train_e/atom_rmse: 7.809758
+train_f_mae: 4.080632
+2026-03-14 08:56:21.729 INFO: train_f_mae: 4.080632
+train_f_rmse: 8.528184
+2026-03-14 08:56:21.729 INFO: train_f_rmse: 8.528184
+val_e/atom_mae: 10.880677
+2026-03-14 08:56:21.828 INFO: val_e/atom_mae: 10.880677
+val_e/atom_rmse: 12.782583
+2026-03-14 08:56:21.828 INFO: val_e/atom_rmse: 12.782583
+val_f_mae: 6.121254
+2026-03-14 08:56:21.830 INFO: val_f_mae: 6.121254
+val_f_rmse: 11.746394
+2026-03-14 08:56:21.830 INFO: val_f_rmse: 11.746394
+epoch 61 Loss 59248.406403480934
+epoch 62 Loss 60526.99275680219
+epoch 63 Loss 61648.20304394827
+epoch 64 Loss 61367.74867539545
+epoch 65 Loss 57500.11440230138
+epoch 66 Loss 57491.67399604867
+epoch 67 Loss 60444.73386122071
+epoch 68 Loss 59365.79534182274
+epoch 69 Loss 57797.67699088242
+epoch 70 Loss 57961.481139151285
+##### Step: 109 Learning rate: 0.00015625 #####
+Epoch 70, Train Loss: 57961.4811, Val Loss: 57305.4679
+train_e/atom_mae: 4.274984
+2026-03-14 10:11:44.391 INFO: train_e/atom_mae: 4.274984
+train_e/atom_rmse: 5.765331
+2026-03-14 10:11:44.393 INFO: train_e/atom_rmse: 5.765331
+train_f_mae: 3.476112
+2026-03-14 10:11:44.505 INFO: train_f_mae: 3.476112
+train_f_rmse: 7.683498
+2026-03-14 10:11:44.506 INFO: train_f_rmse: 7.683498
+val_e/atom_mae: 3.582723
+2026-03-14 10:11:44.605 INFO: val_e/atom_mae: 3.582723
+val_e/atom_rmse: 4.094611
+2026-03-14 10:11:44.605 INFO: val_e/atom_rmse: 4.094611
+val_f_mae: 3.149439
+2026-03-14 10:11:44.606 INFO: val_f_mae: 3.149439
+val_f_rmse: 7.531201
+2026-03-14 10:11:44.607 INFO: val_f_rmse: 7.531201
+epoch 71 Loss 59723.41952899582
+epoch 72 Loss 57654.56544514646
+epoch 73 Loss 57287.33780273684
+epoch 74 Loss 58988.82931851138
+epoch 75 Loss 57239.93097268729
+epoch 76 Loss 54757.43476973918
+epoch 77 Loss 54751.750899267725
+epoch 78 Loss 56206.89862815018
+epoch 79 Loss 59289.92879716275
+epoch 80 Loss 56082.710250038435
+##### Step: 119 Learning rate: 0.00015625 #####
+Epoch 80, Train Loss: 56082.7103, Val Loss: 48600.7458
+train_e/atom_mae: 4.233713
+2026-03-14 11:27:15.080 INFO: train_e/atom_mae: 4.233713
+train_e/atom_rmse: 5.679861
+2026-03-14 11:27:15.080 INFO: train_e/atom_rmse: 5.679861
+train_f_mae: 3.389285
+2026-03-14 11:27:15.191 INFO: train_f_mae: 3.389285
+train_f_rmse: 7.543735
+2026-03-14 11:27:15.192 INFO: train_f_rmse: 7.543735
+val_e/atom_mae: 2.381713
+2026-03-14 11:27:15.289 INFO: val_e/atom_mae: 2.381713
+val_e/atom_rmse: 2.804879
+2026-03-14 11:27:15.289 INFO: val_e/atom_rmse: 2.804879
+val_f_mae: 2.819607
+2026-03-14 11:27:15.291 INFO: val_f_mae: 2.819607
+val_f_rmse: 6.950907
+2026-03-14 11:27:15.291 INFO: val_f_rmse: 6.950907
+epoch 81 Loss 50523.007578367666
+epoch 82 Loss 53965.25856543116
+epoch 83 Loss 50975.355209920286
+epoch 84 Loss 51974.685609018765
+epoch 85 Loss 51969.0234334351
+epoch 86 Loss 49670.50633265921
+epoch 87 Loss 50078.14402624721
+epoch 88 Loss 50046.21719258729
+epoch 89 Loss 47730.003605000544
+epoch 90 Loss 50664.118647385796
+##### Step: 129 Learning rate: 7.8125e-05 #####
+Epoch 90, Train Loss: 50664.1186, Val Loss: 46473.9735
+train_e/atom_mae: 3.301101
+2026-03-14 12:42:38.499 INFO: train_e/atom_mae: 3.301101
+train_e/atom_rmse: 4.466115
+2026-03-14 12:42:38.500 INFO: train_e/atom_rmse: 4.466115
+train_f_mae: 3.025581
+2026-03-14 12:42:38.610 INFO: train_f_mae: 3.025581
+train_f_rmse: 7.111970
+2026-03-14 12:42:38.611 INFO: train_f_rmse: 7.111970
+val_e/atom_mae: 1.878874
+2026-03-14 12:42:38.706 INFO: val_e/atom_mae: 1.878874
+val_e/atom_rmse: 2.196138
+2026-03-14 12:42:38.707 INFO: val_e/atom_rmse: 2.196138
+val_f_mae: 2.713745
+2026-03-14 12:42:38.708 INFO: val_f_mae: 2.713745
+val_f_rmse: 6.804498
+2026-03-14 12:42:38.709 INFO: val_f_rmse: 6.804498
+epoch 91 Loss 49887.46947426127
+epoch 92 Loss 52893.14288678059
+epoch 93 Loss 51185.78143084206
+epoch 94 Loss 48370.428416124145
+epoch 95 Loss 50001.65167798332
+epoch 96 Loss 49431.66075465321
+epoch 97 Loss 49634.18310534557
+epoch 98 Loss 48632.58269820228
+epoch 99 Loss 49233.375842482244
+epoch 100 Loss 49431.313554996676
+##### Step: 139 Learning rate: 7.8125e-05 #####
+Epoch 100, Train Loss: 49431.3136, Val Loss: 59731.6552
+train_e/atom_mae: 3.248962
+2026-03-14 13:58:07.412 INFO: train_e/atom_mae: 3.248962
+train_e/atom_rmse: 4.425256
+2026-03-14 13:58:07.413 INFO: train_e/atom_rmse: 4.425256
+train_f_mae: 2.975763
+2026-03-14 13:58:07.524 INFO: train_f_mae: 2.975763
+train_f_rmse: 7.049391
+2026-03-14 13:58:07.525 INFO: train_f_rmse: 7.049391
+val_e/atom_mae: 4.672372
+2026-03-14 13:58:07.622 INFO: val_e/atom_mae: 4.672372
+val_e/atom_rmse: 5.807242
+2026-03-14 13:58:07.623 INFO: val_e/atom_rmse: 5.807242
+val_f_mae: 3.623287
+2026-03-14 13:58:07.624 INFO: val_f_mae: 3.623287
+val_f_rmse: 7.714597
+2026-03-14 13:58:07.625 INFO: val_f_rmse: 7.714597
+Third train loop:
+epoch 1 Loss 48523.7851772828
+epoch 2 Loss 48515.3510546641
+epoch 3 Loss 49200.75010174579
+epoch 4 Loss 48603.979829328215
+epoch 5 Loss 47984.7457886974
+epoch 6 Loss 53703.81991352347
+epoch 7 Loss 52202.40842207553
+epoch 8 Loss 49661.49860034869
+epoch 9 Loss 48118.84284023127
+epoch 10 Loss 49134.48539806254
+##### Step: 149 Learning rate: 3.90625e-05 #####
+Epoch 10, Train Loss: 49134.4854, Val Loss: 46978.6499
+train_e/atom_mae: 3.109269
+2026-03-14 15:13:36.711 INFO: train_e/atom_mae: 3.109269
+train_e/atom_rmse: 4.213341
+2026-03-14 15:13:36.712 INFO: train_e/atom_rmse: 4.213341
+train_f_mae: 2.851382
+2026-03-14 15:13:36.822 INFO: train_f_mae: 2.851382
+train_f_rmse: 6.925843
+2026-03-14 15:13:36.823 INFO: train_f_rmse: 6.925843
+val_e/atom_mae: 1.411203
+2026-03-14 15:13:36.920 INFO: val_e/atom_mae: 1.411203
+val_e/atom_rmse: 1.893909
+2026-03-14 15:13:36.921 INFO: val_e/atom_rmse: 1.893909
+val_f_mae: 2.736912
+2026-03-14 15:13:36.922 INFO: val_f_mae: 2.736912
+val_f_rmse: 6.814765
+2026-03-14 15:13:36.922 INFO: val_f_rmse: 6.814765
+epoch 11 Loss 50143.04807405443
+epoch 12 Loss 48276.338847309504
+epoch 13 Loss 50027.286451799715
+epoch 14 Loss 51207.74357061453
+epoch 15 Loss 51723.14532476862
+epoch 16 Loss 50326.76252397062
+epoch 17 Loss 50299.14852442583
+epoch 18 Loss 48478.88309085357
+epoch 19 Loss 49082.27016857775
+epoch 20 Loss 48889.71900049974
+##### Step: 159 Learning rate: 3.90625e-05 #####
+Epoch 20, Train Loss: 48889.7190, Val Loss: 98431.6250
+train_e/atom_mae: 3.237183
+2026-03-14 16:29:04.862 INFO: train_e/atom_mae: 3.237183
+train_e/atom_rmse: 4.379642
+2026-03-14 16:29:04.863 INFO: train_e/atom_rmse: 4.379642
+train_f_mae: 2.860248
+2026-03-14 16:29:04.974 INFO: train_f_mae: 2.860248
+train_f_rmse: 6.936800
+2026-03-14 16:29:04.974 INFO: train_f_rmse: 6.936800
+val_e/atom_mae: 6.177680
+2026-03-14 16:29:05.077 INFO: val_e/atom_mae: 6.177680
+val_e/atom_rmse: 8.057046
+2026-03-14 16:29:05.077 INFO: val_e/atom_rmse: 8.057046
+val_f_mae: 5.001310
+2026-03-14 16:29:05.079 INFO: val_f_mae: 5.001310
+val_f_rmse: 9.616025
+2026-03-14 16:29:05.079 INFO: val_f_rmse: 9.616025
+epoch 21 Loss 51973.95106886663
+epoch 22 Loss 48242.91130994379
+epoch 23 Loss 47778.4281516128
+epoch 24 Loss 49777.38595239233
+epoch 25 Loss 47534.84105669285
+epoch 26 Loss 50186.598219793574
+epoch 27 Loss 48640.47151998603
+epoch 28 Loss 47612.41212326342
+epoch 29 Loss 48117.933313363974
+epoch 30 Loss 46957.23105006213
+##### Step: 169 Learning rate: 1.953125e-05 #####
+Epoch 30, Train Loss: 46957.2311, Val Loss: 45867.6839
+train_e/atom_mae: 2.797672
+2026-03-14 17:44:35.983 INFO: train_e/atom_mae: 2.797672
+train_e/atom_rmse: 3.880272
+2026-03-14 17:44:35.984 INFO: train_e/atom_rmse: 3.880272
+train_f_mae: 2.794616
+2026-03-14 17:44:36.094 INFO: train_f_mae: 2.794616
+train_f_rmse: 6.879478
+2026-03-14 17:44:36.094 INFO: train_f_rmse: 6.879478
+val_e/atom_mae: 1.939955
+2026-03-14 17:44:36.197 INFO: val_e/atom_mae: 1.939955
+val_e/atom_rmse: 2.664607
+2026-03-14 17:44:36.197 INFO: val_e/atom_rmse: 2.664607
+val_f_mae: 2.714685
+2026-03-14 17:44:36.199 INFO: val_f_mae: 2.714685
+val_f_rmse: 6.716261
+2026-03-14 17:44:36.199 INFO: val_f_rmse: 6.716261
+epoch 31 Loss 47161.96214531553
+epoch 32 Loss 50206.260866629
+epoch 33 Loss 46793.03230142449
+epoch 34 Loss 46634.862245654
+epoch 35 Loss 47297.280916893396
+epoch 36 Loss 45771.68660237979
+epoch 37 Loss 49286.86070764197
+epoch 38 Loss 46776.13096001218
+epoch 39 Loss 47765.995861634714
+epoch 40 Loss 44755.91751916233
+##### Step: 179 Learning rate: 1.953125e-05 #####
+Epoch 40, Train Loss: 44755.9175, Val Loss: 47067.2835
+train_e/atom_mae: 2.614405
+2026-03-14 19:00:08.889 INFO: train_e/atom_mae: 2.614405
+train_e/atom_rmse: 3.626429
+2026-03-14 19:00:08.889 INFO: train_e/atom_rmse: 3.626429
+train_f_mae: 2.710577
+2026-03-14 19:00:09.002 INFO: train_f_mae: 2.710577
+train_f_rmse: 6.786859
+2026-03-14 19:00:09.002 INFO: train_f_rmse: 6.786859
+val_e/atom_mae: 1.834284
+2026-03-14 19:00:09.101 INFO: val_e/atom_mae: 1.834284
+val_e/atom_rmse: 2.853751
+2026-03-14 19:00:09.101 INFO: val_e/atom_rmse: 2.853751
+val_f_mae: 2.742597
+2026-03-14 19:00:09.103 INFO: val_f_mae: 2.742597
+val_f_rmse: 6.796005
+2026-03-14 19:00:09.103 INFO: val_f_rmse: 6.796005
+epoch 41 Loss 44775.311918133564
+epoch 42 Loss 45878.052059000365
+epoch 43 Loss 51826.82907878979
+epoch 44 Loss 46862.853746508496
+epoch 45 Loss 45360.58530851763
+epoch 46 Loss 43746.355436184575
+epoch 47 Loss 44880.64101861825
+epoch 48 Loss 46510.46341210297
+epoch 49 Loss 46573.0709717228
+epoch 50 Loss 46466.72639513064
+##### Step: 189 Learning rate: 9.765625e-06 #####
+Epoch 50, Train Loss: 46466.7264, Val Loss: 49804.4421
+train_e/atom_mae: 2.281937
+2026-03-14 20:15:39.220 INFO: train_e/atom_mae: 2.281937
+train_e/atom_rmse: 3.262156
+2026-03-14 20:15:39.221 INFO: train_e/atom_rmse: 3.262156
+train_f_mae: 2.640755
+2026-03-14 20:15:39.332 INFO: train_f_mae: 2.640755
+train_f_rmse: 6.732781
+2026-03-14 20:15:39.333 INFO: train_f_rmse: 6.732781
+val_e/atom_mae: 1.976910
+2026-03-14 20:15:39.432 INFO: val_e/atom_mae: 1.976910
+val_e/atom_rmse: 2.853636
+2026-03-14 20:15:39.433 INFO: val_e/atom_rmse: 2.853636
+val_f_mae: 2.834591
+2026-03-14 20:15:39.434 INFO: val_f_mae: 2.834591
+val_f_rmse: 6.990447
+2026-03-14 20:15:39.434 INFO: val_f_rmse: 6.990447
+epoch 51 Loss 43279.26802649628
+epoch 52 Loss 48963.067023499585
+epoch 53 Loss 50530.78625235765
+epoch 54 Loss 47338.78129713133
+epoch 55 Loss 44711.13743297219
+epoch 56 Loss 44495.77639074547
+epoch 57 Loss 47449.89340480955
+epoch 58 Loss 55047.068725000834
+epoch 59 Loss 53655.510317820714
+epoch 60 Loss 44755.27486662186
+##### Step: 199 Learning rate: 9.765625e-06 #####
+Epoch 60, Train Loss: 44755.2749, Val Loss: 44692.3549
+train_e/atom_mae: 2.465847
+2026-03-14 21:31:09.227 INFO: train_e/atom_mae: 2.465847
+train_e/atom_rmse: 3.614401
+2026-03-14 21:31:09.227 INFO: train_e/atom_rmse: 3.614401
+train_f_mae: 2.731283
+2026-03-14 21:31:09.337 INFO: train_f_mae: 2.731283
+train_f_rmse: 6.844485
+2026-03-14 21:31:09.338 INFO: train_f_rmse: 6.844485
+val_e/atom_mae: 3.366982
+2026-03-14 21:31:09.437 INFO: val_e/atom_mae: 3.366982
+val_e/atom_rmse: 4.228562
+2026-03-14 21:31:09.437 INFO: val_e/atom_rmse: 4.228562
+val_f_mae: 2.532869
+2026-03-14 21:31:09.439 INFO: val_f_mae: 2.532869
+val_f_rmse: 6.551981
+2026-03-14 21:31:09.439 INFO: val_f_rmse: 6.551981
+epoch 61 Loss 43328.936800559284
+epoch 62 Loss 44473.34082068974
+epoch 63 Loss 44575.083680277035
+epoch 64 Loss 43837.7900232802
+epoch 65 Loss 43606.257846605164
+epoch 66 Loss 43711.19178089869
+epoch 67 Loss 46626.441267796894
+epoch 68 Loss 46842.75793667975
+epoch 69 Loss 45787.490225706286
+epoch 70 Loss 45472.869460874805
+##### Step: 209 Learning rate: 4.8828125e-06 #####
+Epoch 70, Train Loss: 45472.8695, Val Loss: 45939.4992
+train_e/atom_mae: 2.034530
+2026-03-14 22:46:36.542 INFO: train_e/atom_mae: 2.034530
+train_e/atom_rmse: 2.989699
+2026-03-14 22:46:36.543 INFO: train_e/atom_rmse: 2.989699
+train_f_mae: 2.540112
+2026-03-14 22:46:36.653 INFO: train_f_mae: 2.540112
+train_f_rmse: 6.634895
+2026-03-14 22:46:36.653 INFO: train_f_rmse: 6.634895
+val_e/atom_mae: 2.422982
+2026-03-14 22:46:36.752 INFO: val_e/atom_mae: 2.422982
+val_e/atom_rmse: 3.640776
+2026-03-14 22:46:36.753 INFO: val_e/atom_rmse: 3.640776
+val_f_mae: 2.614808
+2026-03-14 22:46:36.754 INFO: val_f_mae: 2.614808
+val_f_rmse: 6.682292
+2026-03-14 22:46:36.755 INFO: val_f_rmse: 6.682292
+epoch 71 Loss 44933.6839391129
+epoch 72 Loss 43798.133581074886
+epoch 73 Loss 44865.20388701561
+epoch 74 Loss 44514.01775263874
+epoch 75 Loss 44447.0392278985
+epoch 76 Loss 45235.51365398326
+epoch 77 Loss 44363.588881122116
+epoch 78 Loss 46112.885450776965
+epoch 79 Loss 44545.158256584655
+epoch 80 Loss 43707.022851722635
+##### Step: 219 Learning rate: 4.8828125e-06 #####
+Epoch 80, Train Loss: 43707.0229, Val Loss: 42300.3016
+train_e/atom_mae: 2.119518
+2026-03-15 00:02:13.061 INFO: train_e/atom_mae: 2.119518
+train_e/atom_rmse: 2.932989
+2026-03-15 00:02:13.095 INFO: train_e/atom_rmse: 2.932989
+train_f_mae: 2.544195
+2026-03-15 00:02:13.204 INFO: train_f_mae: 2.544195
+train_f_rmse: 6.624051
+2026-03-15 00:02:13.205 INFO: train_f_rmse: 6.624051
+val_e/atom_mae: 1.523218
+2026-03-15 00:02:13.320 INFO: val_e/atom_mae: 1.523218
+val_e/atom_rmse: 2.239349
+2026-03-15 00:02:13.320 INFO: val_e/atom_rmse: 2.239349
+val_f_mae: 2.398158
+2026-03-15 00:02:13.321 INFO: val_f_mae: 2.398158
+val_f_rmse: 6.458612
+2026-03-15 00:02:13.322 INFO: val_f_rmse: 6.458612
+epoch 81 Loss 45297.93473061447
+epoch 82 Loss 46398.82934074517
+epoch 83 Loss 45966.14367161509
+epoch 84 Loss 46142.303586372815
+epoch 85 Loss 46468.08950108163
+epoch 86 Loss 45642.628033558125
+epoch 87 Loss 42856.71284926768
+epoch 88 Loss 42669.211291731786
+epoch 89 Loss 47089.77329459705
+epoch 90 Loss 46758.23257269989
+##### Step: 229 Learning rate: 2.44140625e-06 #####
+Epoch 90, Train Loss: 46758.2326, Val Loss: 47602.0070
+train_e/atom_mae: 2.124666
+2026-03-15 01:17:49.747 INFO: train_e/atom_mae: 2.124666
+train_e/atom_rmse: 2.982612
+2026-03-15 01:17:49.765 INFO: train_e/atom_rmse: 2.982612
+train_f_mae: 2.611045
+2026-03-15 01:17:49.875 INFO: train_f_mae: 2.611045
+train_f_rmse: 6.687933
+2026-03-15 01:17:49.876 INFO: train_f_rmse: 6.687933
+val_e/atom_mae: 2.374163
+2026-03-15 01:17:49.990 INFO: val_e/atom_mae: 2.374163
+val_e/atom_rmse: 2.806798
+2026-03-15 01:17:49.990 INFO: val_e/atom_rmse: 2.806798
+val_f_mae: 2.692621
+2026-03-15 01:17:49.992 INFO: val_f_mae: 2.692621
+val_f_rmse: 6.821109
+2026-03-15 01:17:49.992 INFO: val_f_rmse: 6.821109
+epoch 91 Loss 47874.557964305706
+epoch 92 Loss 46337.458928944485
+epoch 93 Loss 44990.51856743652
+epoch 94 Loss 43512.68945185472
+epoch 95 Loss 44567.739733021386
+epoch 96 Loss 44513.98323234612
+epoch 97 Loss 44363.47867672763
+epoch 98 Loss 44975.22723881387
+epoch 99 Loss 43788.19134185822
+epoch 100 Loss 44504.2685108512
+##### Step: 239 Learning rate: 2.44140625e-06 #####
+Epoch 100, Train Loss: 44504.2685, Val Loss: 43166.9200
+train_e/atom_mae: 2.014932
+2026-03-15 02:33:14.249 INFO: train_e/atom_mae: 2.014932
+train_e/atom_rmse: 2.881270
+2026-03-15 02:33:14.250 INFO: train_e/atom_rmse: 2.881270
+train_f_mae: 2.557145
+2026-03-15 02:33:14.360 INFO: train_f_mae: 2.557145
+train_f_rmse: 6.647986
+2026-03-15 02:33:14.360 INFO: train_f_rmse: 6.647986
+val_e/atom_mae: 2.019911
+2026-03-15 02:33:14.457 INFO: val_e/atom_mae: 2.019911
+val_e/atom_rmse: 2.976626
+2026-03-15 02:33:14.458 INFO: val_e/atom_rmse: 2.976626
+val_f_mae: 2.429982
+2026-03-15 02:33:14.459 INFO: val_f_mae: 2.429982
+val_f_rmse: 6.499594
+2026-03-15 02:33:14.459 INFO: val_f_rmse: 6.499594
+Fourth train loop:
+epoch 1 Loss 84286.6890715783
+epoch 2 Loss 73871.32342756409
+epoch 3 Loss 76019.56555988762
+epoch 4 Loss 77393.18424773769
+epoch 5 Loss 79500.4346217859
+epoch 6 Loss 80123.66830335784
+epoch 7 Loss 82737.30436470963
+epoch 8 Loss 82555.64044075513
+epoch 9 Loss 82266.94140364784
+epoch 10 Loss 82588.32199272979
+##### Step: 249 Learning rate: 1.220703125e-06 #####
+Epoch 10, Train Loss: 82588.3220, Val Loss: 82996.4585
+train_e/atom_mae: 1.221184
+2026-03-15 03:48:32.183 INFO: train_e/atom_mae: 1.221184
+train_e/atom_rmse: 2.018766
+2026-03-15 03:48:32.183 INFO: train_e/atom_rmse: 2.018766
+train_f_mae: 2.442227
+2026-03-15 03:48:32.293 INFO: train_f_mae: 2.442227
+train_f_rmse: 6.592590
+2026-03-15 03:48:32.294 INFO: train_f_rmse: 6.592590
+val_e/atom_mae: 1.267796
+2026-03-15 03:48:32.392 INFO: val_e/atom_mae: 1.267796
+val_e/atom_rmse: 2.064031
+2026-03-15 03:48:32.392 INFO: val_e/atom_rmse: 2.064031
+val_f_mae: 2.504416
+2026-03-15 03:48:32.393 INFO: val_f_mae: 2.504416
+val_f_rmse: 6.666524
+2026-03-15 03:48:32.394 INFO: val_f_rmse: 6.666524
+epoch 11 Loss 83224.349573145
+epoch 12 Loss 81532.91369051505
+epoch 13 Loss 83371.30632176866
+epoch 14 Loss 82697.89875516304
+epoch 15 Loss 80887.74018216254
+epoch 16 Loss 80397.22977021773
+epoch 17 Loss 81587.72546206569
+epoch 18 Loss 79964.98440858166
+epoch 19 Loss 80289.1391797417
+epoch 20 Loss 79731.67498209594
+##### Step: 259 Learning rate: 1.220703125e-06 #####
+Epoch 20, Train Loss: 79731.6750, Val Loss: 81380.6305
+train_e/atom_mae: 1.227670
+2026-03-15 05:03:48.678 INFO: train_e/atom_mae: 1.227670
+train_e/atom_rmse: 2.049384
+2026-03-15 05:03:48.678 INFO: train_e/atom_rmse: 2.049384
+train_f_mae: 2.431415
+2026-03-15 05:03:48.789 INFO: train_f_mae: 2.431415
+train_f_rmse: 6.601171
+2026-03-15 05:03:48.789 INFO: train_f_rmse: 6.601171
+val_e/atom_mae: 1.184094
+2026-03-15 05:03:48.889 INFO: val_e/atom_mae: 1.184094
+val_e/atom_rmse: 2.021869
+2026-03-15 05:03:48.889 INFO: val_e/atom_rmse: 2.021869
+val_f_mae: 2.502059
+2026-03-15 05:03:48.890 INFO: val_f_mae: 2.502059
+val_f_rmse: 6.661562
+2026-03-15 05:03:48.891 INFO: val_f_rmse: 6.661562
+epoch 21 Loss 79961.79443251593
+epoch 22 Loss 80394.40212595426
+epoch 23 Loss 79186.46823266392
+epoch 24 Loss 76593.21890009352
+epoch 25 Loss 75778.21066062458
+epoch 26 Loss 75751.7307679901
+epoch 27 Loss 76190.56507440869
+epoch 28 Loss 75326.30362170977
+epoch 29 Loss 76215.54042977064
+epoch 30 Loss 77709.42955582173
+##### Step: 269 Learning rate: 6.103515625e-07 #####
+Epoch 30, Train Loss: 77709.4296, Val Loss: 76877.6878
+train_e/atom_mae: 1.133621
+2026-03-15 06:19:09.781 INFO: train_e/atom_mae: 1.133621
+train_e/atom_rmse: 1.932802
+2026-03-15 06:19:09.782 INFO: train_e/atom_rmse: 1.932802
+train_f_mae: 2.432608
+2026-03-15 06:19:09.893 INFO: train_f_mae: 2.432608
+train_f_rmse: 6.610617
+2026-03-15 06:19:09.893 INFO: train_f_rmse: 6.610617
+val_e/atom_mae: 1.158279
+2026-03-15 06:19:09.992 INFO: val_e/atom_mae: 1.158279
+val_e/atom_rmse: 1.888383
+2026-03-15 06:19:09.992 INFO: val_e/atom_rmse: 1.888383
+val_f_mae: 2.506985
+2026-03-15 06:19:09.994 INFO: val_f_mae: 2.506985
+val_f_rmse: 6.674176
+2026-03-15 06:19:09.994 INFO: val_f_rmse: 6.674176
+epoch 31 Loss 75521.75160235762
+epoch 32 Loss 77482.30579651064
+epoch 33 Loss 75116.14616617304
+epoch 34 Loss 74709.77243979691
+epoch 35 Loss 75039.58497856748
+epoch 36 Loss 74853.14004650559
+epoch 37 Loss 74761.63121714818
+epoch 38 Loss 76389.85517783988
+epoch 39 Loss 76856.65109021969
+epoch 40 Loss 78726.0023785542
+##### Step: 279 Learning rate: 6.103515625e-07 #####
+Epoch 40, Train Loss: 78726.0024, Val Loss: 78186.9324
+train_e/atom_mae: 1.117357
+2026-03-15 07:34:31.386 INFO: train_e/atom_mae: 1.117357
+train_e/atom_rmse: 1.893910
+2026-03-15 07:34:31.387 INFO: train_e/atom_rmse: 1.893910
+train_f_mae: 2.435142
+2026-03-15 07:34:31.497 INFO: train_f_mae: 2.435142
+train_f_rmse: 6.608725
+2026-03-15 07:34:31.498 INFO: train_f_rmse: 6.608725
+val_e/atom_mae: 1.126150
+2026-03-15 07:34:31.595 INFO: val_e/atom_mae: 1.126150
+val_e/atom_rmse: 1.924164
+2026-03-15 07:34:31.595 INFO: val_e/atom_rmse: 1.924164
+val_f_mae: 2.510119
+2026-03-15 07:34:31.596 INFO: val_f_mae: 2.510119
+val_f_rmse: 6.680690
+2026-03-15 07:34:31.597 INFO: val_f_rmse: 6.680690
+epoch 41 Loss 78671.18356226239
+epoch 42 Loss 80044.21644009496
+epoch 43 Loss 79695.40633751862
+epoch 44 Loss 78791.67278851029
+epoch 45 Loss 78636.6836428445
+epoch 46 Loss 79214.76230793018
+epoch 47 Loss 79320.54918003948
+epoch 48 Loss 78420.35380437179
+epoch 49 Loss 78871.36982634666
+epoch 50 Loss 79997.05107920442
+##### Step: 289 Learning rate: 3.0517578125e-07 #####
+Epoch 50, Train Loss: 79997.0511, Val Loss: 78112.8539
+train_e/atom_mae: 1.172119
+2026-03-15 08:49:57.599 INFO: train_e/atom_mae: 1.172119
+train_e/atom_rmse: 1.989057
+2026-03-15 08:49:57.600 INFO: train_e/atom_rmse: 1.989057
+train_f_mae: 2.435412
+2026-03-15 08:49:57.713 INFO: train_f_mae: 2.435412
+train_f_rmse: 6.600455
+2026-03-15 08:49:57.713 INFO: train_f_rmse: 6.600455
+val_e/atom_mae: 1.146160
+2026-03-15 08:49:57.814 INFO: val_e/atom_mae: 1.146160
+val_e/atom_rmse: 1.929989
+2026-03-15 08:49:57.814 INFO: val_e/atom_rmse: 1.929989
+val_f_mae: 2.496184
+2026-03-15 08:49:57.816 INFO: val_f_mae: 2.496184
+val_f_rmse: 6.659007
+2026-03-15 08:49:57.816 INFO: val_f_rmse: 6.659007
+epoch 51 Loss 79084.07309686717
+epoch 52 Loss 78989.66859851764
+epoch 53 Loss 78671.70745255271
+epoch 54 Loss 79068.09500819571
+epoch 55 Loss 78752.35946432012
+epoch 56 Loss 79136.33236343275
+epoch 57 Loss 78819.88514914257
+epoch 58 Loss 79434.48490466937
+epoch 59 Loss 78715.71861173166
+epoch 60 Loss 77908.91071651393
+##### Step: 299 Learning rate: 3.0517578125e-07 #####
+Epoch 60, Train Loss: 77908.9107, Val Loss: 77990.4668
+train_e/atom_mae: 1.161920
+2026-03-15 10:05:20.909 INFO: train_e/atom_mae: 1.161920
+train_e/atom_rmse: 1.978229
+2026-03-15 10:05:20.909 INFO: train_e/atom_rmse: 1.978229
+train_f_mae: 2.434261
+2026-03-15 10:05:21.020 INFO: train_f_mae: 2.434261
+train_f_rmse: 6.606374
+2026-03-15 10:05:21.021 INFO: train_f_rmse: 6.606374
+val_e/atom_mae: 1.126916
+2026-03-15 10:05:21.123 INFO: val_e/atom_mae: 1.126916
+val_e/atom_rmse: 1.920320
+2026-03-15 10:05:21.123 INFO: val_e/atom_rmse: 1.920320
+val_f_mae: 2.498842
+2026-03-15 10:05:21.125 INFO: val_f_mae: 2.498842
+val_f_rmse: 6.676857
+2026-03-15 10:05:21.125 INFO: val_f_rmse: 6.676857
+epoch 61 Loss 79220.31514996356
+epoch 62 Loss 78973.95512533332
+epoch 63 Loss 80349.1455218549
+epoch 64 Loss 78724.79322273724
+epoch 65 Loss 79070.46002939419
+epoch 66 Loss 78849.52511844577
+epoch 67 Loss 78862.50446152518
+epoch 68 Loss 78954.69048151503
+epoch 69 Loss 78926.70338094271
+epoch 70 Loss 78301.20314657172
+##### Step: 309 Learning rate: 1.52587890625e-07 #####
+Epoch 70, Train Loss: 78301.2031, Val Loss: 78989.5655
+train_e/atom_mae: 1.163260
+2026-03-15 11:20:42.345 INFO: train_e/atom_mae: 1.163260
+train_e/atom_rmse: 1.983341
+2026-03-15 11:20:42.345 INFO: train_e/atom_rmse: 1.983341
+train_f_mae: 2.432144
+2026-03-15 11:20:42.454 INFO: train_f_mae: 2.432144
+train_f_rmse: 6.605106
+2026-03-15 11:20:42.455 INFO: train_f_rmse: 6.605106
+val_e/atom_mae: 1.139121
+2026-03-15 11:20:42.552 INFO: val_e/atom_mae: 1.139121
+val_e/atom_rmse: 1.955790
+2026-03-15 11:20:42.552 INFO: val_e/atom_rmse: 1.955790
+val_f_mae: 2.503238
+2026-03-15 11:20:42.553 INFO: val_f_mae: 2.503238
+val_f_rmse: 6.658929
+2026-03-15 11:20:42.554 INFO: val_f_rmse: 6.658929
+epoch 71 Loss 79484.03753035437
+epoch 72 Loss 79473.25792794944
+epoch 73 Loss 78990.43016877545
+epoch 74 Loss 78392.29763873242
+epoch 75 Loss 79382.83596540772
+epoch 76 Loss 78977.59497387498
+epoch 77 Loss 78545.79834550228
+epoch 78 Loss 79613.43554194784
+epoch 79 Loss 79679.46668385834
+epoch 80 Loss 79107.79574568024
+##### Step: 319 Learning rate: 1.52587890625e-07 #####
+Epoch 80, Train Loss: 79107.7957, Val Loss: 78763.3786
+train_e/atom_mae: 1.163841
+2026-03-15 12:36:03.122 INFO: train_e/atom_mae: 1.163841
+train_e/atom_rmse: 1.985075
+2026-03-15 12:36:03.123 INFO: train_e/atom_rmse: 1.985075
+train_f_mae: 2.436706
+2026-03-15 12:36:03.236 INFO: train_f_mae: 2.436706
+train_f_rmse: 6.611164
+2026-03-15 12:36:03.237 INFO: train_f_rmse: 6.611164
+val_e/atom_mae: 1.138028
+2026-03-15 12:36:03.339 INFO: val_e/atom_mae: 1.138028
+val_e/atom_rmse: 1.933635
+2026-03-15 12:36:03.339 INFO: val_e/atom_rmse: 1.933635
+val_f_mae: 2.514560
+2026-03-15 12:36:03.341 INFO: val_f_mae: 2.514560
+val_f_rmse: 6.700816
+2026-03-15 12:36:03.341 INFO: val_f_rmse: 6.700816
+epoch 81 Loss 78503.71789344457
+epoch 82 Loss 78841.79539181029
+epoch 83 Loss 78662.08939401606
+epoch 84 Loss 78353.94517483216
+epoch 85 Loss 78284.75310820456
+epoch 86 Loss 78987.59811343627
+epoch 87 Loss 79325.88476818096
+epoch 88 Loss 78791.26532884708
+epoch 89 Loss 78306.1309487567
+epoch 90 Loss 79724.56120163256
+##### Step: 329 Learning rate: 7.62939453125e-08 #####
+Epoch 90, Train Loss: 79724.5612, Val Loss: 77985.0739
+train_e/atom_mae: 1.155868
+2026-03-15 13:52:59.978 INFO: train_e/atom_mae: 1.155868
+train_e/atom_rmse: 1.974885
+2026-03-15 13:53:00.000 INFO: train_e/atom_rmse: 1.974885
+train_f_mae: 2.434348
+2026-03-15 13:53:00.111 INFO: train_f_mae: 2.434348
+train_f_rmse: 6.609364
+2026-03-15 13:53:00.112 INFO: train_f_rmse: 6.609364
+val_e/atom_mae: 1.136524
+2026-03-15 13:53:00.216 INFO: val_e/atom_mae: 1.136524
+val_e/atom_rmse: 1.924562
+2026-03-15 13:53:00.217 INFO: val_e/atom_rmse: 1.924562
+val_f_mae: 2.483320
+2026-03-15 13:53:00.218 INFO: val_f_mae: 2.483320
+val_f_rmse: 6.663709
+2026-03-15 13:53:00.218 INFO: val_f_rmse: 6.663709
+epoch 91 Loss 79116.95186170006
+epoch 92 Loss 78211.01633167749
+epoch 93 Loss 78930.15842376924
+epoch 94 Loss 78612.27772752164
+epoch 95 Loss 78721.62906883078
+epoch 96 Loss 79295.17106051017
+epoch 97 Loss 78106.74292069174
+epoch 98 Loss 78703.99364369042
+epoch 99 Loss 78336.58940846648
+epoch 100 Loss 79448.87725716138
+##### Step: 339 Learning rate: 7.62939453125e-08 #####
+Epoch 100, Train Loss: 79448.8773, Val Loss: 78484.1927
+train_e/atom_mae: 1.156271
+2026-03-15 15:08:25.009 INFO: train_e/atom_mae: 1.156271
+train_e/atom_rmse: 1.973914
+2026-03-15 15:08:25.030 INFO: train_e/atom_rmse: 1.973914
+train_f_mae: 2.432901
+2026-03-15 15:08:25.142 INFO: train_f_mae: 2.432901
+train_f_rmse: 6.609668
+2026-03-15 15:08:25.142 INFO: train_f_rmse: 6.609668
+val_e/atom_mae: 1.124957
+2026-03-15 15:08:25.255 INFO: val_e/atom_mae: 1.124957
+val_e/atom_rmse: 1.935919
+2026-03-15 15:08:25.255 INFO: val_e/atom_rmse: 1.935919
+val_f_mae: 2.490700
+2026-03-15 15:08:25.256 INFO: val_f_mae: 2.490700
+val_f_rmse: 6.672957
+2026-03-15 15:08:25.257 INFO: val_f_rmse: 6.672957
+Finished
+Number of trainable parameters: 12829

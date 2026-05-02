@@ -1,0 +1,23 @@
+train: "bio_dimers_train"
+valid: "bio_dimers_valid"
+chunk_size: 32
+num_graphs: 2
+num_nodes: 32
+num_edges: 512
+loss_weights: {"energy": 0.5, "forces": 0.5}
+scale_by_variance: False
+start_learning_rate: 1e-4
+min_learning_rate: 1e-6
+optimizer: "adam"
+max_epochs: 4000
+valid_every_epoch: 2
+decay_style: "linear"
+start_decay_after: 10
+seed: 23
+checkpointers: "full"
+default_matmul_precision: "float32"
+correct_mean: True
+# modify for testing
+use_wandb: True
+worker_count: 4
+worker_buffer_size: 2

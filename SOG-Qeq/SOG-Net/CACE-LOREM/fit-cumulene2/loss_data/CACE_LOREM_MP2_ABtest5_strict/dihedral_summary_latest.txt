@@ -1,0 +1,1 @@
+[DihedralSummary] file=dihedral_diagnostics_20260430_022030.csv epoch=500 corr_long_vs_ref=0.7272 amp_long/ref=0.0753 mean_Flong/Ftotal=1.0494 => NOT_PASS(未达到角度学习阈值)

@@ -1,0 +1,9 @@
+
+cd $REMOTE_ROOT
+cd Na_mp-2018774
+test $? -ne 0 && exit 1
+if [ ! -f b328e56bf9ee3cc968bd04fab385d4cfb6d67920_task_tag_finished ] ;then
+   ( ulimit -s unlimited && ulimit -l unlimited && export I_MPI_PMI_LIBRARY=/usr/lib64/libpmi.so && export I_MPI_FABRICS=shm:ofi && export I_MPI_PMI=pmi && mpirun -n 64 vasp_std ) 1>>log 2>>err 
+  if test $? -eq 0; then touch b328e56bf9ee3cc968bd04fab385d4cfb6d67920_task_tag_finished; else echo 1 > $REMOTE_ROOT/30c1134fe2e397483c1d6aba6167633740376724_flag_if_job_task_fail;tail -v -c 1000 $REMOTE_ROOT/Na_mp-2018774/err > $REMOTE_ROOT/30c1134fe2e397483c1d6aba6167633740376724_last_err_file;fi
+fi &
+wait 

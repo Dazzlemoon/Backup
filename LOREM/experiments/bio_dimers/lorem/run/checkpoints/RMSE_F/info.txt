@@ -1,0 +1,2 @@
+model with best summed rmse of forces on split valid at step=23533888:
+-> loss=5.9230623245e+00

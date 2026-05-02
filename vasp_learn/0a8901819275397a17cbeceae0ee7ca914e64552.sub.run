@@ -1,0 +1,9 @@
+
+cd $REMOTE_ROOT
+cd Na_Na3SbS4_Data/MACE_Training_Run
+test $? -ne 0 && exit 1
+if [ ! -f f31b40a8f7e7fb5e9a406ad60304e2109ea3220f_task_tag_finished ] ;then
+   ( source activate mace2 && export MPLBACKEND=Agg && python3 -m mace.cli.run_train \ --name='Na_System_MACE_Train' \ --foundation_model='./mace-mpa-0-medium.model' \ --train_file='Na_Na3SbS4_Data/dataset/Na_System_train.xyz' \ --valid_file='Na_Na3SbS4_Data/dataset/Na_System_val.xyz' \ --E0s='average' \ --energy_key='energy' \ --forces_key='forces' \ --stress_key='stress' \ --energy_weight=1.0 \ --forces_weight=10.0 \ --loss='universal' \ --lr=0.0005 \ --batch_size=10 \ --max_num_epochs=100 \ --ema \ --ema_decay=0.99 \ --device=cuda \ --default_dtype='float64' \ --checkpoints_dir='checkpoints' \ --results_dir='results' \ --model_dir='./' ) 1>>log 2>>err 
+  if test $? -eq 0; then touch f31b40a8f7e7fb5e9a406ad60304e2109ea3220f_task_tag_finished; else echo 1 > $REMOTE_ROOT/0a8901819275397a17cbeceae0ee7ca914e64552_flag_if_job_task_fail;tail -v -c 1000 $REMOTE_ROOT/Na_Na3SbS4_Data/MACE_Training_Run/err > $REMOTE_ROOT/0a8901819275397a17cbeceae0ee7ca914e64552_last_err_file;fi
+fi &
+wait 

@@ -1,0 +1,2 @@
+model with best summed mae of forces on split valid at step=3676038:
+-> loss=9.7168359756e+00

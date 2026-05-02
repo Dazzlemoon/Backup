@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+# Logs / runtime files
+*.out
+*.log
+slurm-*.out
+# Model/checkpoints/artifacts
+*.pth
+*.pt
+*.ckpt
+*.npz
+*.npy
+*.model
+# Caches / IDE
+.cursor/
+.vscode/
+# Common large data
+*.xyz
+*.vasp
+
+# >>> large-files-block >>>
+# Ignore common large artifacts
+*.zip
+*.tar
+*.tar.gz
+*.7z
+*.bin
+*.pt
+*.pth
+*.onnx
+*.traj
+*.mmap
+OUTCAR
+vasprun.xml
+# <<< large-files-block <<<
+
+# 超过 GitHub 100MB，仅本地保留
+LOREM/datasets/sn2_train/mmap/data.ninja
+reaxnet/reaxnet/pretrained/params.pickle

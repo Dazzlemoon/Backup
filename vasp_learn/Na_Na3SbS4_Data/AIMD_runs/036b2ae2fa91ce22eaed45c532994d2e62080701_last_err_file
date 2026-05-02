@@ -1,0 +1,7 @@
+==> /dssg/home/acct-matxzl/matxzl/QiuQizhi/vasp_learn/Na_Na3SbS4_Data/AIMD_runs/Na_mp-127/err <==
+./../../../src/pm/i_hydra/libhydra/spawn/intel/hydra_spawn.c:146): execvp error on file vasp_std (No such file or directory)
+[proxy:0:0@node811.pi.sjtu.edu.cn] HYD_spawn (../../../../../src/pm/i_hydra/libhydra/spawn/intel/hydra_spawn.c:146): execvp error on file vasp_std (No such file or directory)
+[proxy:0:0@node769.pi.sjtu.edu.cn] HYD_spawn (../../../../../src/pm/i_hydra/libhydra/spawn/intel/hydra_spawn.c:146): execvp error on file vasp_std (No such file or directory)
+[proxy:0:0@node769.pi.sjtu.edu.cn] HYD_spawn (../../../../../src/pm/i_hydra/libhydra/spawn/intel/hydra_spawn.c:146): execvp error on file vasp_std (No such file or directory)
+[proxy:0:0@node712.pi.sjtu.edu.cn] HYD_spawn (../../../../../src/pm/i_hydra/libhydra/spawn/intel/hydra_spawn.c:146): execvp error on file vasp_std (No such file or directory)
+[proxy:0:0@node712.pi.sjtu.edu.cn] HYD_spawn (../../../../../src/pm/i_hydra/libhydra/spawn/intel/hydra_spawn.c:146): execvp error on file vasp_std (No such file or directory)

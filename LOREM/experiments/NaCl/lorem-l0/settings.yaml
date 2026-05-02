@@ -1,0 +1,22 @@
+train: "4G/NaCl/train"
+valid: "4G/NaCl/valid"
+chunk_size: 1
+num_graphs: 64
+num_nodes: 256
+num_edges: 1024
+loss_weights: {"energy": 0.5, "forces": 0.5}
+scale_by_variance: False
+correct_mean: True
+start_learning_rate: 1e-3
+min_learning_rate: 1e-6
+optimizer: "adam"
+max_epochs: 8000
+valid_every_epoch: 2
+decay_style: "exponential"
+start_decay_after: 20
+default_matmul_precision: "float32"
+seed: 42
+# modify for testing
+use_wandb: True
+worker_count: 6
+worker_buffer_size: 2

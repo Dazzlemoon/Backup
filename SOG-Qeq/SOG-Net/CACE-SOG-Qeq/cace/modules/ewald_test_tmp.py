@@ -1,0 +1,3 @@
+class _EwaldTmp:
+    pass
+

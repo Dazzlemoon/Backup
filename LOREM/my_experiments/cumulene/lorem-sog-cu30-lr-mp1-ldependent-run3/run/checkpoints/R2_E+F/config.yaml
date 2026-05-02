@@ -1,0 +1,45 @@
+chunk_size: 1
+loss_weights:
+  energy: 0.5
+  forces: 0.5
+lr_decay:
+  start_decay_after: 10
+  stop_decay_after: 2000
+  style: linear
+lr_kernel_type: sog
+max_steps: 4000000
+min_learning_rate: 1.0e-06
+model:
+  lorem.Lorem:
+    cutoff: 3.0
+    cutoff_fn: cosine_cutoff
+    equivariant_message_passing: false
+    initialize_node_features: true
+    lr: true
+    lr_kernel_type: sog
+    max_degree: 6
+    max_degree_lr: 2
+    num_features: 128
+    num_message_passing: 0
+    num_radial: 32
+    num_species: 8
+    num_spherical_features: 8
+    radial_basis: basic_bernstein
+    sog_init_mode: dimer_cc
+    sog_l_dependent_params: true
+    sog_num_gaussians: 12
+n_train: 2000
+n_valid: 500
+num_parameters: 1021270
+sog_init_mode: dimer_cc
+sog_l_dependent_params: true
+sog_num_gaussians: 12
+start_learning_rate: 0.001
+training_pipeline:
+  num_edges: 512
+  num_graphs: 32
+  num_nodes: 128
+  style: shape
+valid_every: 4000
+worker_buffer_size: 2
+worker_count: 4

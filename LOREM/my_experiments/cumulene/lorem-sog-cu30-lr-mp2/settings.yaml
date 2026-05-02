@@ -1,0 +1,25 @@
+train: "cumulene_train"
+valid: "cumulene_valid"
+chunk_size: 1
+num_graphs: 32
+num_nodes: 128
+num_edges: 512
+loss_weights: {"energy": 0.5, "forces": 0.5}
+scale_by_variance: False
+correct_mean: True
+start_learning_rate: 1e-3
+min_learning_rate: 1e-6
+optimizer: "lamb"
+max_epochs: 2000
+valid_every_epoch: 2
+decay_style: "linear"
+start_decay_after: 10
+default_matmul_precision: "float32"
+seed: 42
+# modify for testing
+use_wandb: False
+worker_count: 4
+worker_buffer_size: 2
+lr_kernel_type: "sog"
+sog_num_gaussians: 12
+sog_init_mode: "dimer_cc"

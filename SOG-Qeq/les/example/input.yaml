@@ -1,0 +1,11 @@
+n_layers: 3
+n_hidden:
+  - 32
+  - 16
+add_linear_nn: true
+output_scaling_factor: 0.1
+sigma: 1.0
+dl: 1.5
+remove_mean: false
+epsilon_factor: 1.5
+use_atomwise: False

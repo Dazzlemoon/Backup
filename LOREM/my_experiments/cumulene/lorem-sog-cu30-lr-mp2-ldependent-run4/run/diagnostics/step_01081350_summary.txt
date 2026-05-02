@@ -1,0 +1,43 @@
+step=1081350, graph_id=0, num_atoms=13
+scalar_charges: [nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan]
+spherical_charges_l0: [[nan],
+ [nan],
+ [nan],
+ [nan],
+ [nan],
+ [nan],
+ [nan],
+ [nan],
+ [nan],
+ [nan],
+ [nan],
+ [nan],
+ [nan]]
+spherical_charges_l1: [[nan, nan, nan],
+ [nan, nan, nan],
+ [nan, nan, nan],
+ [nan, nan, nan],
+ [nan, nan, nan],
+ [nan, nan, nan],
+ [nan, nan, nan],
+ [nan, nan, nan],
+ [nan, nan, nan],
+ [nan, nan, nan],
+ [nan, nan, nan],
+ [nan, nan, nan],
+ [nan, nan, nan]]
+spherical_charges_l2: [[nan, nan, nan, nan, nan],
+ [nan, nan, nan, nan, nan],
+ [nan, nan, nan, nan, nan],
+ [nan, nan, nan, nan, nan],
+ [nan, nan, nan, nan, nan],
+ [nan, nan, nan, nan, nan],
+ [nan, nan, nan, nan, nan],
+ [nan, nan, nan, nan, nan],
+ [nan, nan, nan, nan, nan],
+ [nan, nan, nan, nan, nan],
+ [nan, nan, nan, nan, nan],
+ [nan, nan, nan, nan, nan],
+ [nan, nan, nan, nan, nan]]
+energy_short: [nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan]
+energy_long: [nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan]

@@ -1,0 +1,17 @@
+graph_net_steps: 6
+hidden_irreps: 256x0e+256x1e
+n_elements: 89
+n_neighbors: 36.017484119202564
+nonlinearities:
+  e: raw_swish
+  o: tanh
+num_basis: 8
+r_max: 5.0
+radial_net_n_hidden: 64
+radial_net_n_layers: 2
+radial_net_nonlinearity: raw_swish
+scalar_mlp_std: 4.0
+scale:  0.743240162576517
+sh_irreps: 1x0e+1x1o
+shift: 0.15980868814172663
+use_sc: true

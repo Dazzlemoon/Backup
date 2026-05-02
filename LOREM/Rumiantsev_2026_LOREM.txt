@@ -1,0 +1,2661 @@
+Learning Long-Range Representations with Equivariant Messages
+
+arXiv:2507.19382v2 [physics.chem-ph] 6 Mar 2026
+
+Egor Rumiantsev∗ , Marcel F. Langer∗† , Tulga-Erdene Sodjargal, Michele Ceriotti,
+Philip Loche†
+Laboratory of Computational Science and Modeling
+École Polytechnique Fédérale de Lausanne
+1015 Lausanne, Switzerland
+∗
+Contributed equally
+†
+Corresponding authors. Contacts: marcel.langer@epfl.ch, philip.loche@epfl.ch
+
+Abstract
+Machine learning interatomic potentials trained on first-principles reference data are becoming
+valuable tools for computational physics, biology, and chemistry. Equivariant message-passing
+neural networks, including transformers, achieve state-of-the-art accuracy but rely on cutoffbased graphs, limiting their ability to capture long-range effects such as electrostatics or
+dispersion, as well as electron delocalization. While long-range correction schemes based
+on inverse power laws of interatomic distances have been proposed, they are unable to
+communicate higher-order geometric information and are thus limited in applicability. To
+address this shortcoming, we propose the use of equivariant, rather than scalar, charges for
+long-range interactions, and design a graph neural network architecture, Lorem, around this
+long-range message passing mechanism. We consider several datasets specifically designed to
+highlight non-local physical effects, and compare short-range message passing with different
+receptive fields to invariant and equivariant long-range message passing. Even though most
+approaches work for careful dataset-specific choices of their model hyperparameters, Lorem
+works consistently without such changes, with excellent benchmark performance.
+
+1
+
+Introduction
+
+Machine learning interatomic potentials (MLIPs) for atomistic simulations are trained on quantum-mechanical
+simulations to predict energies and forces of new atomic structures. Most MLIPs assume locality: The energy
+of each atom depends only on neighbors within a cutoff radius. This leads to linear scaling with respect to
+the number of atoms but fails for systems with long-range interactions, such as electrostatics, dispersion, or
+electron delocalization. (Behler & Parrinello, 2007; Ko et al., 2021; Tkatchenko & Scheffler, 2009; Grisafi
+& Ceriotti, 2019; Unke et al., 2021b; Huguenin-Dumittan et al., 2023) Several approaches aim to overcome
+this limitation. Message-passing graph neural networks (MPNNs, Gilmer et al. (2017)) overcome locality by
+iteratively exchanging information between neighboring atoms, but are still constrained by the number of
+message-passing steps, graph connectivity, and reduced information flow with increasing number of iterations
+(Cai & Wang, 2020; Alon & Yahav, 2020; Nigam et al., 2022).
+An alternative approach is to use physics-inspired corrections to the total energy, written as an inverse power
+law of interatomic distances, 1/rp , with p = 1 for charge–charge, p = 3 for dipole–dipole, and p = 6 for
+dispersion. Some models predict partial atomic charges, either using explicit charge labels and equilibration
+schemes, or learning them implicitly from energies and forces to include electrostatic terms (Unke et al.,
+2021a; Ko et al., 2021; Fedik et al., 2022; Pellegrini et al., 2023; Maruf et al., 2025; Cheng, 2025). Physical
+long-range interactions can also serve as building block: For instance, Kosmala et al. (2023) propose Ewald
+message passing, i.e., the use of electrostatic interactions for message passing, and Grisafi & Ceriotti (2019)
+propose the long-distance equivariant (LODE) framework that uses inverse power-law interactions to compute
+equivariant features from the scalar potential around each atom.
+1
+
+In this work, we combine the strengths of physical inverse power law 1/rp interactions with the ability
+of equivariant message passing to communicate higher-order geometric information. Inverse power-law
+interactions are well-defined for periodic systems, have physically meaningful asymptotic behavior, and can be
+computed efficiently using established techniques from computational physics. Extending the idea of Ewald
+message passing, we treat charges as equivariant objects and use inverse power-law potentials as a mechanism
+for long-range communication. Based on this mechanism, we design Lorem, an MLIP architecture that
+combines short- and long-range message passing. Lorem offers consistently high accuracy across a series of
+long-range benchmark tasks, outperforming other short- and long-range message passing models.
+Our contributions are:
+• We introduce an equivariant, global, long-range message passing mechanism that can leverage efficient
+methods from computational physics for asymptotic O(N log N ) scaling in periodic systems, and
+potentially O(N ) scaling in non-periodic ones,
+• We design a novel MLIP architecture, Lorem, around this mechanism,
+• We conduct a series of experiments to probe the limits of equivariant short-range message passing to
+model long-range physics.
+
+2
+
+Background
+
+Machine learning interatomic potentials Under the Born & Oppenheimer (1927) approximation, which
+decouples the nuclear and the electronic degrees of freedom, the atoms in a molecule or material move on
+a potential energy surface (PES) E = E ({ (ri , Zi ) | i = 1...N }) where ri and Zi are positions and atomic
+numbers for the N atoms; in a periodic system, i.e., materials or liquids, the arrangement of N atoms is
+repeated periodically in space, described by three cell vectors { ca | a = 1, 2, 3 } and corresponding integer
+P3
+offsets { na | a = 1, 2, 3 } so that each position ri is associated with the replicas { ri + a=1 na ca | n ∈ Z3 }.
+The energy is then computed for the positions in the unit cell (n = 0) considering their interactions with
+the infinite ‘crystal’ system. The forces, which drive the dynamics of the atoms, are defined as derivatives
+of the energy fi = −∇ri E. Traditionally, this PES has been approximated by physics-inspired analytical
+expressions, called force fields, that are parametrized manually or through global optimization. In the past
+decades, in tandem with the increasing availability of large datasets of quantum mechanical reference data,
+MLIPs have emerged as a less computationally efficient, but more accurate, data-driven alternative.
+Atomistic graph neural networks Most MLIPs can be seen as graph neural networks (GNNs, Battaglia
+et al. (2018)) acting on a description of an arrangement of atoms in space as a geometric graph G = (E, V)
+with edges E corresponding to interatomic relative-position vectors rij and nodes (or vertices) V corresponding
+to atoms. Edges connect nodes that lie within a cutoff radius rc of each other. In periodic systems, rij are
+constructed to respect periodic boundary conditions, i.e., if a replica lies closer than an original atom, rij
+points to the replica. If more than one replica lies within the cutoff, multiple edges with different labels
+are drawn between nodes. By restricting the range of interactions to neighbors on this graph, linear scaling
+with the number of atoms N (at constant density) can be achieved; efficient scaling with system size is
+required to make MLIPs
+PN practical for large-scale simulations. MLIPs typically predict E as a sum over atomic
+contributions, E = i=1 Ei , predicted from node features.
+Invariance and equivariance The potential energy E is invariant under permutations, i.e., reordering, of
+atomic positions, as well as global translations and rotations of the coordinate system. In other words, E is
+invariant under actions of the (special) Euclidean symmetry group SE(3) applied to all positions (including
+replicas).1 MLIPs must respect these symmetries, at least approximately. Translation invariance is respected
+by construction in atomistic GNNs through the use of relative-position vectors as edge labels. Permutation
+invariance is typically ensured through commutative aggregation functions, for instance sums. Finally, rotation
+1 In fact, the energy is invariant under global inversions as well, i.e., under the action of the full Euclidean group E(3),
+composed of translations and rotations+inversions, O(3). To simplify notation in this manuscript, we focus on proper scalars
+and tensors, i.e., irreducible representations of SO(3) – all arguments and operations can be readily generalized to O(3).
+
+2
+
+invariance can either be learned through data augmentation (Pozdnyakov & Ceriotti (2023); Langer et al.
+(2024)), or ensured by requiring that internal features remain aware of their geometric meaning, i.e., that
+they are equivariant to rotations. While in principle, MLIPs could be constructed from invariant features
+only, equivariant internal features have been found to improve accuracy and data efficiency by allowing the
+model to access orientation information (Thomas et al. (2018); Batzner et al. (2022); Batatia et al. (2022)).
+A thorough discussion of equivariance for MLIPs can be found in other works (Smidt, 2021; Unke & Maennel,
+2024); essentially, we consider the transformation of internal features of the models under rotations g ∈ SO(3)
+applied equally to all geometric inputs (positions and cell vectors), leading to a joint rotation of all bulk
+positions. Consider the MLIP up to some hidden layer as a function f : X → Y, where X = R3×(N +3) for
+periodic systems and X = R3×N for molecules. Equivariance is defined by f ◦ g = g ◦ f for all g ∈ SO(3):
+rotations can be equivalently applied before or after f . To ensure that this is the case, internal features
+must be constructed as direct sum of different
+ irreducible
+ representations of SO(3), indexed by l, combined
+max
+R2l+1 ⊗ Rc . Rotations act as linear transformations on
+with a feature (channel) dimension c: Y = ⊕ll=0
+these irreducible representations. We write spherical features as tensor S with the last three indices the
+representation order l = 0, ..., lmax , the component m = −l, ..., l, and the channel index c. Such tensors are
+therefore ragged: Different l correspond to different numbers of components m. The l = 0 components are
+called scalars and are invariant under rotations. Collections of purely scalar features are also denoted as
+matrices P . In Appendix A, we describe a number of operations that can be applied to spherical features
+without disrupting equivariance.
+
+Long-range interactions The potential energy E arises from the many-body Schrödinger equation, which
+involves only Coulomb interactions between electrons and nuclei without any range separation. Efficient
+approximations, such as empirical force fields or MLIPs, typically restrict interactions to local environments,
+motivated by the nearsightedness principle of electronic matter (Prodan & Kohn (2005)), which states that
+electronic properties are insensitive to distant perturbations. In the long-range regime, interactions reduce to
+inverse power laws 1/rp of the interatomic distance. Since in nature no fixed nearsightedness length scale
+exists, MLIPs must capture both local many-body quantum effects, possibly extending beyond the model’s
+cutoff rc , and formally infinite-range electrostatic interactions. Additional complexity arises from charge
+distributions that depend on distant atoms and from electron wavefunctions that may delocalize over large
+distances; see Section 6.
+Ewald summation The evaluation of inverse power-law potentials 1/rp has been the object of much study
+in computational physics and chemistry. The general task is to compute the potential Vi = V (ri ) at a given
+atomic position ri , induced by (generalized) point charges2 qj placed at the position of other atoms j:
+Vi =
+
+N X
+X
+j=1 n∈Z3
+
+qj
+.
+|ri − (rj + n1 c1 + n2 c2 + n3 c3 )|p
+
+(1)
+
+Where
+P | · | denotes the vector norm. In periodic systems, Eq. (1) implies an infinite sum over replicas, denoted
+by n∈Z3 and defined by the cell vectors ca ; for non-periodic systems (molecules), this sum and the extra
+term in the denominator are omitted. For p ≤ 3, the periodic, infinite, sum converges conditionally, i.e.,
+convergence or divergence depends on the summation order. Ewald (1921) summation was developed to
+tackle this problem for electrostatics (p = 1) and later extended to other exponents; its basic concept is
+to split 1/r into a short-ranged part, which converges fast in real space, and a long-range part, which is
+smooth, and therefore converges well, in reciprocal space. A naive implementation of Ewald summation scales
+O(N 2 ), which can be brought down to O(N 3/2 ) by choosing the cutoffs to be proportional to the size of the
+simulation cell. This is, however, undesirable for MLIPs, which are typically constructed and trained for a
+fixed cutoff radius. Particle–mesh Ewald (PME, P3M) algorithms reduce this to O(N log N ) by interpolating
+charges onto a grid and employing the fast Fourier transform for the reciprocal-space part (Darden et al.,
+1993; Hockney & Eastwood, 2021). While such methods are standard in force fields, implementations in
+popular machine learning frameworks, PyTorch (Paszke et al., 2019) and JAX (Bradbury et al., 2018), have
+2 For p = 1, i.e., electrostatics, it is common to speak of charges. For p > 1, for example dispersion (p = 6), ‘coefficients’ is
+more common.
+
+3
+
+only become available recently (Loche et al., 2025). In non-periodic systems, the naive evaluation of Eq. (1)
+scales O(N 2 ). However, methods like the fast multipole expansion can reduce this cost to O(N ) (Greengard
+& Rokhlin, 1987). Another approach is multi-level summation (Hardy et al., 2015), which scales O(N ) for
+non-periodic and periodic systems and has recently been implemented in JAX (Buchner et al., 2025). For
+systems with fewer than thousands of atoms, naive implementations—Ewald summation for periodic systems
+and direct summation for non-periodic systems—are typically faster than more complex, but better-scaling,
+methods; this is benchmarked, for instance, in Loche et al. (2025). Since all systems considered in this work
+are smaller than this threshold, we use naive implementations throughout.
+
+3
+
+Related work
+
+Equivariant message passing Bond-order potentials first introduced the idea of repeatedly updating
+atomic environments to extend interactions beyond the cutoff radius rc (Tersoff, 1988; Brenner, 1990), a
+principle now central to modern MLIPs. In MPNNs (Gilmer et al., 2017), atoms exchange messages over M
+steps, so features and energies depend on neighbors within M · rc . Letting k Pi denote the features at atom i
+and message-passing step k:
+k+1
+
+Mi =
+
+X
+
+k
+
+m(k Pi , k Pj , rij )
+
+(2)
+
+j
+k+1
+
+Pi = k u(k Pi , k+1 Mi ) ,
+
+(3)
+
+with learned message and update functions m and u. Early models used invariant updates (Schütt et al.,
+2017; Xie & Grossman, 2018), later extended to equivariant ones (Gasteiger et al., 2019; Schütt et al., 2021;
+Batatia et al., 2022; Batzner et al., 2022; Frank et al., 2024b). Equivariant MPNNs are restricted in the
+choice of operations within the network, as they must retain equivariance throughout (see Appendix A).
+Recent universal MLIPs trained on big datasets (Batatia et al., 2025; Wood et al., 2025; Mazitov et al.,
+2025; Rhodes et al., 2025) sometimes replace message passing with local self-attention. While effective at
+capturing semi-local interactions, MPNNs cannot model true long-range effects, since distant atoms without
+intermediates never interact, and many steps reduce expressivity (Cai & Wang, 2020; Alon & Yahav, 2020;
+Nigam et al., 2022).
+Physics-based long-range models Many long-range models explicitly add physics-inspired terms to E
+that capture interactions
+decaying more slowly with distance. A common example of such a form is given by
+P
+Eq. (1): E long = i qi Vi where qi are latent per-atom descriptors (e.g., partial charges or polarizabilities)
+predicted by the model and Vi is computed as an inverse power law of interatomic distances. Usually, these
+qi are predicted directly as scalar functions of local atomic features (Unke et al., 2021a; Staacke et al., 2021;
+Loche et al., 2025; Kim et al., 2024; Ji et al., 2025; Kabylda et al., 2025; Cheng, 2025). A modification
+of this approach is to include the qi in an equilibration scheme, thus allowing these descriptors to capture
+information otherwise missed due to their initial dependence on local environments (Ko et al., 2021; Pellegrini
+et al., 2023; Maruf et al., 2025). Grisafi & Ceriotti (2019); Huguenin-Dumittan et al. (2023) propose to use
+physics-inspired kernels to compute long-range features, mathematically equivalent to a multipole expansion,
+but find that higher-order features contain little additional information.
+Other long-range models Some models avoid handcrafted corrections and instead learn long-range
+interactions directly. Ewald message passing augments GNNs with Fourier-space invariants (Kosmala et al.,
+2023), while fully connected approaches use all-to-all distances (Chmiela et al., 2018) or global attention (Unke
+et al., 2021a), though these lose efficiency or distance information. Linear-scaling attention with geometric
+embeddings (Frank et al., 2024a) enables global orientation exchange but needs symmetrization and has
+not yet been adapted to periodic systems. Alternatives include virtual nodes for global aggregation (Caruso
+et al., 2025) or message passing in spherical harmonics space (Frank et al., 2022). Despite approximations,
+most methods still struggle to bridge periodic and non-periodic systems. Some methods outside atomistic
+modeling also aim to capture long-range effects (Dwivedi et al., 2022; Bamberger et al., 2025; Moskalev et al.,
+2025; Zhdanov et al., 2025), but require further adaptation to include geometric information or periodicity.
+4
+
+4
+
+Equivariant long-range message passing
+
+Ewald summation, as introduced in Section 2 and Eq. (1), allows the efficient, and convergent in period
+systems, evaluation of a potential Vi at each atomic position, based on coefficients qj associated with all other
+p
+atoms j and a power of the the inverse distances 1/rij
+. This computation can be seen as a physics-inspired
+p
+form of message passing (Eqs. (2) and (3)), with radial filter 1/rij
+, neighbor feature qi , and resulting message
+Vi ; this correspondence was pointed out by Kosmala et al. (2023) and used by Grisafi & Ceriotti (2019) to
+compute general long-range features.
+To bring it more in line with standard message passing, the operation can be carried out in parallel across an
+extra feature dimension, promoting qi to an array qi . This allows to communicate more information, but in
+this form, this information is restricted to geometric invariants. We propose to promote qi to an equivariant
+tensor instead: Qi,l,m . This results in equivariant messages, or potentials:
+Vi,l,m =
+
+N X
+X
+j=1 n∈Z3
+
+Qj,l,m
+,
+|ri − (rj + n1 c1 + n2 c2 + n3 c3 )|p
+
+(4)
+
+carrying out the Ewald summation over each spherical order l and component m in parallel.
+To see that the result is equivariant, recall (see Appendix A) that adding two equivariant objects yields
+another equivariant object, and that multiplication with a prefactor, provided that the factor is shared across
+p
+all entries for a given l, also retains equivariance. The prefactor 1/rij
+depends on the pair (i, j) and therefore
+varies across pairs; however, for any given pair, it is a single scalar that multiplies all m components equally
+within each l. Since the action of rotations on spherical features is a linear map along the m index, this
+p
+scalar multiplication commutes with it. It is then easy to see that multiplying Qi with a factor 1/rij
+yields
+an equivariant quantity, and that the sum in Eq. (4) also yields an equivariant, since all summands are
+equivariant objects. We argue and numerically confirm in Appendix B that a compensating background
+charge correction preserves equivariance.
+Overall, this approach allows the global aggregation of equivariant messages in a way that is amenable to
+efficient implementation, scaling O(N log N ) in periodic systems (see Appendix E) and—at least in principle,
+see Section 2—O(N ) in finite systems. Even more advanced computational methods can bring O(N ) scaling
+to both. The method also naturally accommodates the long-range effects in physical systems, which decay
+asymptotically following a power law.
+
+5
+
+Lorem
+
+Lorem follows the blueprint of equivariant MPNNs, making a few modifications: Scalar and spherical features
+are handled separately, following Frank et al. (2022; 2024b), and mixed using a variant of the power spectrum
+(Bartók et al., 2013) and a residual update block (He et al., 2015).
+Overview Lorem, illustrated in Fig. 1 maps a point cloud of N atomic positions { ri }, potentially
+contained in a periodic unit cell c1 , c2 , c3 , and labeled with chemical species { Zi }, to atomic energies { Ei }
+which, when summed, yield the total potential energy E. Internally, the point cloud is processed as a graph,
+with edges between nodes, the atoms, defined by a cutoff radius rc . Accordingly, edges correspond to vectors
+rij = rj − ri connecting atoms i and j. Node features are updated through either short-range message
+passing or long-range message passing. Spherical information is used to update scalar features by
+computing their spherical norm and passing it through an update block. Updates of scalar features are
+followed by a residual prediction of atomic energy contributions. We discuss the main components of Lorem
+below; specialized equivariant operations are described in more detail in Appendix A.
+Short-range message passing Initial scalar features 0 Pi are a learned embedding of chemical species. At
+each short-range message passing step k, edge features Kij are obtained from distances rij and scalar features
+k
+Pi and k Pj through a radial expansion. These edge features are then linearly transformed twice, with
+different learned weight matrices: Once to yield scalar messages that are aggregated into scalar updates, and
+5
+
+Radial coefficients
+
+Embedding
+
+LayerNorm
+
+MLP
+MLP
+
+Update
+
+Expansion
+
+MLP
+
+LayerNorm
+
+Short-Range MP
+
+Radial coefficients
+
+Linear
+
+Long-Range MP
+
+Linear
+
+Linear
+
+Linear
+
+MLP
+
+Linear
+Linear
+
+MLP
+
+Linear
+
+Linear layer
+
+Update
+
+Long-Range MP
+
+Update
+
+Spherical norm
+
+Update
+
+Short-Range MP
+
+Linear
+
+MLP
+
+MLP
+
+Multi-layer perceptron
+Cutoff function
+
+Embedding
+Expansion
+
+Embedding
+lookup table
+Basis expansion
+
+Tensor product
+
+Multiplication
+
+Concatenation
+Addition
+
+Edge to node
+aggregation
+
+Figure 1: Sketch of the Lorem architecture.
+again to yield pre-factors for the spherical harmonics Yij (angular expansion), which are combined with
+neighboring spherical features Sj in a tensor product.3 The results are aggregated into a spherical message,
+which updates the spherical features via another tensor product, resulting in k+1 Si . The spherical norm of
+the updated spherical node features is then used to further update the scalar features, finally yielding k+1 Pi .
+This process is repeated M times (the total number of short-range message passing steps).
+Long-range message passing We use the method discussed in Section 4 to communicate equivariant
+information beyond the effective interaction cutoff of short-range message passing. To minimize computational
+cost, which is proportional to the number of channels over which Ewald summation is carried out, node
+features are transformed into low-dimensional charges: The scalar features M Pi are transformed into a single
+per-atom charge qi , and spherical features M Si are likewise, using a linear transformation followed by a
+self tensor product, transformed into Qi,l,m with a low lmax, LR and a singular feature dimension. Unless
+otherwise noted, we use lmax, LR = 2. The scalar charge is concatenated with the l = 0 spherical charge,
+which yields a total of 10 charge channels for lmax, LR = 2.4 After Ewald summation, which is carried out
+in parallel across l and m, the potentials are split back into the purely scalar Vi and the spherical Vi . The
+spherical potentials are combined with spherical node features through a tensor product; the spherical norm
+of the result is concatenated with the scalar potential to update scalar representations. We find that using
+only p=1, i.e., the Coulomb interaction, rather than a set of different exponents, is sufficient in practice.
+Experiments for lmax, LR = 0, 1, 2 can be found in Appendix F.
+3 In the initial message passing step, no spherical node features are available, and therefore the tensor product with S is
+j
+omitted. Initial spherical node features are obtained via a self tensor product (dotted lines) rather than a tensor product of the
+updates with the previous features.
+4 Two with l=0: one from the scalar features and one from the scalar component of the spherical features.
+
+6
+
+Update block Updates Y to scalar features X use an update block consisting of multi-layer perceptrons
+(MLP) and layer normalization (LayerNorm) (Ba et al., 2016), following a residual structure (He et al., 2015):
+X ← X + MLP(Y )
+X ← LayerNorm(X)
+X ← X + MLP(X)
+X ← LayerNorm(X) .
+Radial expansion Lorem processes information about the distance between two atoms rij through
+learned coefficients for linear transformations of an initial radial basis expansion of rij . Distances rij are
+first expanded in Bernstein polynomials multiplied with fcut , the cosine cutoff function (extending from 0 to
+rc ), yielding initial radial features ρij,c . These features are multiplied with a weight matrix A, which is in
+turn obtained through a MLP (and subsequent reshaping operation) applied to the concatenated scalar atom
+features Pi and Pj . This allows the model to learn a radial basis based on the features of both atoms i and j.
+The resulting edge features are called Kij .
+Angular expansion The vectors rij are expanded in spherical harmonics Yij = Y(ri ), which are polynomials of vector components that produce outputs in different irreducible representations of SO(3) (Unke &
+′
+Maennel, 2024). During message passing, they are multiplied with per-l coefficients: Yij,l,m,c
+= Aij,l,c Yij,l,m ,
+where Aij are obtained as linear transformation of Kij , followed by reshaping operation. Since the factors
+are shared across m, this preserves equivariance.
+
+6
+
+Experiments
+
+We perform experiments on a number of existing benchmark tasks designed to probe the ability of MLIPs
+to model long-range interactions, comparing Lorem to short and long-range MLIPs. The experiments are
+divided into two parts: In Section 6.1, we compare Lorem with other models using standardized settings.
+We find that Lorem performs well, but also observe that most tasks can be solved by models that do not
+consider long-range interactions at all – the effective interaction range of typical message passing models is
+sufficient. However, predictions break down beyond this interaction range. In Section 6.2, we probe this limit
+of short-range message passing. We find that while careful consideration of the number of message-passing
+steps and the cutoff radius is required to resolve long-range interactions with short-range models, Lorem can
+solve these benchmarks without adaptation. Additional experiments can be found in the appendix: Runtime
+benchmarks comparing Ewald and particle-mesh Ewald implementations of Lorem, demonstrating near-linear
+scaling up to 30 k atoms in Appendix E, ablations of lmax, LR and the long-range block in Appendix F, as
+well as competitive performance on the larger ADAPT dataset (Dramko et al., 2025) in Appendix J.
+Models We compare Lorem with a number of purely short-ranged MLIPs, Mace and Pet, as well as the
+recently introduced Cace-Les model that combines short-range message passing with a scalar long-range
+part, and 4G-NN, which includes a physics-based long-range energy contribution and charge equilibration.
+Additionally we include metrics for SpookyNet (Unke et al., 2021a), which predicts scalar partial charges and
+nuclear dipoles for long-range corrections, together with global attention. Full details on model descriptions
+and training can be found in Appendix D; approximate parameter counts are: Lorem ∼1 M, Cace-Les
+∼70 k, Mace ∼800 k, Pet ∼1 M, 4G-NN ∼5 k (estimated), SpookyNet ∼3 M (from (Blücher et al., 2023)).
+The datasets and associated benchmark tasks used in our experiments are briefly introduced below; additional
+details are given in Appendix C. An overview of validation or test set (where available) metrics for all datasets
+is given in Table 1. Lorem performs very well across datasets, and is competitive with, or more accurate
+than, other models.
+MgO surface This benchmark task is the first in a series designed by Ko et al. (2021) to highlight the
+need for long-range information in MLIPs. Illustrated in Fig. 2A, it consists of a magnesium oxide (MgO)
+5 4G-NN
+
+training requires DFT-computed charges, which are not available for the biodimers and cumulene datasets.
+
+7
+
+Table 1: Root mean squared errors for energy E and forces f for datasets and models used in Section 6.1.
+Where available, a held-out test set was used; otherwise, the validation set was used instead and indicated
+in the table. The lowest error is indicated in bold, the second lowest is underlined. The second line after
+each model name indicates the number of short-range (SR) message-passing steps and whether some form
+of long-range (LR) interactions are included in the model.5 An MAE version of this table is provided in
+Appendix I.
+Dataset
+
+Lorem
+1×SR+LR
+
+Cace-Les
+1×SR+LR
+
+Mace
+2×SR
+
+Pet
+2× SR
+
+4G-NN
+1×SR+LR
+
+SpookyNet
+6×SR+LR
+
+E (meV/at)
+f (meV/Å)
+
+0.064
+4.076
+
+0.071
+7.913
+
+0.376
+5.971
+
+0.210
+6.261
+
+0.219
+66.000
+
+0.107
+5.337
+
+E (meV/at)
+f (meV/Å)
+
+0.112
+1.155
+
+0.210
+9.784
+
+1.681
+40.219
+
+1.517
+42.438
+
+0.481
+32.780
+
+0.135
+1.052
+
+Biodimers
+
+E (meV/at)
+f (meV/Å)
+
+0.222
+1.646
+
+2.259
+3.163
+
+7.793
+16.150
+
+6.758
+16.470
+
+–
+–
+
+–
+–
+
+Cumulene
+
+E (meV/at)
+f (meV/Å)
+
+3.309
+50.084
+
+17.803
+147.616
+
+12.592
+104.318
+
+3.205
+46.905
+
+–
+–
+
+–
+–
+
+MgO surface
+(Validation)
+
+NaCl cluster
+(Validation)
+
+surface on which a gold (Au2) dimer is placed. Depending on the presence of an aluminum (Al) dopant deep
+inside the surface, the lowest-energy position of the gold dimer is either in the ‘wetting’ (flat), or ‘non-wetting’
+(standing up), position. The benchmark consists of two parts: Correctly identifying the ordering between
+upright and flat geometries in the doped and undoped case, and reproducing the energy-distance curve for
+the non-wetting geometry, in particular the local minimum corresponding to the equilibrium distance.
+NaCl cluster Similar to the presence of a dopant modifying the potential-energy surface for the gold dimer
+in the MgO surface task, this benchmark by Ko et al. (2021) relies on the presence or absence of a sodium
+atom at one end of a charged sodium chloride (NaCl) cluster changing the behavior of a sodium atom at the
+opposite end: Since one atom is removed while the charge remains constant, the charge must redistribute
+over the remaining atoms. The benchmark task consists of reproducing the location of the local minimum
+and the energy profile when moving the sodium atom farthest from the removed one, indicated in Fig. 2C.
+Cumulene The cumulene benchmark task was proposed by Unke et al. (2021b) as an example of a
+long-range problem that is due to a non-local effect of the electronic structure of a molecule. This molecule
+consists of a chain of nine carbon atoms, with a pair of hydrogen atoms, the rotors, at the opposite ends. The
+orientation of the rotors determines the shape of the atomic orbitals for each carbon, which propagates along
+the chain to the other end; in the absence of bending or stretching, the energy is therefore fully determined by
+the relative orientation of the rotors. The task is to recover the energy profile of this rotation for an idealized
+fully extended geometry, illustrated in Fig. 3.
+Biodimers This benchmark dataset by Huguenin-Dumittan et al. (2023) consists of pairs of relaxed organic
+molecules placed at distances of 4 Å to 15 Å from each other, illustrated in Fig. 4A. Depending on the chemical
+nature of the molecules, interactions between the molecules take different asymptotic power-law forms, ranging
+from charge-charge 1/r interactions to apolar-apolar 1/r6 interactions. Here, we simply compare energy and
+force prediction errors on test sets stratified by the dominating power-law interaction.
+SN 2 reactions Finally, the SN 2 reactions benchmark was introduced by Frank et al. (2024a) to probe the
+ability of MLIPs to model the long-range interactions required to mediate gas-phase chemical reactions. It
+consists of the nucleophilic substitution of methyl halides by another halide ion: X– + H3C Y → X CH3 + Y–
+where X,Y = F, Cl, Br, or I. The benchmark task in this case is predicting the energy along the reaction
+coordinate, i.e., correctly modeling the potential energy profile as the two reactants approach one another,
+react, and separate again.
+8
+
+A
+non-wetting
+wetting
+
+B
+
+Doped
+Reference
+L OREM 1×SR + LR
+C ACE -L ES 1×SR + LR
+
+∼ 12 Å
+
+E − Emin (meV)
+
+d
+
+dopant
+
+20
+0
+
+2.2
+
+D
+∼ 21 Å
+
+E − Emin (meV)
+
+C
+
+Undoped
+
+2.3
+2.4
+Au-O Distance (Å)
+
+4G-NN 1×SR + LR
+M ACE 2×SR
+P ET 2× SR
+
+2.1
+
+Na8 Cl+
+8
+
+2.2
+Au-O Distance (Å)
+
+Na9 Cl+
+8
+
+10
+0
+
+d
+
+3.4
+3.5
+Na-Na Distance d (Å)
+
+3.6
+
+3.3
+3.4
+Na-Na Distance d (Å)
+
+3.5
+
+Figure 2: (A) Au2 dimer on MgO surface, showing both wetting and non-wetting geometries, as well as the
+Al dopant. (B) Energy over distance d for the non-wetting geometry for the doped and undoped surface.
+The minima are indicated with a diamond symbol; the reference energy curve is drawn in grey. Offsets
+are added to distinguish the curves and the value at the minimum is subtracted. (C) Na9Cl8+ (top) and
+Na8Cl8+ (bottom) cluster, the moving atom is marked with transparent copies of itself, and the distance of
+interest is labeled with d. (D) Energy over distance for both clusters.
+6.1
+
+Standardized settings
+
+We compare Lorem to other models using standardized settings: Two message-passing steps for short-range
+models, one message-passing step for long-range models, and rc = 5 Å for most models (see Appendix D).
+MgO surface The results for this experiment can be seen in Fig. 2B: Despite being designed to require
+long-range interactions, this benchmark task can be solved by both purely short-range and long-range
+message-passing models. In this case, the success of short-range message passing is due to the small size of
+this benchmark system: With an effective cutoff radius above 6 Å, centrally located atoms can ‘see’ the full
+system and hence, Mace and Pet can solve this task. All models also resolve the orientation preference for
+the Au2 dimer between the doped and undoped surfaces.
+NaCl cluster The results of this experiment, seen in Fig. 2D, are drastically different from the previous one:
+Here, only models with a long-range component are able to resolve the difference between Na9Cl8+ and Na8Cl8+.
+All such models show excellent agreement with reference values. The failure of short-range message-passing is
+due to the larger system size compared to the MgO surface: Here, effective cutoff radii exceeding 10.5 Å are
+required to solve the benchmark task.
+Cumulene Resolving the cumulene energy profile, seen in Fig. 3, requires simultaneous knowledge of the
+orientation of both rotors at opposite ends of the molecule. This can be achieved in two ways: Through
+equivariant short-range message passing (Mace, Pet), provided that the chain is not too long (see Section 6.2),
+9
+
+A
+
+B
+
+3.3 Å
+
+Reference
+L OREM 1×SR + LR
+C ACE -L ES 1×SR + LR
+
+5.8 Å
+1.3 Å
+
+1.1 Å
+
+2.1 Å
+
+Energy (eV)
+
+0.6
+
+M ACE 2×SR
+P ET 2× SR
+
+θ
+
+0.4
+0.2
+0.0
+90
+
+120
+150
+Dihedral angle θ (Degrees)
+
+180
+
+Figure 3: (A) Illustration of cumulene laid flat, indicating relevant distances between atoms. (B) Energy
+profile over a 90◦ rotation of one rotor. The minimum value of each curve is subtracted before plotting. The
+inset shows a 3D representation of cumulene, defining the dihedral angle θ.
+A
+
+B
+25
+
+L OREM
+C ACE -L ES
+M ACE
+P ET
+
+∼4
+
+Å
+
+−
+
+15
+
+Å
+
+Forces MAE (meV/Å)
+
+20
+15
+10
+5
+2
+1
+0
+
+AA
+
+CA
+
+CC
+CP
+Dimer class
+
+PA
+
+PP
+
+Figure 4: (A) Charge-charge pair from the biodimers dataset. (B) Mean absolute error on forces for different
+models on the different dimer classes: Apolar-apolar (AA), charge-apolar (CA), charge-charge (CC), chargepolar (CP), polar-apolar (PA), polar-polar (PP). Note that the vertical axis has been split at 2.75 meV/Å.
+or through equivariant long-range message passing (Lorem). For this reason, Cace-Les cannot solve this
+benchmark: Scalar charges are not sufficiently expressive to communicate relative orientation. All equivariant
+models that are able to access this information can solve this benchmark, achieving good agreement with the
+reference data. Pet resolves the dihedral angle as well, but requires long training and an adaptation in the
+number of transformer layers to succeed at this benchmark (see Appendix D). We note that the sharp cusp at
+180◦ is an artifact of the underlying reference method; it is a desirable behavior of MLIPs to smoothen it out.
+Biodimers Since the pairs of molecules in the biodimers benchmark are placed at separations up to 15 Å,
+much beyond the cutoff used for graph construction, high accuracy requires a long-range component. This is
+confirmed by the results of this experiment, seen in Fig. 4: The long range Lorem and Cace-Les models
+yield lower error than Mace and Pet. Predictive error varies between dimer classes, i.e., the expected type
+of inverse power-law interaction, for all models, with the exception for Lorem, which yields consistent, and
+in all but one class the highest, accuracy. It is important to note that Lorem uses p = 1 (Coulomb) for
+long-range message passing while different exponents describe the underlying physics of the dimer classes:
+The nonlinearity after the long-range message passing block may allow the model to correct this mismatch
+between exponents; see also the supplement of (Huguenin-Dumittan et al., 2023).
+10
+
+Table 2: Ability of different Lorem models, with and without long-range message passing and with different
+numbers of short-range message passing steps, to solve the cumulene benchmark task. A tick (✓) indicates
+yes, a cross (×) indicates no. Figure 10 shows the full curves.
+
+6.2
+
+Cutoff
+
+1×SR
++ LR
+
+2×SR
++ LR
+
+1×SR
+
+2×SR
+
+3×SR
+
+4×SR
+
+2.5 Å
+3.0 Å
+3.5 Å
+
+✓
+✓
+✓
+
+✓
+✓
+✓
+
+×
+×
+×
+
+×
+×
+✓
+
+×
+✓
+✓
+
+✓
+✓
+✓
+
+Limits of short-range message passing
+
+In the previous experiments, we observed that the performance of models with short-range message passing
+strongly depends on the match between the effective interaction cutoff and the problem to be solved. The case
+of biodimers, demonstrates clearly that message passing cannot resolve interactions where no intermediate
+atoms are present. To study these cases, we perform additional experiments using Lorem, with and without
+long-range message passing, and with different cutoffs.
+
+Energy (meV)
+
+SN 2 reactions Solving the benchmark
+task for the SN 2 reactions dataset reReference
+quires long-range interactions, since it
+0
+1×SR + LR
+involves modeling intra-molecular inter2×SR
+actions over distances exceeding the typ-200
+ical cutoffs used for MLIPs. This is con-400
+firmed by Fig. 5, which compares the
+performance of Lorem with and with-600
+out long-range message passing. The
+former can reproduce the energy over
+-800
+the course of the reaction with excellent
+accuracy, including the tails as the reacReaction coordinate
+tants approach and separate. The latter,
+which
+does not include long-range interFigure 5: Energy over the reaction coordinate for the nucleophilic
+–
+–
+actions,
+cannot account for the tails and
+substitution reaction Cl + H3C Br → Cl CH3 + Br ; snapshots
+consequently predicts a constant once
+are shown as insets.
+the molecules separate more than 5 Å.
+Cumulene with different cutoffs We probe the dependence of the performance of message-passing
+models on their hyperparameters by training a set of Lorem models with and without long-range message
+passing at different cutoffs (2.5 Å, 3 Å and 3.5 Å) and numbers of short-range message passing steps (1, 2,
+3 and 4). Small cutoffs are chosen to simulate the longer chain lengths of real biomolecular systems. The
+results are shown in Table 2 with additional plots in Appendix G: In all cases, models that include long-range
+message passing are able to resolve the angle. Short-range models, on the other hand, can only resolve the
+angle in certain combinations of hyperparameters: One message passing step is never sufficient. For two,
+a minimum cutoff of 3.5 Å is required. For three message passing steps, 3.0 Å is required. Therefore, an
+effective cutoff substantially larger than the 5.8 Å distance between the central carbon atom in the chain
+and the hydrogen rotors is needed. This is because MPNNs rely on the input graph structure (see Fig. 3A)
+for information flow: Below rc = 2.6 Å, connections in the graph only extend to nearest neighbors, with the
+exception of the rotors and the second-to-last carbon atoms. Consequently, at least four message passing
+steps are required. This example illustrates that short-range message passing is difficult to apply to this
+class of problems: Parameters have to be adapted to the chain length, with careful consideration of graph
+structure. In contrast, long-range message passing is robust, requiring no change in model hyper-parameters
+to solve this task.
+11
+
+7
+
+Discussion
+
+We introduced a simple yet effective equivariant long-range message passing scheme: Latent equivariant
+charges are predicted from local node features, and well-established techniques for evaluating inverse power-law
+potentials are used to efficiently compute long-range messages in a way that is convergent and well-defined for
+periodic systems. Building on this message-passing mechanism, we developed Lorem, a MLIP architecture
+that achieves consistently strong performance across benchmarks that require accurate long-range modeling.
+By construction, our model assumes that interactions decay asymptotically with distance. While it is therefore
+not suited for learning truly global representations that have no notion of locality, this limitation is largely
+theoretical for physical systems: Electrostatics dominates most long-range behavior in realistic systems, and
+even other effects typically do not extend over arbitrary distances.
+A more practical limitation arises in non-periodic systems, where the cost of a naive long-range message
+evaluation scales as O(N 2 ). Although this is acceptable for small molecules and unit cells, this is a bottleneck
+for larger systems. However, linear-scaling methods for the evaluation of inverse power-law potentials are
+available: Fast multipole methods (Greengard & Rokhlin, 1987; Andy L Jones) or multi-level summation
+(Hardy et al., 2015; Buchner et al., 2025). Being able to leverage such methods is a key advantage of our
+proposed physics-inspired message-passing scheme.
+We also investigated the capabilities of purely short-range message passing and found that, in many cases,
+it performs very well—even on datasets explicitly designed to require long-range interactions or charge
+equilibration. However, its success depends on matching the cutoff radius and number of message passing
+steps to the specific task, a process that can be both tedious and error-prone. More fundamentally, short-range
+methods cannot resolve interactions between distant atoms without intermediaries. Our augmentation with
+long-range message passing overcomes these limitations, providing robust results across different tasks without
+requiring changes to model architecture or its hyperparameters (cutoff radius, number of message-passing
+steps, representation order). Training hyperparameters such as learning rate, optimizer, and loss weights are
+tuned per dataset, as is standard practice for MLIPs.
+Finally, our results underscore a broader issue: the lack of challenging long-range benchmarks. Many
+current datasets are based on simplified, small-scale systems and fail to capture the complexity of real-world
+applications where long-range interactions are essential. Our deliberate focus on these benchmarks reflects
+the proof-of-concept nature of this work: On large, heterogeneous datasets, improvements in aggregate loss
+metrics can often be achieved by increasing the capacity of the short-range model, making it difficult to
+isolate and attribute gains to improved modeling of long-range physics (Huguenin-Dumittan et al., 2023).
+The controlled benchmarks we consider allow a clearer mechanistic validation of the proposed equivariant
+Ewald message passing. Nevertheless, as a step towards larger-scale evaluation, we present results on the
+ADAPT silicon point-defect dataset (Dramko et al., 2025) in Appendix J, where Lorem achieves competitive
+force accuracy and substantially better energy predictions compared to all baselines, using default model
+hyperparameters. Addressing the gap of challenging large long-range datasets is a key direction for future
+work, which requires the development of application-oriented benchmarks.
+
+Reproducibility statement
+Code, data, configuration files, and trained models are available at doi:10.5281/zenodo.17789350. Scripts
+include data pre-processing, model training, model evaluation, and the creation of figures and tables in this
+work. Hyperparameters are also described in Appendix D.
+
+References
+Joseph W. Abbott, Carlos Mera Acosta, Alaa Akkoush, Alberto Ambrosetti, Viktor Atalla, Alexej Bagrets,
+Jörg Behler, Daniel Berger, Björn Bieniek, Jonas Björk, Volker Blum, Saeed Bohloul, Connor L. Box,
+Nicholas Boyer, Danilo Simoes Brambila, Gabriel A. Bramley, Kyle R. Bryenton, María Camarasa-Gómez,
+Christian Carbogno, Fabio Caruso, Sucismita Chutia, Michele Ceriotti, Gábor Csányi, William Dawson,
+Francisco A. Delesma, Fabio Della Sala, Bernard Delley, Robert A. DiStasio Jr, Maria Dragoumi, Sander
+12
+
+Driessen, Marc Dvorak, Simon Erker, Ferdinand Evers, Eduardo Fabiano, Matthew R. Farrow, Florian
+Fiebig, Jakob Filser, Lucas Foppa, Lukas Gallandi, Alberto Garcia, Ralf Gehrke, Simiam Ghan, Luca M.
+Ghiringhelli, Mark Glass, Stefan Goedecker, Dorothea Golze, Matthias Gramzow, James A. Green, Andrea
+Grisafi, Andreas Grüneis, Jan Günzl, Stefan Gutzeit, Samuel J. Hall, Felix Hanke, Ville Havu, Xingtao
+He, Joscha Hekele, Olle Hellman, Uthpala Herath, Jan Hermann, Daniel Hernangómez-Pérez, Oliver T.
+Hofmann, Johannes Hoja, Simon Hollweger, Lukas Hörmann, Ben Hourahine, Wei Bin How, William P.
+Huhn, Marcel Hülsberg, Timo Jacob, Sara Panahian Jand, Hong Jiang, Erin R. Johnson, Werner Jürgens,
+J. Matthias Kahk, Yosuke Kanai, Kisung Kang, Petr Karpov, Elisabeth Keller, Roman Kempt, Danish
+Khan, Matthias Kick, Benedikt P. Klein, Jan Kloppenburg, Alexander Knoll, Florian Knoop, Franz Knuth,
+Simone S. Köcher, Jannis Kockläuner, Sebastian Kokott, Thomas Körzdörfer, Hagen-Henrik Kowalski,
+Peter Kratzer, Pavel Kůs, Raul Laasner, Bruno Lang, Björn Lange, Marcel F. Langer, Ask Hjorth Larsen,
+Hermann Lederer, Susi Lehtola, Maja-Olivia Lenz-Himmer, Moritz Leucke, Sergey Levchenko, Alan Lewis,
+O. Anatole von Lilienfeld, Konstantin Lion, Werner Lipsunen, Johannes Lischner, Yair Litman, Chi
+Liu, Qing-Long Liu, Andrew J. Logsdail, Michael Lorke, Zekun Lou, Iuliia Mandzhieva, Andreas Marek,
+Johannes T. Margraf, Reinhard J. Maurer, Tobias Melson, Florian Merz, Jörg Meyer, Georg S. Michelitsch,
+Teruyasu Mizoguchi, Evgeny Moerman, Dylan Morgan, Jack Morgenstein, Jonathan Moussa, Akhil S.
+Nair, Lydia Nemec, Harald Oberhofer, Alberto Otero-de-la-Roza, Ramón L. Panadés-Barrueta, Thanush
+Patlolla, Mariia Pogodaeva, Alexander Pöppl, Alastair J. A. Price, Thomas A. R. Purcell, Jingkai Quan,
+Nathaniel Raimbault, Markus Rampp, Karsten Rasim, Ronald Redmer, Xinguo Ren, Karsten Reuter,
+Norina A. Richter, Stefan Ringe, Patrick Rinke, Simon P. Rittmeyer, Herzain I. Rivera-Arrieta, Matti
+Ropo, Mariana Rossi, Victor Ruiz, Nikita Rybin, Andrea Sanfilippo, Matthias Scheffler, Christoph Scheurer,
+Christoph Schober, Franziska Schubert, Tonghao Shen, Christopher Shepard, Honghui Shang, Kiyou
+Shibata, Andrei Sobolev, Ruyi Song, Aloysius Soon, Daniel T. Speckhard, Pavel V. Stishenko, Muhammad
+Tahir, Izumi Takahara, Jun Tang, Zechen Tang, Thomas Theis, Franziska Theiss, Alexandre Tkatchenko,
+Milica Todorović, George Trenins, Oliver T. Unke, Álvaro Vázquez-Mayagoitia, Oscar van Vuren, Daniel
+Waldschmidt, Han Wang, Yanyong Wang, Jürgen Wieferink, Jan Wilhelm, Scott Woodley, Jianhang Xu,
+Yong Xu, Yi Yao, Yingyu Yao, Mina Yoon, Victor Wen-zhe Yu, Zhenkun Yuan, Marios Zacharias, Igor Ying
+Zhang, Min-Ye Zhang, Wentao Zhang, Rundong Zhao, Shuo Zhao, Ruiyi Zhou, Yuanyuan Zhou, and Tong
+Zhu. Roadmap on Advancements of the FHI-aims Software Package, June 2025.
+Uri Alon and Eran Yahav. On the Bottleneck of Graph Neural Networks and its Practical Implications. In
+International Conference on Learning Representations, October 2020. URL https://openreview.net/
+forum?id=i80OPhOCVH2.
+Andy L Jones. pybbfmm. URL https://www.github.com/andyljones/pybbfmm.
+Jimmy Lei Ba, Jamie Ryan Kiros, and Geoffrey E. Hinton. Layer Normalization, July 2016.
+Jacob Bamberger, Benjamin Gutteridge, Scott le Roux, Michael M. Bronstein, and Xiaowen Dong. On
+Measuring Long-Range Interactions in Graph Neural Networks. In Forty-Second International Conference
+on Machine Learning, June 2025. URL https://openreview.net/forum?id=2fBcAOi8lO&referrer=
+%5Bthe%20profile%20of%20Jacob%20Bamberger%5D(%2Fprofile%3Fid%3D~Jacob_Bamberger1).
+Albert P. Bartók, Risi Kondor, and Gábor Csányi. On representing chemical environments. Physical Review
+B, 87(18):184115, May 2013. doi: 10.1103/PhysRevB.87.184115.
+Ilyes Batatia, David P. Kovacs, Gregor Simm, Christoph Ortner, and Gabor Csanyi. MACE: Higher Order
+Equivariant Message Passing Neural Networks for Fast and Accurate Force Fields. Advances in Neural Information Processing Systems, 35:11423–11436, December 2022. URL https://proceedings.neurips.cc/
+paper_files/paper/2022/hash/4a36c3c51af11ed9f34615b81edb5bbc-Abstract-Conference.html.
+Ilyes Batatia, Philipp Benner, Yuan Chiang, Alin M. Elena, Dávid P. Kovács, Janosh Riebesell, Xavier R.
+Advincula, Mark Asta, Matthew Avaylon, William J. Baldwin, Fabian Berger, Noam Bernstein, Arghya
+Bhowmik, Filippo Bigi, Samuel M. Blau, Vlad Cărare, Michele Ceriotti, Sanggyu Chong, James P. Darby,
+Sandip De, Flaviano Della Pia, Volker L. Deringer, Rokas Elijošius, Zakariya El-Machachi, Edvin Fako,
+Fabio Falcioni, Andrea C. Ferrari, John L. A. Gardner, Mikołaj J. Gawkowski, Annalena Genreith-Schriever,
+Janine George, Rhys E. A. Goodall, Jonas Grandel, Clare P. Grey, Petr Grigorev, Shuang Han, Will
+13
+
+Handley, Hendrik H. Heenen, Kersti Hermansson, Cheuk Hin Ho, Stephan Hofmann, Christian Holm,
+Jad Jaafar, Konstantin S. Jakob, Hyunwook Jung, Venkat Kapil, Aaron D. Kaplan, Nima Karimitari,
+James R. Kermode, Panagiotis Kourtis, Namu Kroupa, Jolla Kullgren, Matthew C. Kuner, Domantas
+Kuryla, Guoda Liepuoniute, Chen Lin, Johannes T. Margraf, Ioan-Bogdan Magdău, Angelos Michaelides,
+J. Harry Moore, Aakash A. Naik, Samuel P. Niblett, Sam Walton Norwood, Niamh O’Neill, Christoph
+Ortner, Kristin A. Persson, Karsten Reuter, Andrew S. Rosen, Louise A. M. Rosset, Lars L. Schaaf,
+Christoph Schran, Benjamin X. Shi, Eric Sivonxay, Tamás K. Stenczel, Christopher Sutton, Viktor Svahn,
+Thomas D. Swinburne, Jules Tilly, Cas van der Oord, Santiago Vargas, Eszter Varga-Umbrich, Tejs Vegge,
+Martin Vondrák, Yangshuai Wang, William C. Witt, Thomas Wolf, Fabian Zills, and Gábor Csányi. A
+foundation model for atomistic materials chemistry. The Journal of Chemical Physics, 163(18):184110,
+November 2025. ISSN 0021-9606. doi: 10.1063/5.0297006.
+Peter W. Battaglia, Jessica B. Hamrick, Victor Bapst, Alvaro Sanchez-Gonzalez, Vinicius Zambaldi, Mateusz
+Malinowski, Andrea Tacchetti, David Raposo, Adam Santoro, Ryan Faulkner, Caglar Gulcehre, Francis
+Song, Andrew Ballard, Justin Gilmer, George Dahl, Ashish Vaswani, Kelsey Allen, Charles Nash, Victoria
+Langston, Chris Dyer, Nicolas Heess, Daan Wierstra, Pushmeet Kohli, Matt Botvinick, Oriol Vinyals, Yujia
+Li, and Razvan Pascanu. Relational inductive biases, deep learning, and graph networks, October 2018.
+Simon Batzner, Albert Musaelian, Lixin Sun, Mario Geiger, Jonathan P. Mailoa, Mordechai Kornbluth, Nicola
+Molinari, Tess E. Smidt, and Boris Kozinsky. E(3)-equivariant graph neural networks for data-efficient
+and accurate interatomic potentials. Nature Communications, 13(1), May 2022. ISSN 2041-1723. doi:
+10.1038/s41467-022-29939-5.
+Jörg Behler and Michele Parrinello. Generalized Neural-Network Representation of High-Dimensional
+Potential-Energy Surfaces. Physical Review Letters, 98(14):146401, April 2007. ISSN 0031-9007, 1079-7114.
+doi: 10.1103/physrevlett.98.146401.
+Stefan Blücher, Klaus-Robert Müller, and Stefan Chmiela. Reconstructing Kernel-Based Machine Learning
+Force Fields with Superlinear Convergence. Journal of Chemical Theory and Computation, 19(14):4619–4630,
+July 2023. ISSN 1549-9618. doi: 10.1021/acs.jctc.2c01304.
+M. Born and R. Oppenheimer. Zur Quantentheorie der Molekeln. Annalen der Physik, 389(20):457–484,
+January 1927. ISSN 0003-3804, 1521-3889. doi: 10.1002/andp.19273892002.
+James Bradbury, Roy Frostig, Peter Hawkins, Matthew James Johnson, Chris Leary, Dougal Maclaurin, George
+Necula, Adam Paszke, Jake VanderPlas, Skye Wanderman-Milne, and Qiao Zhang. JAX: Composable
+transformations of Python+NumPy programs, 2018. URL http://github.com/jax-ml/jax.
+Donald W. Brenner. Empirical potential for hydrocarbons for use in simulating the chemical vapor deposition
+of diamond films. Physical Review B, 42(15):9458–9471, November 1990. doi: 10.1103/PhysRevB.42.9458.
+Florian Buchner, Johannes Schörghuber, Nico Unglert, Jesús Carrete, and Georg K. H. Madsen. msmJAX:
+Fast and Differentiable Electrostatics on the GPU in Python, October 2025.
+Lori A Burns, John C Faver, Zheng Zheng, Michael S Marshall, Daniel GA Smith, Kenno Vanommeslaeghe,
+Alexander D MacKerell, Kenneth M Merz, and C David Sherrill. The biofragment database (bfdb): An
+open-data platform for computational chemistry analysis of noncovalent interactions. The Journal of
+chemical physics, 147(16), 2017.
+Chen Cai and Yusu Wang. A Note on Over-Smoothing for Graph Neural Networks, June 2020.
+Alessandro Caruso, Jacopo Venturin, Lorenzo Giambagli, Edoardo Rolando, Frank Noé, and Cecilia Clementi.
+Extending the RANGE of Graph Neural Networks: Relaying Attention Nodes for Global Encoding,
+February 2025.
+Bingqing Cheng. Cartesian atomic cluster expansion for machine learning interatomic potentials. npj
+Computational Materials, 10(1):157, July 2024. ISSN 2057-3960. doi: 10.1038/s41524-024-01332-4.
+14
+
+Bingqing Cheng. Latent Ewald summation for machine learning of long-range interactions. npj Computational
+Materials, 11(1):80, March 2025. ISSN 2057-3960. doi: 10.1038/s41524-025-01577-7.
+Stefan Chmiela, Huziel E. Sauceda, Klaus-Robert Müller, and Alexandre Tkatchenko. Towards exact molecular
+dynamics simulations with machine-learned force fields. Nature Communications, 9(1):3887, September
+2018. ISSN 2041-1723. doi: 10.1038/s41467-018-06169-2.
+Tom Darden, Darrin York, and Lee Pedersen. Particle mesh Ewald: An N log(N) method for Ewald sums in
+large systems. The Journal of Chemical Physics, 98(12):10089–10092, June 1993. ISSN 0021-9606. doi:
+10.1063/1.464397.
+Evan Dramko, Yihuang Xiong, Yizhi Zhu, Geoffroy Hautier, Thomas Reps, Christopher Jermaine, and
+Anastasios Kyrillidis. ADAPT: Lightweight, Long-Range Machine Learning Force Fields Without Graphs,
+September 2025.
+Geneviève Dusson, Markus Bachmayr, Gábor Csányi, Ralf Drautz, Simon Etter, Cas van der Oord, and
+Christoph Ortner. Atomic cluster expansion: Completeness, efficiency and stability. Journal of Computational Physics, 454:110946, April 2022. ISSN 0021-9991. doi: 10.1016/j.jcp.2022.110946.
+Vijay Prakash Dwivedi, Ladislav Rampášek, Mikhail Galkin, Ali Parviz, Guy Wolf, Anh Tuan Luu, and
+Dominique Beaini. Long Range Graph Benchmark. In Thirty-Sixth Conference on Neural Information
+Processing Systems Datasets and Benchmarks Track, June 2022. URL https://openreview.net/forum?
+id=in7XC5RcjEn.
+P. P. Ewald. Die Berechnung optischer und elektrostatischer Gitterpotentiale. Annalen der Physik, 369(3):
+253–287, 1921. ISSN 1521-3889. doi: 10.1002/andp.19213690304.
+Nikita Fedik, Roman Zubatyuk, Maksim Kulichenko, Nicholas Lubbers, Justin S. Smith, Benjamin Nebgen,
+Richard Messerly, Ying Wai Li, Alexander I. Boldyrev, Kipton Barros, Olexandr Isayev, and Sergei Tretiak.
+Extending machine learning beyond interatomic potentials for predicting molecular properties. Nature
+Reviews Chemistry, 6(9):653–672, September 2022. ISSN 2397-3358. doi: 10.1038/s41570-022-00416-3.
+J. Thorben Frank, Stefan Chmiela, Klaus-Robert Müller, and Oliver T. Unke. Euclidean Fast Attention:
+Machine Learning Global Atomic Representations at Linear Cost, December 2024a.
+J. Thorben Frank, Oliver T. Unke, Klaus-Robert Müller, and Stefan Chmiela. A Euclidean transformer for
+fast and stable machine learned force fields. Nature Communications, 15(1):6539, August 2024b. ISSN
+2041-1723. doi: 10.1038/s41467-024-50620-6.
+Thorben Frank, Oliver Unke, and Klaus-Robert Müller. So3krates: Equivariant attention for interactions
+on arbitrary length-scales in molecular systems. Advances in Neural Information Processing Systems,
+35:29400–29413, December 2022. URL https://proceedings.neurips.cc/paper_files/paper/2022/
+hash/bcf4ca90a8d405201d29dd47d75ac896-Abstract-Conference.html.
+Johannes Gasteiger, Janek Groß, and Stephan Günnemann. Directional Message Passing for Molecular Graphs.
+In International Conference on Learning Representations, September 2019. URL https://openreview.
+net/forum?id=B1eWbxStPH.
+Justin Gilmer, Samuel S. Schoenholz, Patrick F. Riley, Oriol Vinyals, and George E. Dahl. Neural Message
+Passing for Quantum Chemistry. In Proceedings of the 34th International Conference on Machine Learning,
+pp. 1263–1272. PMLR, July 2017. URL https://proceedings.mlr.press/v70/gilmer17a.html.
+L Greengard and V Rokhlin. A fast algorithm for particle simulations. Journal of Computational Physics, 73
+(2):325–348, December 1987. ISSN 0021-9991. doi: 10.1016/0021-9991(87)90140-9.
+Andrea Grisafi and Michele Ceriotti. Incorporating long-range physics in atomic-scale machine learning. The
+Journal of Chemical Physics, 151(20):204105, November 2019. ISSN 0021-9606. doi: 10.1063/1.5128375.
+15
+
+David J. Hardy, Zhe Wu, James C. Phillips, John E. Stone, Robert D. Skeel, and Klaus Schulten. Multilevel
+Summation Method for Electrostatic Force Evaluation. Journal of Chemical Theory and Computation, 11
+(2):766–779, February 2015. ISSN 1549-9618. doi: 10.1021/ct5009075.
+Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun. Deep Residual Learning for Image Recognition,
+December 2015.
+R. W. Hockney and J. W. Eastwood. Computer Simulation Using Particles. CRC Press, Boca Raton, March
+2021. ISBN 978-0-367-80693-4. doi: 10.1201/9780367806934.
+Kevin K. Huguenin-Dumittan, Philip Loche, Ni Haoran, and Michele Ceriotti. Physics-Inspired Equivariant
+Descriptors of Nonbonded Interactions. The Journal of Physical Chemistry Letters, 14(43):9612–9618,
+November 2023. doi: 10.1021/acs.jpclett.3c02375.
+Yajie Ji, Jiuyang Liang, and Zhenli Xu. Machine-Learning Interatomic Potentials for Long-Range Systems,
+February 2025.
+Keller Jordan, Yuchen Jin, Vlado Boza, You Jiacheng, Franz Cesista, Laker Newhouse, and Jeremy Bernstein.
+Muon: An optimizer for hidden layers in neural networks, 2024. URL https://kellerjordan.github.
+io/posts/muon/.
+Adil Kabylda, J. Thorben Frank, Sergio Suarez Dou, Almaz Khabibrakhmanov, Leonardo Medrano Sandonas,
+Oliver T. Unke, Stefan Chmiela, Klaus-Robert Müller, and Alexandre Tkatchenko. Molecular Simulations
+with a Pretrained Neural Network and Universal Pairwise Force Fields, June 2025.
+Dongjin Kim, Daniel S. King, Peichen Zhong, and Bingqing Cheng. Learning charges and long-range
+interactions from energies and forces, December 2024.
+Diederik P. Kingma and Jimmy Ba. Adam: A Method for Stochastic Optimization, January 2017.
+Tsz Wai Ko, Jonas A. Finkler, Stefan Goedecker, and Jörg Behler. A fourth-generation high-dimensional neural
+network potential with accurate electrostatics including non-local charge transfer. Nature Communications,
+12(1):398, January 2021. ISSN 2041-1723. doi: 10.1038/s41467-020-20427-2.
+Arthur Kosmala, Johannes Gasteiger, Nicholas Gao, and Stephan Günnemann. Ewald-based Long-Range
+Message Passing for Molecular Graphs. In Proceedings of the 40th International Conference on Machine
+Learning, pp. 17544–17563. PMLR, July 2023. URL https://proceedings.mlr.press/v202/kosmala23a.
+html.
+Marcel F Langer, Sergey N Pozdnyakov, and Michele Ceriotti. Probing the effects of broken symmetries in
+machine learning. Machine Learning: Science and Technology, 5(4):04LT01, October 2024. ISSN 2632-2153.
+doi: 10.1088/2632-2153/ad86a0.
+Philip Loche, Kevin K. Huguenin-Dumittan, Melika Honarmand, Qianjun Xu, Egor Rumiantsev, Wei Bin How,
+Marcel F. Langer, and Michele Ceriotti. Fast and flexible long-range models for atomistic machine learning.
+The Journal of Chemical Physics, 162(14):142501, April 2025. ISSN 0021-9606. doi: 10.1063/5.0251713.
+Moin Uddin Maruf, Sungmin Kim, and Zeeshan Ahmad. Equivariant Machine Learning Interatomic Potentials
+with Global Charge Redistribution, March 2025.
+Arslan Mazitov, Filippo Bigi, Matthias Kellner, Paolo Pegolo, Davide Tisi, Guillaume Fraux, Sergey
+Pozdnyakov, Philip Loche, and Michele Ceriotti. PET-MAD, a lightweight universal interatomic potential
+for advanced materials modeling, August 2025.
+Artem Moskalev, Mangal Prakash, Junjie Xu, Tianyu Cui, Rui Liao, and Tommaso Mansi. Geometric
+Hyena Networks for Large-scale Equivariant Learning. In Forty-Second International Conference on Machine Learning, June 2025. URL https://openreview.net/forum?id=jJRkkPr474&referrer=%5Bthe%
+20profile%20of%20Mangal%20Prakash%5D(%2Fprofile%3Fid%3D~Mangal_Prakash1).
+16
+
+Jigyasa Nigam, Sergey Pozdnyakov, Guillaume Fraux, and Michele Ceriotti. Unified theory of atom-centered
+representations and message-passing machine-learning schemes. The Journal of Chemical Physics, 156(20):
+204115, May 2022. ISSN 0021-9606. doi: 10.1063/5.0087042.
+Adam Paszke, Sam Gross, Francisco Massa, Adam Lerer, James Bradbury, Gregory Chanan, Trevor Killeen,
+Zeming Lin, Natalia Gimelshein, Luca Antiga, Alban Desmaison, Andreas Kopf, Edward Yang, Zachary
+DeVito, Martin Raison, Alykhan Tejani, Sasank Chilamkurthy, Benoit Steiner, Lu Fang, Junjie Bai, and
+Soumith Chintala. PyTorch: An Imperative Style, High-Performance Deep Learning Library. In Advances
+in Neural Information Processing Systems, volume 32. Curran Associates, Inc., 2019. URL https://papers.
+nips.cc/paper_files/paper/2019/hash/bdbca288fee7f92f2bfa9f7012727740-Abstract.html.
+Franco Pellegrini, Ruggero Lot, Yusuf Shaidu, and Emine Küçükbenli. PANNA 2.0: Efficient neural network
+interatomic potentials and new architectures. The Journal of Chemical Physics, 159(8):084117, August
+2023. ISSN 0021-9606. doi: 10.1063/5.0158075.
+John P. Perdew, Kieron Burke, and Matthias Ernzerhof. Generalized Gradient Approximation Made Simple.
+Physical Review Letters, 77(18):3865–3868, October 1996. doi: 10.1103/PhysRevLett.77.3865.
+Sergey Pozdnyakov and Michele Ceriotti.
+Smooth, exact rotational symmetrization for deep
+learning on point clouds.
+Advances in Neural Information Processing Systems, 36:79469–
+79501, December 2023. URL https://proceedings.neurips.cc/paper_files/paper/2023/hash/
+fb4a7e3522363907b26a86cc5be627ac-Abstract-Conference.html.
+E. Prodan and W. Kohn. Nearsightedness of electronic matter. Proceedings of the National Academy of
+Sciences, 102(33):11635–11638, August 2005. doi: 10.1073/pnas.0505436102.
+Benjamin Rhodes, Sander Vandenhaute, Vaidotas Šimkus, James Gin, Jonathan Godwin, Tim Duignan, and
+Mark Neumann. Orb-v3: Atomistic simulation at scale, April 2025.
+Kristof Schütt, Pieter-Jan Kindermans, Huziel Enoc Sauceda Felix, Stefan Chmiela, Alexandre
+Tkatchenko, and Klaus-Robert Müller. SchNet: A continuous-filter convolutional neural network
+for modeling quantum interactions. In Advances in Neural Information Processing Systems, volume 30. Curran Associates, Inc., 2017. URL https://papers.nips.cc/paper_files/paper/2017/hash/
+303ed4c69846ab36c2904d3ba8573050-Abstract.html.
+Kristof Schütt, Oliver Unke, and Michael Gastegger. Equivariant message passing for the prediction of tensorial
+properties and molecular spectra. In Proceedings of the 38th International Conference on Machine Learning,
+pp. 9377–9388. PMLR, July 2021. URL https://proceedings.mlr.press/v139/schutt21a.html.
+Tess E. Smidt. Euclidean Symmetry and Equivariance in Machine Learning. Trends in Chemistry, 3(2):82–85,
+February 2021. ISSN 2589-5974. doi: 10.1016/j.trechm.2020.10.006.
+Carsten G. Staacke, Hendrik H. Heenen, Christoph Scheurer, Gábor Csányi, Karsten Reuter, and Johannes T.
+Margraf. On the Role of Long-Range Electrostatics in Machine-Learned Interatomic Potentials for
+Complex Battery Materials. ACS Applied Energy Materials, 4(11):12562–12569, November 2021. doi:
+10.1021/acsaem.1c02363.
+J. Tersoff. New empirical approach for the structure and energy of covalent systems. Physical Review B, 37
+(12):6991–7000, April 1988. doi: 10.1103/PhysRevB.37.6991.
+Nathaniel Thomas, Tess Smidt, Steven Kearnes, Lusann Yang, Li Li, Kai Kohlhoff, and Patrick Riley. Tensor
+field networks: Rotation- and translation-equivariant neural networks for 3D point clouds, February 2018.
+URL https://arxiv.org/abs/1802.08219v3.
+Alexandre Tkatchenko and Matthias Scheffler. Accurate Molecular Van Der Waals Interactions from GroundState Electron Density and Free-Atom Reference Data. Physical Review Letters, 102(7):073005, February
+2009. ISSN 0031-9007, 1079-7114. doi: 10.1103/physrevlett.102.073005.
+Oliver T. Unke and Hartmut Maennel. E3x: E(3)-Equivariant Deep Learning Made Easy, November 2024.
+17
+
+Oliver T. Unke and Markus Meuwly. PhysNet: A Neural Network for Predicting Energies, Forces, Dipole
+Moments, and Partial Charges. Journal of Chemical Theory and Computation, 15(6):3678–3693, June 2019.
+ISSN 1549-9618. doi: 10.1021/acs.jctc.9b00181.
+Oliver T. Unke, Stefan Chmiela, Michael Gastegger, Kristof T. Schütt, Huziel E. Sauceda, and Klaus-Robert
+Müller. SpookyNet: Learning force fields with electronic degrees of freedom and nonlocal effects. Nature
+Communications, 12(1), December 2021a. ISSN 2041-1723. doi: 10.1038/s41467-021-27504-0.
+Oliver T. Unke, Stefan Chmiela, Huziel E. Sauceda, Michael Gastegger, Igor Poltavsky, Kristof T. Schütt,
+Alexandre Tkatchenko, and Klaus-Robert Müller. Machine Learning Force Fields. Chemical Reviews, 121
+(16):10142–10186, August 2021b. ISSN 0009-2665. doi: 10.1021/acs.chemrev.0c01111.
+Brandon M. Wood, Misko Dzamba, Xiang Fu, Meng Gao, Muhammed Shuaibi, Luis Barroso-Luque, Kareem
+Abdelmaqsoud, Vahe Gharakhanyan, John R. Kitchin, Daniel S. Levine, Kyle Michel, Anuroop Sriram,
+Taco Cohen, Abhishek Das, Ammar Rizvi, Sushree Jagriti Sahoo, Zachary W. Ulissi, and C. Lawrence
+Zitnick. UMA: A Family of Universal Models for Atoms, June 2025.
+Tian Xie and Jeffrey C. Grossman. Crystal Graph Convolutional Neural Networks for an Accurate and
+Interpretable Prediction of Material Properties. Physical Review Letters, 120(14):145301, April 2018. doi:
+10.1103/PhysRevLett.120.145301.
+Yang You, Jing Li, Sashank Reddi, Jonathan Hseu, Sanjiv Kumar, Srinadh Bhojanapalli, Xiaodan Song,
+James Demmel, Kurt Keutzer, and Cho-Jui Hsieh. Large Batch Optimization for Deep Learning: Training
+BERT in 76 minutes. In International Conference on Learning Representations, September 2019. URL
+https://openreview.net/forum?id=Syx4wnEtvH.
+Maksim Zhdanov, Max Welling, and Jan-Willem van de Meent. Erwin: A Tree-based Hierarchical Transformer
+for Large-scale Physical Systems. In Forty-Second International Conference on Machine Learning, June
+2025. URL https://openreview.net/forum?id=MrphqqwnKv.
+
+18
+
+A
+
+Equivariant modules in Lorem
+
+As discussed in Section 2, only certain operations can be applied to equivariant features S without disrupting
+equivariance. We briefly discuss the operations used in Lorem; a more thorough discussion can be found
+in Smidt (2021); Unke & Maennel (2024). All operations are implemented using the e3x library (Unke &
+Maennel, 2024). We work with spherical features S, dropping the atom index i, as operations are typically
+broadcast across i or pairs of atoms.
+S is a three-dimensional tensor Sl,m,c in which l enumerates the order of the irreducible representation of
+SO(3), m the 2l + 1 components of that irreducible representation, and c the channel (feature) dimension.
+For a fixed l and c, Sl,:,c can be thought of as a generalised Cartesian vector. Indeed, for l = 1 it is a vector
+in three-dimensional space.
+Prerequisites A rotation g ∈ SO(3) applied to all inputs causes a corresponding rotation of the spherical
+features S expressed in terms of irreducible representations. For a set of features with order l, this rotation is
+represented by a matrix R(g) ∈ R2l+1×2l+1 and acts on these features through matrix multiplication along
+the m index,
+l
+X
+Sl,m,: −→g
+Rm,m′ (g)Sl,m′ ,: .
+(5)
+m′ =−l
+
+In other word, the action of rotations on spherical features is a linear map.
+Addition, Multiplication, Linear layers Since the action of rotations is linear, adding two spherical
+features of equal l together does not disrupt equivariance. By the same logic, any multiplication of spherical
+features that is broadcast along the m index, i.e., that scales spherical features of order l equally, is permissible.
+Therefore, a linear layer can be applied to spherical features, provided it is only applied to the channel index,
+and broadcast along m. We therefore define a learned linear transformation as
+X
+l
+Linear(Sl,:,c ) =
+Wc,c
+(6)
+′ Sl,:,c′
+c′
+
+with per-l learned weights W l . A bias term could be applied to l = 0, i.e., the scalar part of the spherical
+features, but we choose not to.
+Tensor products Two spherical features of order l1 and l2 can be combined into a new spherical feature
+with l3 using a specialized tensor product
+X
+l1 ,l2 ,l3
+Tensor(Sl1 ,m1 ,: , Ql2 ,m2 ,: ) = Ul3 ,m3 ,: = w:l1 ,l2 ,l3
+Cm
+S
+Ql2 ,m2 ,:
+(7)
+1 ,m2 ,m3 l1 ,m1 ,:
+m1 ,m2
+
+Cl1 ,l2 ,l3 are the Clebsch-Gordan coefficients, and wl1 ,l2 ,l3 ∈ Rc is a per-channel weight vector for a given
+combination of l1 , l2 , l3 . This tensor product can be carried out for every valid combination |l1 − l2 | ≤ l3 ≤
+|l1 + l2 |. In Lorem, unless specified otherwise, tensor products are only carried out to a fixed maximum
+dimension lmax , which all spherical features have in common, not the maximum possible one. Some operations,
+for example the preparation of the equivariant message-passing block, perform a tensor product only to
+a specified target order. If both inputs of the tensor product are the same feature, we call the operation
+a self-tensor product. This operation increases the body-order of the representation (Dusson et al., 2022;
+Batatia et al., 2022).
+Spherical Norm To predict invariant quantities, we require a way to extract invariant information from
+spherical, equivariant, features. One way to do achieve this is a tensor product to target order l = 0. Another,
+which is used in Lorem, is to take the norm of each irreducible representation
+s
+X
+2
+Norm(S) = (2l + 1)1/2
+Sl,m,c
+.
+(8)
+m
+
+19
+
+We found empirically that the prefactor (2l + 1)1/2 helps reduce variance across l. As opposed to a tensor
+product to l = 0, this operation, inspired by the power spectrum (Bartók et al., 2013), keeps the norms per l
+separate; a tensor product would linearly combine all l into one.
+
+B
+
+Invariance of Lorem
+
+As explained in Section 4 and Appendix A, the potential at each atom, Vi is equivariant because the long-range
+message passing step consists of equivariant operations: Addition and multiplication with a factor shared per
+l. In practical implementations of Ewald summation in periodic systems, there is one extra step: To prevent
+divergences, the total charge must be zero, which can be done either by simply subtracting the sum of the
+total charge from each charge, or equivalently, by subtracting an analytical correction from the potentials.
+Both approaches are equivalent, and since summation is equivariant, also do not break invariance. For this
+reason, the total procedure retains equivariance.
+To numerically confirm these considerations, we compute the mean absolute error of energy predictions over
+a degree L = 3 Lebedev grid of rotations, plus inversions, with respect to the unrotated case, for the first 5
+structures of the MgO surface validation set. The errors are in line with precision expectations: For single
+precision, 1.031 · 10−6 meV and for double precision 5.913 · 10−15 meV.
+
+C
+
+Dataset Construction
+
+MgO surface The MgO surface dataset from Ko et al. (2021) is used without modification. A representative
+snapshot of the unit cell is shown in Fig. 2A. The dataset is built from four configuration types, each derived
+from a distinct initial structure:
+1. A pure MgO surface with the Au2 dimer oriented perpendicular to the surface,
+2. A pure MgO surface with the Au2 dimer oriented parallel to the surface,
+3. An Al-doped MgO surface with the Au2 dimer perpendicular to the surface, and
+4. An Al-doped MgO surface with the Au2 dimer parallel to the surface.
+Each of these initial configurations was first geometry optimized. For the two perpendicular, ‘non-wetting’,
+cases (1 and 3), the distance between the lower Au atom and the O atom directly beneath it was systematically
+varied, displacing the Au2 dimer as a whole. From these distance-dependent samples, a subset was randomly
+selected. To introduce structural diversity, Gaussian noise was applied to each configuration: a standard
+deviation of 0.02 Å for atoms in the MgO substrate and 0.1 Å for the gold cluster. After perturbation,
+1250 structures were selected from each of the four configuration types, yielding a total of 5000 samples.
+For these, energies and forces were computed using the FHI-aims code (Abbott et al., 2025) and the
+Perdew–Burke–Ernzerhof (PBE) functional (Perdew et al., 1996). A random 90/10 train–validation split was
+used, as reported in Ko et al. (2021). Additional energy–distance curves with equal spacing were constructed
+for the perpendicular cases and are shown in Fig. 2B.
+NaCl cluster The NaCl cluster dataset from Ko et al. (2021) is used without modification. First, the
+Na9Cl8+ cluster was optimized in vacuum. A snapshot is shown in the top panel of Fig. 2C. From this
+geometry, the Na atom farthest from all other Na atoms was removed, yielding the Na8Cl8+ cluster shown in
+the bottom panel of Fig. 2C. From these two structures, additional configurations were created by varying the
+distance between a selected pair of Na atoms along the line connecting them. In Fig. 2C, this moving atom is
+illustrated by transparent copies along its trajectory. Training datasets for both Na9Cl8+ and Na8Cl8+ were
+constructed by randomly sampling configurations along these trajectories. Gaussian noise with a standard
+deviation of 0.05 Å was applied to the atomic coordinates, resulting in 2500 perturbed structures for each
+molecule and a total of 5000 instances. Energies and forces were computed using the FHI-aims code and the
+PBE functional. A random 90/10 train–validation split was used, as reported by Ko et al. (2021). Additional
+energy–distance curves with equal spacing were constructed and are shown in Fig. 2D.
+20
+
+Cumulenes The cumulene dataset from Unke et al. (2021b) is used without modification. The geometry of
+the linear molecule is shown in Fig. 3A. The dataset contains 4500 randomly sampled cumulene structures with
+nine carbon atoms, divided into training, validation, and test sets with 2000/500/2000 instances, respectively.
+The energy curves shown in Fig. 3B are based on a controlled subset in which only one terminal carbon atom
+is rotated, while the rest of the molecule remains fixed. A visualization of this rotational motion is provided
+in the inset of Fig. 3B.
+Biodimers The Biodimers dataset from Huguenin-Dumittan et al. (2023); Burns et al. (2017) is used
+without modification. It consists of 2291 relaxed organic sidechain–sidechain fragments, including small
+molecules such as ethanol, acetamide, and others. Based on molecular properties, the dataset is divided into
+six categories: each molecule is classified as either polar, apolar, or charged, resulting in the following dimer
+types—polar–polar (PP), polar–apolar (PA), charged-polar (CP), apolar–apolar (AA), charged-apolar (CA),
+and charged–charged (CC). A representative CC dimer is shown in Fig. 4A. The initial separation between
+molecules reflects their positions in protein structures. From this configuration, the intermolecular distance is
+incrementally increased up to 15 Å, resulting in a total of 29 783 dimer instances. Instances where the final
+separation exceeds the initial distance by more than 4 Å (13 743 samples) are designated as the test set. The
+remaining 16 040 instances form the training set. Energies and forces were computed using the FHI-aims code
+and the HSE06 hybrid functional. For each of the six dimer types, a random 80/20 train–validation split was
+applied. The resulting subsets were then merged into a single training set and a single validation set.
+SN 2 reactions The SN 2 reactions dataset from Unke & Meuwly (2019); Frank et al. (2024a) is used without
+modification. It contains molecular structures in vacuum that model nucleophilic substitution (SN 2) reactions.
+The dataset includes molecules of the types XCH3Y–, CH3X, HX, CHX, CH2X, XY, X, and Y, for all possible
+combinations of X, Y ∈ {F, Cl, Br, I}. A representative reaction coordinate with corresponding snapshots is
+shown in Fig. 5. Additional species such as H2, CH2, and CH3 are also included in the dataset. Training
+configurations were generated using ab initio molecular dynamics simulations at 5000 K, with a time step of
+0.1 fs. Full computational details, including the level of theory, are provided in the original publications. The
+dataset is randomly split into 405 000 training, 5000 validation, and 42 708 test samples.
+
+D
+
+Model description and training setup
+
+For all models, training parameters, and in some cases, model parameters, vary slightly between datasets.
+Where we were unable to use models from previous work, we tuned parameters to minimize the error on
+the validation set,6 aiming to perform a similar number of experiments, on the order of ten, per model and
+experiment. With this, we aim to report results that reflect a practical degree of hyper-parameter tuning.
+Lorem For all experiments, except the ones where variations were tested, the same Lorem model architecture
+(Section 5) was used: A cutoff radius of 5 Å, lmax = 6 for spherical features and lmax, LR = 2 for the long-range
+message passing, 128 scalar features, 8 channels for spherical features, and 32 radial basis functions. We
+perform only the initial short-range message passing step; performing additional steps typically increases
+accuracy but hinders comparison of long-range expressivity. This model has 1 021 198 learnable parameters.
+It was implemented using the e3x library (Unke & Maennel, 2024). Training is performed entirely in float32
+precision; while we find that reduced precision has only a minor effect on training dynamics, it can significantly
+alter validation and test results.
+Training parameters vary slightly between datasets; the exact parameters can be found in Table 3. We report
+errors for the better out of two runs with different seeds; the presented conclusions hold for both models.
+In all cases, except NaCl7 , the learning rate was decayed linearly after 10 epochs, from the indicated starting
+value to 1 · 10−6 ; the ADAM (Kingma & Ba, 2017) and LAMB (You et al., 2019) optimizers were used. The
+loss function was a simple mean squared error, with the energy residuals normalized by number of atoms.
+6We note that minimizing the validation error does not always yield the best qualitative agreement: In the cumulene dataset,
+it does not readily correlate with ability to predict the dihedral curve in Fig. 3 – while all models below a certain error threshold
+are able to resolve the task, the qualitative agreement varies.
+7 Here, exponential learning rate decay was employed.
+
+21
+
+Dataset
+
+Optimizer
+
+Initial LR
+
+Epochs
+
+Batch size
+
+E weight
+
+f weight
+
+Time
+
+MgO surface
+Biodimers
+Cumulene
+NaCl cluster
+SN 2 reactions
+
+ADAM
+ADAM
+LAMB
+ADAM
+ADAM
+
+4 · 10
+1 · 10−4
+1 · 10−3
+1 · 10−3
+1 · 10−4
+
+4000
+4000
+2000
+8000
+500
+
+32
+32
+32
+64
+32
+
+1000
+0.5
+0.5
+0.5
+0.5
+
+1.0
+0.5
+0.5
+0.5
+0.5
+
+17 h
+42 h
+2h
+7h
+17 h
+
+−4
+
+Table 3: Training settings for Lorem for different datasets. Training times are given for a single Nvidia H100
+SXM5 GPU.
+The squared residuals were averaged over the whole batch, including over atoms and components in the
+case of forces, and then summed and weighted with a factor. The checkpoint with the lowest summed R2 of
+energy and forces, evaluated on the validation set, was used for experiments. Training times are given for the
+entire run, not the time until the best checkpoint.
+For NaCl and AuMgO, prior work (Kim et al., 2024; Ko et al., 2021) reports error directly on the validation
+set, as the benchmark was originally intended as an overfitting exercise. We follow this practice, but verify in
+Appendix H that, due to the statistical uniformity of the dataset, there is no significant difference to tuning
+hyper-parameters systematically on an inner train/validation split, keeping the data used for Table 1 held
+out.
+Mace The Mace MLIP (Batatia et al. (2022)) is an equivariant message-passing neural network as described
+in Section 2. It is used with the standard setting of two message-passing steps, i.e., an effective cutoff of 10 Å.
+Training generally used default hyperparameters, with some adjustments made on hyperparameters related
+to training dynamics. Specifically, the cumulene system was trained using the default energy-to-forces loss
+weight ratio of 1:100 and ’128x0e + 128x1o + 128x2e’ hidden irreps. All other systems were trained using a
+1:10 ratio and ’128x0e + 128x1o’ hidden irreps.
+All experiments, except those involving cumulenes and the NaCl cluster, used the SWA protocol, which
+swaps the loss weights between energy and forces at a specified epoch. This epoch was set where the energy
+RMSE plateaued, with the subsequent training continued until loss saturation. All models were trained with
+lmax = 2, a batch size of 32, and utilized cuEquivariance acceleration.
+Pet Pet (Pozdnyakov & Ceriotti (2023)) is an unconstrained transformer model, consisting of multiple
+edge-to-edge transformer layers within local neighborhoods followed by message passing. Similar to Mace, it
+is also used with two message-passing steps and an effective cutoff of 10 Å. To ensure approximate rotational
+invariance, it is trained with data augmentation. No inference-time symmetrization is used in our experiments.
+Unless otherwise specified, we used default hyperparameters (cutoff radius of 5 Å with cosine smoothing over
+the outermost 0.2 Å, dPET = 128, dhead = 128, dfeedforward = 512, with 8 heads per attention layer, and 2
+attention layers per GNN layer), with some adjustments made related to training dynamics. Models were
+trained using an epoch-based scheduler, which halved the learning rate after 250 epochs. This applies to all
+datasets except biodimers. For biodimers, a ReduceLROnPlateau scheduler was used instead, reducing the
+learning rate by 20% if the loss did not improve for 100 consecutive epochs. To improve training stability,
+biodimers training also employed gradient clipping with a maximum gradient norm of 5. Every training run
+included 10 warmup epochs, during which the learning rate was linearly increased from zero to the preset
+learning rate of 1 × 10−4 .
+For the biodimers and NaCl cluster datasets, the targets were normalized by their standard deviation in the
+training set. The energy-to-forces loss weight ratio was set to 1:1 for biodimers and MgO surface datasets,
+while the NaCl cluster dataset used a ratio of 1:10.
+For cumulene, PET was trained for 20 100 epochs with a batch size of 16, equal energy and forces weight,
+and a maximum learning rate of 2 · 10−4 . The learning rate was increased linearly from 0 over 100 epochs,
+and then reduced by 10% every 500 epochs over the entire training run. Architecturally, 4 attention layers
+22
+
+and cosine cutoff function was employed to resolve the cumulenes. We found that increasing the number of
+attention layers, and adapting the cutoff function, were critical to resolve this benchmark task.
+Cace-Les The Cace-Les model was originally presented in Cheng (2024), with an additional modification
+introducing a long-range component in Cheng (2025). Similar to Mace, Cace-Les is an equivariant messagepassing neural network. After short-range message passing, invariant scalar pseudo-charges are predicted and
+passed to the long-range part of Ewald summation; the resulting energy contribution is added to the energy
+predictions of the short-range message-passing model. We use this model with the recommended setting of
+one message-passing step and, depending on the system, the following corresponding effective cutoff radii:
+5.5 Å for the MgO surface, 5.29 Å for the NaCl cluster—these are the settings used in the original paper Kim
+et al. (2024)—and we chose a cutoff of 5 Å for biodimers and cumulene.
+For the MgO surface and NaCl cluster datasets, models were taken from Kim et al. (2024). For the cumulenes
+and biodimers datasets, the hyperparameters were as follows: 6 Bessel radial functions, c = 8, lmax = 3, νmax ,
+Nembedding = 2, one message-passing layer, one-dimensional hidden variable, σ = 1, and dl = 2. Training
+followed the example in the original paper: the first 200 epochs used an energy loss weight of 0.1 and a forces
+loss weight of 1000, after which the energy loss weight was changed to 1, 10, and 1000 every 100 epochs,
+yielding a total of 500 epochs. The learning rate was 5 × 10−3 , with a step learning rate schedule decreasing
+it by a factor of 2 every 20 steps.
+4G-NN The 4G-NN model was designed to tackle the benchmarks introduced by Ko et al. (2021), and
+introduced in that work. It consists of a shallow neural network acting on rotationally invariant features,
+predicting both a local energy contribution and an electronegativity, which is then used in a charge equilibration
+procedure that globally redistributes charges to minimize an energy expression. This process can be seen as a
+physics-inspired long-range message passing scheme iterated until a fixed point is reached. As the model
+requires charge labels to train, which are not available for all datasets, we did not train this model for our
+experiments but instead include results from Ko et al. (2021), which are only available for the NaCl cluster
+and MgO surface datasets. The cutoffs used in the original paper are as follows: 4.23 Å for the MgO surface
+and 5.29 Å for the NaCl cluster.
+SpookyNet SpookyNet (Unke et al., 2021a) is an equivariant MLIP that predicts scalar partial charges
+and nuclear dipoles, which are used to compute long-range electrostatic and dispersion corrections via Ewald
+summation. Additionally, the model includes global attention without geometric information. The model has
+approximately 3 M parameters (Blücher et al., 2023). Results for the MgO surface and NaCl cluster datasets
+are taken from Ko et al. (2021).
+
+23
+
+Inference time (ms)
+
+103
+
+NaCl (Ewald)
+NaCl (PME)
+CsCl (Ewald)
+CsCl (PME)
+
+Cu2 O (Ewald)
+Cu2 O (PME)
+∝ N2
+∝N
+
+102
+
+101
+
+100
+101
+
+102
+103
+Number of atoms N
+
+104
+
+Figure 6: Runtime scaling of Lorem with Ewald (dashed) and PME (solid) long-range implementations for
+NaCl, CsCl, and Cu2O supercells. Reference scaling lines (∝ N 2 and ∝ N ) are shown for comparison.
+Table 4: Runtime of Lorem with Ewald and PME long-range implementations for NaCl supercells of varying
+size N . LR denotes the time spent in the long-range block alone.
+
+E
+
+N
+
+SR+LR (ms)
+
+Ewald
+LR (ms)
+
+LR (%)
+
+SR+LR (ms)
+
+PME
+LR (ms)
+
+LR (%)
+
+8
+64
+512
+1728
+4096
+8000
+17576
+32768
+
+0.7
+0.9
+6.4
+61.2
+475.8
+–
+–
+–
+
+0.2
+0.4
+5.3
+58.4
+469.8
+–
+–
+–
+
+32.4
+45.4
+82.6
+95.5
+98.7
+–
+–
+–
+
+0.8
+1.0
+2.1
+4.8
+12.1
+20.2
+41.5
+101.2
+
+0.3
+0.5
+1.0
+2.1
+6.1
+8.9
+16.9
+51.6
+
+41.9
+50.0
+46.0
+42.6
+50.5
+43.8
+40.7
+51.0
+
+Runtime Benchmark
+
+To estimate the runtime overhead of the long-range block and compare the Ewald and particle-mesh Ewald
+(PME) implementations, we benchmarked Lorem on supercells of three physical crystal structures: NaCl,
+CsCl, and Cu2O. For each crystal, we constructed supercells of increasing size and ran predictions (energy
+and forces) for Lorem models with and without the long-range block, using both Ewald and PME for the
+long-range evaluation. All benchmarks were repeated ten times and averaged, and executed on a single
+NVIDIA H100 GPU.
+The scaling behavior is shown in Fig. 6. Ewald summation scales quadratically with system size and runs out
+of memory beyond approximately 8000 atoms; PME scales roughly linearly and extends to over 30 000 atoms.
+At 4096 atoms, PME is approximately 40× faster than Ewald. Detailed timings, including the fraction of
+total runtime spent in the long-range block, are reported in Tables 4 to 6. With Ewald, the LR fraction grows
+from around 30 % at small sizes to over 95 % at large sizes. With PME, the LR fraction remains roughly
+constant and depends on the density of the crystal: Cu2O (the densest, ∼ 35 neighbors per atom) shows
+around 25 %, while CsCl (the least dense, ∼ 14 neighbors) shows around 60 %. Overall, performance with
+PME on the order of single-digit µs/atom is in line with expectations for modern MLIPs.
+
+24
+
+Table 5: Runtime of Lorem with Ewald and PME long-range implementations for CsCl supercells of varying
+size N .
+N
+
+SR+LR (ms)
+
+Ewald
+LR (ms)
+
+LR (%)
+
+SR+LR (ms)
+
+PME
+LR (ms)
+
+LR (%)
+
+2
+54
+432
+1458
+4394
+8192
+18522
+31250
+
+0.7
+0.8
+5.1
+46.0
+710.1
+–
+–
+–
+
+0.3
+0.4
+4.3
+44.3
+705.7
+–
+–
+–
+
+42.7
+48.1
+84.5
+96.2
+99.4
+–
+–
+–
+
+0.8
+0.9
+1.7
+4.2
+11.0
+19.0
+42.5
+72.9
+
+0.4
+0.5
+0.9
+2.5
+6.7
+11.2
+25.5
+44.2
+
+50.2
+55.4
+52.4
+58.8
+60.6
+59.2
+60.0
+60.7
+
+Table 6: Runtime of Lorem with Ewald and PME long-range implementations for Cu2O supercells of varying
+size N .
+N
+
+SR+LR (ms)
+
+Ewald
+LR (ms)
+
+LR (%)
+
+SR+LR (ms)
+
+PME
+LR (ms)
+
+LR (%)
+
+6
+48
+384
+1296
+4374
+7986
+16464
+29478
+
+0.7
+0.8
+2.5
+43.0
+177.1
+773.1
+–
+–
+
+0.3
+0.4
+1.5
+40.3
+169.1
+759.0
+–
+–
+
+42.2
+42.8
+58.6
+93.9
+95.4
+98.2
+–
+–
+
+0.9
+1.0
+1.7
+3.8
+11.0
+19.9
+40.5
+78.1
+
+0.5
+0.5
+0.6
+1.1
+2.9
+5.7
+11.3
+19.6
+
+55.6
+52.5
+38.4
+30.4
+26.5
+28.7
+27.8
+25.1
+
+25
+
+Table 7: Root mean squared errors for energy E and forces f for datasets used in Sec. 6.1 of the main text,
+for different Lorem variants. See Tab. 1 of the main text for details.
+Dataset
+
+Lorem
+No LR
+
+Lorem
+LR l = 0
+
+Lorem
+LR l = 1
+
+Lorem
+LR l = 2
+
+E (meV/at)
+f (meV/Å)
+
+2.234
+61.487
+
+0.063
+5.870
+
+0.062
+5.284
+
+0.064
+4.076
+
+E (meV/at)
+f (meV/Å)
+
+1.582
+50.110
+
+0.113
+1.243
+
+0.111
+1.062
+
+0.112
+1.155
+
+Biodimers
+
+E (meV/at)
+f (meV/Å)
+
+8.259
+16.452
+
+0.302
+1.677
+
+0.329
+1.725
+
+0.222
+1.646
+
+Cumulene
+
+E (meV/at)
+f (meV/Å)
+
+16.203
+126.000
+
+15.793
+133.092
+
+5.576
+85.956
+
+3.309
+50.084
+
+MgO surface
+(Validation set)
+
+NaCl cluster
+(Validation set)
+
+F
+
+Ablations of LR block and l
+
+We repeated the experiments on the MgO surface, NaCl cluster, cumulene, and biodimers with Lorem
+models with l = 0 and l = 1, as well as without the long-range message-passing block. The parameter counts
+for no LR and l = 0, 1, 2 (in that order) are 839129, 1020300, 1020749, and 1021198.
+Results can be seen in Table 7 and Figs. 7 to 9. Generally, higher l improve error metrics. For experiments
+where only scalar long-range interactions are required (MgO surface, NaCl cluster), higher l do not improve
+qualitative agreement. The cumulene example, which requires access to relative orientation between rotors,
+requires equivariant long-range interactions with l = 2 to be resolved. Removing the long-range messagepassing block significantly increases error and renders the model unable to solve all the benchmark tasks.
+
+26
+
+A
+non-wetting
+wetting
+
+B
+
+Doped
+
+Undoped
+
+Reference
+L OREM, LR l = 2
+L OREM, LR l = 1
+
+∼ 12 Å
+
+E − Emin (meV)
+
+d
+
+dopant
+
+20
+0
+
+C
+
+2.2
+
+2.3
+2.4
+Au-O Distance (Å)
+
+D
+
+2.1
+
+2.2
+Au-O Distance (Å)
+
+Na8 Cl+
+8
+
+E − Emin (meV)
+
+∼ 21 Å
+
+L OREM, LR l = 0
+L OREM, No LR
+
+Na9 Cl+
+8
+
+10
+0
+3.4
+3.5
+Na-Na Distance d (Å)
+
+d
+
+3.6
+
+3.3
+3.4
+Na-Na Distance d (Å)
+
+3.5
+
+Figure 7: (A) Au2 dimer on MgO surface, showing both wetting and non-wetting geometries, as well as the
+Al dopant. (B) Energy over distance d for the non-wetting geometry for the doped and undoped surface.
+The minima are indicated with a diamond symbol; the reference energy curve is drawn in grey. Offsets
+are added to distinguish the curves and the value at the minimum is subtracted. (C) Na9Cl8+ (top) and
+Na8Cl8+ (bottom) cluster, the moving atom is marked with transparent copies of itself, and the distance of
+interest is labeled with d. (D) Energy over distance for both clusters.
+
+Energy (eV)
+
+0.6
+
+Reference
+L OREM, No LR
+L OREM, LR l = 0
+
+L OREM, LR l = 1
+L OREM, LR l = 2
+
+0.4
+0.2
+0.0
+90
+
+120
+150
+Dihedral angle θ (Degrees)
+
+180
+
+Figure 8: Energy profile over a 90◦ rotation of one rotor. The minimum value of each curve is subtracted
+before plotting.
+
+27
+
+25
+
+L OREM, No LR
+L OREM, LR l = 0
+L OREM, LR l = 1
+L OREM, LR l = 2
+
+Forces MAE (meV/Å)
+
+20
+15
+10
+5
+2
+1
+0
+
+AA
+
+CA
+
+CC
+CP
+Dimer class
+
+PA
+
+PP
+
+Figure 9: Mean absolute error on forces for different models on the different dimer classes: Apolar-apolar
+(AA), charge-apolar (CA), charge-charge (CC), charge-polar (CP), polar-apolar (PA), polar-polar (PP).
+
+28
+
+Cutoff 2.5 Å
+
+Energy (eV)
+
+0.6
+
+0.4
+
+Reference
+1×SR + 1×LR
+2×SR + 1×LR
+4×SR
+1×SR
+2×SR
+3×SR
+
+0.2
+
+0.0
+
+0.8
+
+Energy (eV)
+
+0.6
+
+0.4
+
+Cutoff 3.0 Å
+Reference
+1×SR + 1×LR
+2×SR + 1×LR
+3×SR
+4×SR
+1×SR
+2×SR
+
+0.2
+
+0.0
+
+Cutoff 3.5 Å
+
+Energy (eV)
+
+0.6
+
+0.4
+
+Reference
+1×SR + 1×LR
+2×SR + 1×LR
+2×SR
+3×SR
+4×SR
+1×SR
+
+0.2
+
+0.0
+90
+
+120
+150
+Dihedral angle θ (Degrees)
+
+180
+
+Figure 10: Rotational profile of cumulene for variations of the Lorem model with different rc , different
+numbers of short-range message passing steps, and with and without long-range message passing. All curves
+that are identical to zero have been collapsed into a single one for readability.
+
+G
+
+Additional results for cumulene
+
+In Fig. 10, we present the curves related to Table 2. All models where the dihedral information is accessible
+can resolve the benchmark, but vary in match to the ground truth. In particular, we note that models with
+two short-range message passing steps perform better than a single one. This may be due to the high degree
+of degeneracy in atomic environments at short cutoffs, which is alleviated by message passing.
+
+29
+
+H
+
+Hyper-parameter sweep for the NaCl cluster and MgO surface datasets
+
+We report the results of a hyper-parameter sweep for the NaCl cluster and MgO surface datasets on a ‘inner’
+train/validation split of the training set used for the experiments in Section 6, aiming to gauge the impact of
+hyper-parameter tuning and early stopping on the validation set used for Table 1.
+We used random train/validation split (4000 samples / 500 samples) of the NaCl cluster and MgO surface training datasets, sweeping the following combinations of parameters: Initial learning rate (0.001, 0.0001), learning
+rate decay (linear, exponential), batch size (32, 64), and energy/force loss weights (0.5/0.5, 100/1, 1000/1)
+over 4000 epochs of training with the ADAM optimizer. From the resulting models, we selected those with
+the best ‘inner’ validation RMSE on energy and forces and evaluated the models on the ‘outer’ validation split
+used for Table 1. The results are presented in Table 8 and Table 9. The model selected by the best energy
+error on the validation set performs best in both cases, similar to the model used in the main text. The
+model with the best force error ranks second for the MgO surface task. We also verified that both models are
+able to reproduce the curves in Fig. 2. In summary, explicitly tuning the model on an inner train/validation
+split, including performing early stopping on this validation set, does not significantly impact benchmark
+results as reported in Table 1.
+Table 8: Errors on the validation set for the hyperparameter set with the best inner validation metrics for
+the MgO task.
+Model
+Lorem
+Nearest other
+Best E model
+Best F model
+
+Test RMSE E (meV/atom)
+
+Test RMSE f (meV/Å)
+
+0.064
+0.071 (Cace-Les)
+0.064
+0.078
+
+4.076
+5.971 (Mace)
+5.229
+3.630
+
+Table 9: Errors on the validation set for the hyperparameter set with the best inner validation metrics for
+the NaCl task.
+Model
+Lorem
+Nearest other
+Best E model
+Best F model
+
+Test RMSE E (meV/atom)
+
+Test RMSE f (meV/Å)
+
+0.112
+0.210 (Cace-Les)
+0.076
+0.101
+
+1.155
+9.784 (Cace-Les)
+2.613
+1.473
+
+30
+
+I
+
+Result variants: MAE metrics, RMSE biodimers forces, different seeds
+
+Table 1 in the main text reports root mean squared errors (RMSE). For completeness, we provide the
+corresponding mean absolute errors (MAE) in Table 10. Additionally, Fig. 11 shows the biodimers force
+errors using RMSE (the main text uses MAE). The conclusions are unchanged: Lorem achieves the lowest
+or competitive errors across all datasets and dimer classes.
+To assess sensitivity to random initialization and dataset shuffling, we also report results for an alternative
+seed for Lorem (†) in Table 11 (RMSE) and Table 12 (MAE). This represents the worse of two seeds trained
+per task. The results are consistent with the main table, confirming that Lorem’s performance is robust to
+the choice of random seed. We also confirmed that qualitative performance on the benchmark tasks is similar.
+Table 10: Mean absolute errors for energy E and forces f . Models for which MAE metrics are not available
+(4G-NN, SpookyNet) are omitted. Best in bold, second best underlined. See Table 1 for details.
+Dataset
+
+Lorem
+1×SR+LR
+
+Cace-Les
+1×SR+LR
+
+Mace
+2×SR
+
+Pet
+2× SR
+
+E (meV/at)
+f (meV/Å)
+
+0.041
+2.869
+
+0.036
+5.584
+
+0.353
+3.620
+
+0.188
+4.191
+
+E (meV/at)
+(Validation set) f (meV/Å)
+
+0.090
+0.778
+
+0.161
+6.388
+
+1.345
+23.598
+
+1.249
+20.011
+
+MgO surface
+(Validation set)
+
+NaCl cluster
+
+Biodimers
+
+E (meV/at)
+f (meV/Å)
+
+0.155
+1.023
+
+0.566
+1.787
+
+3.220
+5.278
+
+2.657
+5.352
+
+Cumulene
+
+E (meV/at)
+f (meV/Å)
+
+1.096
+22.078
+
+14.567
+107.946
+
+8.961
+70.467
+
+1.363
+13.610
+
+Table 11: RMSE for energy E and forces f , with Lorem results for an alternative seed (†), representing the
+worse of two seeds. Best in bold, second best underlined. See Table 1 for details.
+Dataset
+
+Lorem†
+1×SR+LR
+
+Cace-Les
+1×SR+LR
+
+Mace
+2×SR
+
+Pet
+2× SR
+
+4G-NN
+1×SR+LR
+
+SpookyNet
+6×SR+LR
+
+E (meV/at)
+f (meV/Å)
+
+0.065
+4.381
+
+0.071
+7.913
+
+0.376
+5.971
+
+0.210
+6.261
+
+0.219
+66.000
+
+0.107
+5.337
+
+E (meV/at)
+f (meV/Å)
+
+0.112
+1.275
+
+0.210
+9.784
+
+1.681
+40.219
+
+1.517
+42.438
+
+0.481
+32.780
+
+0.135
+1.052
+
+Biodimers
+
+E (meV/at)
+f (meV/Å)
+
+0.370
+1.985
+
+2.259
+3.163
+
+7.793
+16.150
+
+6.758
+16.470
+
+–
+–
+
+–
+–
+
+Cumulene
+
+E (meV/at)
+f (meV/Å)
+
+3.307
+55.412
+
+17.803
+147.616
+
+12.592
+104.318
+
+3.205
+46.905
+
+–
+–
+
+–
+–
+
+MgO surface
+(Validation)
+
+NaCl cluster
+(Validation)
+
+31
+
+Table 12: MAE for energy E and forces f , with Lorem results for an alternative seed (†), representing the
+worse of two seeds. Models for which MAE metrics are not available (4G-NN, SpookyNet) are omitted.
+Best in bold, second best underlined. See Table 1 for details.
+Dataset
+
+Lorem†
+1×SR+LR
+
+Cace-Les
+1×SR+LR
+
+Mace
+2×SR
+
+Pet
+2× SR
+
+E (meV/at)
+f (meV/Å)
+
+0.040
+3.133
+
+0.036
+5.584
+
+0.353
+3.620
+
+0.188
+4.191
+
+E (meV/at)
+f (meV/Å)
+
+0.090
+0.882
+
+0.161
+6.388
+
+1.345
+23.598
+
+1.249
+20.011
+
+Biodimers
+
+E (meV/at)
+f (meV/Å)
+
+0.322
+1.110
+
+0.566
+1.787
+
+3.220
+5.278
+
+2.657
+5.352
+
+Cumulene
+
+E (meV/at)
+f (meV/Å)
+
+1.212
+28.448
+
+14.567
+107.946
+
+8.961
+70.467
+
+1.363
+13.610
+
+MgO surface
+(Validation set)
+
+NaCl cluster
+(Validation set)
+
+50
+L OREM
+C ACE -L ES
+M ACE
+P ET
+
+Forces RMSE (meV/Å)
+
+40
+30
+20
+10
+6
+4
+2
+0
+
+AA
+
+CA
+
+CC
+CP
+Dimer class
+
+PA
+
+PP
+
+Figure 11: Root mean squared error on forces for different models on the different dimer classes. Compare
+with Fig. 4 in the main text, which shows MAE.
+
+32
+
+J
+
+ADAPT benchmark
+
+To evaluate Lorem on a larger-scale dataset, we trained it on the ADAPT silicon point-defect dataset
+(Dramko et al., 2025). This dataset contains 206 973 training, 51 743 validation, and 4425 test structures,
+each consisting of 217 atoms (215 Si atoms plus 2 dopant atoms drawn from 24 elements, forming 52 unique
+dopant pairs). The test set consists of the first frames from 100 held-out relaxation trajectories, following the
+evaluation protocol of the original work.
+We used Lorem with default model hyperparameters (rc = 5 Å, lmax = 6, lmax, LR = 2, 128 scalar features,
+8 spherical channels, 32 radial basis functions). Training hyperparameters were selected via a sweep of 24
+combinations on a 9500-structure debug subset (100 epochs): optimizer (Muon Jordan et al. (2024), ADAM),
+initial learning rate (1 · 10−3 , 1 · 10−4 ), learning rate decay (linear, exponential), and energy/force loss weights
+(0.5/0.5, 100/1, 1000/1). Four configurations from the Pareto frontier were selected for production training on
+the full dataset, all using the Muon optimizer with initial learning rate 1 · 10−3 : energy/force loss weights
+0.5/0.5 with linear and exponential decay, and 100/1 with linear and exponential decay. These were trained
+for 300 epochs (65 h on a single H100 GPU).
+Results are shown in Table 13, reporting the best force MAE and best energy MAE across the four production
+runs, each evaluated at the checkpoint with the highest summed R2 of energy and forces on the validation
+set. Lorem nearly matches the force accuracy of the ADAPT model (which uses an all-to-all transformer
+architecture with ∼4 M parameters) while achieving substantially better energy accuracy—despite using a
+single model for both properties, compared to ADAPT’s separate energy-only model. Lorem also significantly
+outperforms all other baselines, including MACE (both retrained and foundation models) and MatterSim.
+Table 13: Mean absolute errors on the 100-structure ADAPT benchmark test set. Baseline results are from
+Dramko et al. (2025). The ADAPT model uses a separate energy-only model for energies; all other models
+predict both properties jointly. Best in bold, second best underlined. Parameter counts: ADAPT Small
+∼4 M, ADAPT Large ∼18 M.
+Model
+
+f MAE (eV/Å)
+
+E MAE (eV)
+
+Lorem (best f )
+Lorem (best E)
+
+0.0128
+0.0136
+
+0.097
+0.076
+
+ADAPT Small
+ADAPT Large
+Mace Retrained
+Mace MP0a Large
+Mace MPA-0 Medium
+Mace OMAT-0 Medium
+MatterSim 1M
+MatterSim 5M
+
+0.0126
+0.0136
+0.0217
+0.0439
+0.0349
+0.0283
+0.0323
+0.0335
+
+0.578
+–
+1.313
+6.101
+2.048
+3.223
+1.743
+0.829
+
+33
+
+

@@ -1,0 +1,2 @@
+model with best summed r2 of energy + forces on split valid at step=3716038:
+-> loss=-1.8364884949e+02

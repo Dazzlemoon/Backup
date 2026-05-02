@@ -1,0 +1,27 @@
+
+cd $REMOTE_ROOT
+cd Sb
+test $? -ne 0 && exit 1
+if [ ! -f 6ec31d84a0e023e068f36945df79a7b372a51bb2_task_tag_finished ] ;then
+   ( ulimit -s unlimited && ulimit -l unlimited && export I_MPI_PMI_LIBRARY=/usr/lib64/libpmi.so && export I_MPI_FABRICS=shm:ofi && export I_MPI_PMI=pmi && mpirun -n 64 vasp_std ) 1>>log 2>>err 
+  if test $? -eq 0; then touch 6ec31d84a0e023e068f36945df79a7b372a51bb2_task_tag_finished; else echo 1 > $REMOTE_ROOT/86d2df369e8ea01ded00972075251977ddb44c57_flag_if_job_task_fail;tail -v -c 1000 $REMOTE_ROOT/Sb/err > $REMOTE_ROOT/86d2df369e8ea01ded00972075251977ddb44c57_last_err_file;fi
+fi &
+wait 
+
+cd $REMOTE_ROOT
+cd Na
+test $? -ne 0 && exit 1
+if [ ! -f 08a546a65a2e0d989151125dae4411d7af50b981_task_tag_finished ] ;then
+   ( ulimit -s unlimited && ulimit -l unlimited && export I_MPI_PMI_LIBRARY=/usr/lib64/libpmi.so && export I_MPI_FABRICS=shm:ofi && export I_MPI_PMI=pmi && mpirun -n 64 vasp_std ) 1>>log 2>>err 
+  if test $? -eq 0; then touch 08a546a65a2e0d989151125dae4411d7af50b981_task_tag_finished; else echo 1 > $REMOTE_ROOT/86d2df369e8ea01ded00972075251977ddb44c57_flag_if_job_task_fail;tail -v -c 1000 $REMOTE_ROOT/Na/err > $REMOTE_ROOT/86d2df369e8ea01ded00972075251977ddb44c57_last_err_file;fi
+fi &
+wait 
+
+cd $REMOTE_ROOT
+cd S
+test $? -ne 0 && exit 1
+if [ ! -f bdb35b10634ebfd2fc303a75ceb9face06d5e137_task_tag_finished ] ;then
+   ( ulimit -s unlimited && ulimit -l unlimited && export I_MPI_PMI_LIBRARY=/usr/lib64/libpmi.so && export I_MPI_FABRICS=shm:ofi && export I_MPI_PMI=pmi && mpirun -n 64 vasp_std ) 1>>log 2>>err 
+  if test $? -eq 0; then touch bdb35b10634ebfd2fc303a75ceb9face06d5e137_task_tag_finished; else echo 1 > $REMOTE_ROOT/86d2df369e8ea01ded00972075251977ddb44c57_flag_if_job_task_fail;tail -v -c 1000 $REMOTE_ROOT/S/err > $REMOTE_ROOT/86d2df369e8ea01ded00972075251977ddb44c57_last_err_file;fi
+fi &
+wait 

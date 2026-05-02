@@ -1,0 +1,1 @@
+global_epoch,stage,phase,stage_epoch,lr_weight,sr_weight,std_q,mean_abs_q,mean_q_mono,std_q_mono,mean_abs_q_mono,mean_q_dipole,std_q_dipole,mean_abs_q_dipole,mean_q_quadrupole,std_q_quadrupole,mean_abs_q_quadrupole,mean_e_short,mean_e_long,mean_e_total,mean_abs_e_short,mean_abs_e_long,mean_abs_e_total,f_long_over_f_total,e_long_over_e_total

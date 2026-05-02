@@ -1,0 +1,9 @@
+
+cd $REMOTE_ROOT
+cd Final_Structure
+test $? -ne 0 && exit 1
+if [ ! -f b3102daeeb441a60b58157d8ddbf1b57d04bd1ac_task_tag_finished ] ;then
+   ( ulimit -s unlimited && ulimit -l unlimited && export I_MPI_PMI_LIBRARY=/usr/lib64/libpmi.so && export I_MPI_FABRICS=shm:ofi && export I_MPI_PMI=pmi && mpirun -n 64 /dssg/opt/icelake/linux-centos8-icelake/oneapi-2021.4.0/vasp/vasp.6.3.0/bin/vasp_std ) 1>>log 2>>err 
+  if test $? -eq 0; then touch b3102daeeb441a60b58157d8ddbf1b57d04bd1ac_task_tag_finished; else echo 1 > $REMOTE_ROOT/721af531cf3dc3a0391066c255711aa784a9bbc7_flag_if_job_task_fail;tail -v -c 1000 $REMOTE_ROOT/Final_Structure/err > $REMOTE_ROOT/721af531cf3dc3a0391066c255711aa784a9bbc7_last_err_file;fi
+fi &
+wait 
